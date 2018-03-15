@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Carlabs.Getit.UnitTests
@@ -37,11 +36,25 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
+        public void From_String_AddsToQuery()
+        {
+            // Arrange
+            Query query = new Query();
+            const string from = "user";
+
+            // Act
+            query.From(from);
+
+            // Assert
+            Assert.AreEqual(from, query.Name);
+        }
+
+        [TestMethod]
         public void Select_String_AddsToQuery()
         {
             // Arrange
             Query query = new Query();
-            string select = "id";
+            const string select = "id";
 
             // Act
             query.Select(select);
@@ -97,7 +110,7 @@ namespace Carlabs.Getit.UnitTests
         {
             // Arrange
             Query query = new Query();
-            string select = "id";
+            const string select = "id";
             List<string> selectList = new List<string>()
             {
                 "name",
@@ -217,6 +230,22 @@ namespace Carlabs.Getit.UnitTests
 
             // Assert
             Assert.AreEqual(query2, query.WithList.First());
+        }
+
+        [TestMethod]
+        public void With_QueryWithProps_AddsToWithList()
+        {
+            // Arrange
+            Query query = new Query();
+            Query query2 = new Query();
+            query2.Select("id", "name").From("user").Where("id", 1);
+
+            // Act
+            query.Select("price").Where("id", 2).With(query2);
+
+            // Assert
+            Assert.AreEqual(1, query.WithList.First().WhereMap["id"]);
+            Assert.AreEqual("user", query.WithList.First().Name);
         }
     }
 }

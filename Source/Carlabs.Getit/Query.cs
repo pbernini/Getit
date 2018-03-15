@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 
 namespace Carlabs.Getit
 {
@@ -9,6 +8,23 @@ namespace Carlabs.Getit
         public List<string> SelectList { get; } = new List<string>();
         public List<Query> WithList { get; } = new List<Query>();
         public Dictionary<string, object> WhereMap { get; } = new Dictionary<string, object>();
+        public string Name { get; private set; }
+
+        public Query()
+        {
+        }
+
+        public Query(string from)
+        {
+            Name = from;
+        }
+
+        public Query From(string from)
+        {
+            Name = from;
+
+            return this;
+        }
 
         public Query Select(IEnumerable<string> stringList)
         {

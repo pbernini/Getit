@@ -9,14 +9,17 @@ namespace Carlabs.Getit
         public List<Query> WithList { get; } = new List<Query>();
         public Dictionary<string, object> WhereMap { get; } = new Dictionary<string, object>();
         public string Name { get; private set; }
+        private readonly QueryStringBuilder _builder;
 
-        public Query()
+        public Query(QueryStringBuilder builder)
         {
+            _builder = builder;
         }
 
-        public Query(string from)
+        public Query(string from, QueryStringBuilder builder)
         {
             Name = from;
+            _builder = builder;
         }
 
         public Query From(string from)
@@ -68,7 +71,7 @@ namespace Carlabs.Getit
 
         public override string ToString()
         {
-            return base.ToString();
+            return _builder.Build(this);
         }
     }
 }

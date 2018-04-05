@@ -5,10 +5,13 @@ namespace Carlabs.Getit
 {
     public class Query
     {
-        public List<string> SelectList { get; } = new List<string>();
-        public List<Query> WithList { get; } = new List<Query>();
+        public List<object> SelectList { get; } = new List<object>();
+     
         public Dictionary<string, object> WhereMap { get; } = new Dictionary<string, object>();
         public string Name { get; private set; }
+        public string AliasName { get; private set; }
+        public string GqlComment { get; private set; }
+
         private readonly QueryStringBuilder _builder;
 
         public Query(QueryStringBuilder builder)
@@ -29,9 +32,23 @@ namespace Carlabs.Getit
             return this;
         }
 
-        public Query Select(IEnumerable<string> stringList)
+        public Query Alias(string alias)
         {
-            SelectList.AddRange(stringList);
+            AliasName = alias;
+
+            return this;
+        }
+
+        public Query Comment(string comment)
+        {
+            GqlComment = comment;
+
+            return this;
+        }
+
+        public Query Select(IEnumerable<object> objectList)
+        {
+            SelectList.AddRange(objectList);
 
             return this;
         }
@@ -42,7 +59,7 @@ namespace Carlabs.Getit
 
             return this;
         }
-
+        
         public Query Where(string key, object where)
         {
             WhereMap.Add(key, where);
@@ -50,16 +67,16 @@ namespace Carlabs.Getit
             return this;
         }
 
-        public Query With(IEnumerable<Query> query)
+        /// <summary>
+        /// Add a dict of key value pairs &lt;string, object&gt; to the existing where part
+        /// </summary>
+        /// <param name="dict">An existing Dictionay that takes &lt;string, object&gt;</param>
+        /// <returns>Query</returns>
+        /// <throws>Dupekey and others</throws>
+        public Query Where(Dictionary<string, object> dict)
         {
-            WithList.AddRange(query);
-
-            return this;
-        }
-
-        public Query With(params Query[] query)
-        {
-            WithList.AddRange(query);
+            foreach (var field in dict)
+                WhereMap.Add(field.Key, field.Value);
 
             return this;
         }

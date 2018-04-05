@@ -21,7 +21,10 @@ namespace Carlabs.Getit.UnitTests
         public void Select_StringList_AddsToQuery()
         {
             // Arrange
-            Query query = new Query();
+
+            QueryStringBuilder queryString = new QueryStringBuilder();
+            Query query = new Query(queryString);
+
             List<string> selectList = new List<string>()
             {
                 "id",
@@ -39,7 +42,9 @@ namespace Carlabs.Getit.UnitTests
         public void From_String_AddsToQuery()
         {
             // Arrange
-            Query query = new Query();
+            QueryStringBuilder queryString = new QueryStringBuilder();
+            Query query = new Query(queryString);
+
             const string from = "user";
 
             // Act
@@ -53,7 +58,9 @@ namespace Carlabs.Getit.UnitTests
         public void Select_String_AddsToQuery()
         {
             // Arrange
-            Query query = new Query();
+            QueryStringBuilder queryString = new QueryStringBuilder();
+            Query query = new Query(queryString);
+
             const string select = "id";
 
             // Act
@@ -67,7 +74,8 @@ namespace Carlabs.Getit.UnitTests
         public void Select_DynamicArguments_AddsToQuery()
         {
             // Arrange
-            Query query = new Query();
+            QueryStringBuilder queryString = new QueryStringBuilder();
+            Query query = new Query(queryString);
 
             // Act
             query.Select("some", "thing", "else");
@@ -86,7 +94,9 @@ namespace Carlabs.Getit.UnitTests
         public void Select_ArrayOfString_AddsToQuery()
         {
             // Arrange
-            Query query = new Query();
+            QueryStringBuilder queryString = new QueryStringBuilder();
+            Query query = new Query(queryString);
+
             string[] selects =
             {
                 "id",
@@ -109,7 +119,9 @@ namespace Carlabs.Getit.UnitTests
         public void Select_ChainCombinationOfStringAndList_AddsToQuery()
         {
             // Arrange
-            Query query = new Query();
+            QueryStringBuilder queryString = new QueryStringBuilder();
+            Query query = new Query(queryString);
+
             const string select = "id";
             List<string> selectList = new List<string>()
             {
@@ -148,7 +160,8 @@ namespace Carlabs.Getit.UnitTests
         public void Where_IntegerArgumentWhere_AddsToWhere()
         {
             // Arrange
-            Query query = new Query();
+            QueryStringBuilder queryString = new QueryStringBuilder();
+            Query query = new Query(queryString);
 
             // Act
             query.Where("id", 1);
@@ -161,7 +174,8 @@ namespace Carlabs.Getit.UnitTests
         public void Where_StringArgumentWhere_AddsToWhere()
         {
             // Arrange
-            Query query = new Query();
+            QueryStringBuilder queryString = new QueryStringBuilder();
+            Query query = new Query(queryString);
 
             // Act
             query.Where("name", "danny");
@@ -174,7 +188,9 @@ namespace Carlabs.Getit.UnitTests
         public void Where_DictionaryArgumentWhere_AddsToWhere()
         {
             // Arrange
-            Query query = new Query();
+            QueryStringBuilder queryString = new QueryStringBuilder();
+            Query query = new Query(queryString);
+
             Dictionary<string, int> dict = new Dictionary<string, int>()
             {
                 {"from", 1},
@@ -195,7 +211,9 @@ namespace Carlabs.Getit.UnitTests
         public void Where_ChainedWhere_AddsToWhere()
         {
             // Arrange
-            Query query = new Query();
+            QueryStringBuilder queryString = new QueryStringBuilder();
+            Query query = new Query(queryString);
+
             Dictionary<string, int> dict = new Dictionary<string, int>()
             {
                 {"from", 1},
@@ -216,36 +234,6 @@ namespace Carlabs.Getit.UnitTests
                 {"price", dict}
             };
             CollectionAssert.AreEqual(shouldPass, query.WhereMap);
-        }
-
-        [TestMethod]
-        public void With_Query_AddsToWithList()
-        {
-            // Arrange
-            Query query = new Query();
-            Query query2 = new Query();
-
-            // Act
-            query.With(query2);
-
-            // Assert
-            Assert.AreEqual(query2, query.WithList.First());
-        }
-
-        [TestMethod]
-        public void With_QueryWithProps_AddsToWithList()
-        {
-            // Arrange
-            Query query = new Query();
-            Query query2 = new Query();
-            query2.Select("id", "name").From("user").Where("id", 1);
-
-            // Act
-            query.Select("price").Where("id", 2).With(query2);
-
-            // Assert
-            Assert.AreEqual(1, query.WithList.First().WhereMap["id"]);
-            Assert.AreEqual("user", query.WithList.First().Name);
         }
     }
 }

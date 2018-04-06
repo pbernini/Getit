@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using Carlabs.Getit;
 
-
 namespace Carlabs.Examples.Getit
 {
     class Program
@@ -11,9 +10,6 @@ namespace Carlabs.Examples.Getit
         // ReSharper disable once UnusedParameter.Local
         static void Main(string[] args)
         {
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString);
-
             QueryStringBuilder subSelectString = new QueryStringBuilder();
             Query subSelect = new Query(subSelectString);
             // selection of fields to return, not compound sub-selections, only simple types
@@ -74,14 +70,23 @@ namespace Carlabs.Examples.Getit
                 {"__debug", gqlEnumEnabled},
             };
 
+            QueryStringBuilder queryString = new QueryStringBuilder();
+            Query query = new Query(queryString);
+
             query
-                .Select(selList)
                 .From("Dealer")
+                .Select("somemore", "things", "inaselect")
+                .Select(selList)
                 .Alias("myDealerAlias")
                 .Where(myDict)
+                .Where("id_int", 1)
+                .Where("id_double", 3.25)
+                .Where("id_string", "some_sting_id")
                 .Comment("My First F'n GQL Query with geTit\na second line of comments\nand yet another line of comments");
 
             Console.WriteLine($"{query}");
+
+            // just dump the sub-select alone adding an alias
             subSelect.Alias("myDealerSubSelect");
             Console.WriteLine($"{subSelect}");
         }

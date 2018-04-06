@@ -27,17 +27,30 @@
     {
         private string _str;
 
+        /// <summary>
+        /// Create the Helper with a string, default empty. 
+        /// </summary>
+        /// <param name="enumStr">String to represent as an ENUM to GraphQL, default is the empty string</param>
         public EnumHelper(string enumStr = "")
         {
             _str = enumStr;
         }
 
+        /// <summary>
+        /// Set the Enum value
+        /// </summary>
+        /// <param name="enumStr">The string we want to represent as a GraphQL enum</param>
+        /// <returns>this</returns>
         public EnumHelper Enum(string enumStr)
         {
             _str = enumStr;
             return this;
         }
 
+        /// <summary>
+        /// Gets the Enum as a string
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return _str;

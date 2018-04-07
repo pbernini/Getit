@@ -11,7 +11,7 @@ namespace Carlabs.Getit
     /// 
     /// 
     /// </summary>
-    public class Query
+    public class Query : IQuery
     {
         public List<object> SelectList { get; } = new List<object>();
      

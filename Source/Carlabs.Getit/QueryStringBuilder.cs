@@ -15,9 +15,9 @@ namespace Carlabs.Getit
     /// Most all sturctures can be recursive, and are unwound as needed
     /// 
     /// </summary>
-    public class QueryStringBuilder
+    public class QueryStringBuilder : IQueryStringBuilder
     {
-        private StringBuilder QueryString;
+        public StringBuilder QueryString { get; }
         private const int IndentSize = 4;
 
         public QueryStringBuilder()
@@ -33,7 +33,7 @@ namespace Carlabs.Getit
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        private string BuildQueryParam(object value)
+        public string BuildQueryParam(object value)
         {
             // Nicely use the pattern match
 
@@ -112,22 +112,26 @@ namespace Carlabs.Getit
         /// resolve nested structures
         /// </summary>
         /// <param name="query">The Query</param>
-        private void AddParams(Query query)
+        public void AddParams(Query query)
         {
             // Build the param list from the name value pairs.
             // All entries have a `name`:`value` looking format. The
             // BuildQueryParam's will recurse any nested data elements
-
+            bool hasParams = false;
             foreach (var param in query.WhereMap)
             {
                 QueryString.Append($"{param.Key}:");
                 QueryString.Append(BuildQueryParam(param.Value) + ", ");
+                hasParams = true;
             }
 
-            // Remove the last comma and space that always trails!
+            // Remove the last comma and space that always trails if we have params!
 
-            QueryString.Length--;
-            QueryString.Length--;
+            if (hasParams)
+            {
+                QueryString.Length--;
+                QueryString.Length--;
+            }
         }
 
         /// <summary>
@@ -138,7 +142,7 @@ namespace Carlabs.Getit
         /// </summary>
         /// <param name="query">The Query</param>
         /// <param name="indent">Indent characters, default 0</param>
-        private void AddFields(Query query, int indent = 0)
+        public void AddFields(Query query, int indent = 0)
         {
             // Build the param list from the name value pairs. NOTE
             // This will build array or objects differently based on the
@@ -172,8 +176,11 @@ namespace Carlabs.Getit
         /// </summary>
         /// <param name="comments">Simple Comment</param>
         /// <param name="indent">Indent characters, default 0</param>
-        private void AddComments(string comments, int indent = 0)
+        public void AddComments(string comments, int indent = 0)
         {
+            if (String.IsNullOrEmpty(comments))
+                return;
+
             string pad = new String(' ', indent);
             string comment = comments.Replace("\n", $"\n{pad}# ");
 

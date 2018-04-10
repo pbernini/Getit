@@ -40,7 +40,8 @@ namespace Carlabs.Getit
         /// (primitive). 
         /// </summary>
         /// <param name="value"></param>
-        /// <returns></returns>
+        /// <returns>string</returns>
+        /// <exception cref="ArgumentException">Invalid Object Type in Param List</exception>
         public string BuildQueryParam(object value)
         {
             // Nicely use the pattern match
@@ -165,6 +166,7 @@ namespace Carlabs.Getit
         /// </summary>
         /// <param name="query">The Query</param>
         /// <param name="indent">Indent characters, default 0</param>
+        /// <exception cref="ArgumentException">Invalid Object in Field List</exception>
         public void AddFields(Query query, int indent = 0)
         {
             // Build the param list from the name value pairs. NOTE
@@ -234,13 +236,16 @@ namespace Carlabs.Getit
 
             // here we go, start with the name
 
-            QueryString.Append(pad + query.Name + "(");
+            QueryString.Append(pad + query.Name);
 
-            // for all Params (these are the where parts) get and build param list
-            // params don't get padded they are all on one line typically
-
-            AddParams(query);
-            QueryString.Append(")");
+            // If we have params must add like in parens, if
+            // no params in the query then must skip the parens.
+            if (query.WhereMap.Count > 0)
+            {
+                QueryString.Append("(");
+                AddParams(query);
+                QueryString.Append(")");
+            }
 
             // now build the Field list, bump padding as we are inside a query (field block)
 

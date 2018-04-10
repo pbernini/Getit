@@ -7,9 +7,49 @@ using GraphQL.Common.Request;
 using GraphQL.Common.Response;
 
 using Carlabs.Getit;
+using ConsoleDump;
 
 namespace Carlabs.Examples.Getit
 {
+#pragma warning disable IDE1006 // Naming Styles off for GQL structs
+    public class Dealer
+    {
+        public int id { get; set; }
+        public int subId { get; set; }
+        public string name { get; set; }
+        public string make { get; set; }
+        public int makeId { get; set; }
+        public string dealershipHours { get; set; }
+        public string address { get; set; }
+        public string city { get; set; }
+        public string state { get; set; }
+        public string zip { get; set; }
+        public string county { get; set; }
+        public string phone { get; set; }
+        public string website { get; set; }
+        public double latitude { get; set; }
+        public double longitude { get; set; }
+        public string internetManager { get; set; }
+        public string contactEmail { get; set; }
+        public string dteUpdated { get; set; }
+        public string type { get; set; }
+        public string status { get; set; }
+        public string __debug { get; set; }
+    }
+
+    public class NearestDealer
+    {
+        public Dealer Dealer;
+        public double distance;
+    }
+
+#pragma warning restore IDE1006 // Naming Styles
+
+    public class TestDealers
+    {
+        public IList<Dealer> Dealers { get; set; }
+    }
+    
     public class GqlTester
     {
         public GraphQLResponse GqlResp { get; set; }
@@ -138,34 +178,43 @@ namespace Carlabs.Examples.Getit
             // clear it all so we can start over with a REAL example
 
             query.Clear();
+            subSelect.Clear();
 
-            query
+            subSelect
                 .From("Dealer")
-                .Alias("TestDealers")
                 .Select("id", "subId", "name", "make", "makeId", "dealershipHours", "address")
                 .Select("city", "state", "zip", "county", "phone", "website", "latitude", "longitude")
-                .Select("internetManager", "contactEmail", "dteUpdated", "type", "status", "__debug")
-                .Where("limit", 3)
-                .Where("__debug", gqlEnumEnabled);
+                .Select("internetManager", "contactEmail", "dteUpdated", "type", "status");
 
-            // see the shipped query
+            QueryStringBuilder nearestDealerQueryString = new QueryStringBuilder();
+            Query nearestDealerQuery = new Query(nearestDealerQueryString);
 
-            Console.WriteLine(query);
+            nearestDealerQuery
+                .From("NearestDealer")
+                .Select("distance")
+                .Select(subSelect)
+                .Where("zip", "91302")
+                .Where("makeId", 16);
+
+            Console.WriteLine(nearestDealerQuery);
 
             GqlTester testGql = new GqlTester
             {
-                // set the URL of a clapi gql enabled server here
+                // set the URL of a clapi gql enabled server
 
                 Url = "http://192.168.1.75/clapper/web/graphql"
             };
 
+            // ship the query, but since we are only generating it out
+            // of the main block, add it to a block
+
             try
             {
-                await testGql.Test("{" + query + "}");
+                await testGql.Test("{" + nearestDealerQuery + "}");
             }
             catch (Exception e)
             {
-                Console.WriteLine("In Main");
+                Console.WriteLine("In Main, with Exception - " + e);
                 throw;
             }
 
@@ -175,6 +224,12 @@ namespace Carlabs.Examples.Getit
             {
                 if (testGql.GqlResp.Data != null)
                 {
+                    // using an explicit map of data from the Dealer Query to Dealer Object
+
+                    List<NearestDealer> dealerList = testGql.GqlResp.GetDataFieldAs <List<NearestDealer>>("NearestDealer");
+                    dealerList.Dump();
+
+                    // show the raw JSON if you want 
                     Console.WriteLine(testGql.GqlResp.Data.ToString());
                 }
                 else
@@ -191,10 +246,10 @@ namespace Carlabs.Examples.Getit
                 else
                 {
                     Console.WriteLine("Completed with Errors - ");
-                    foreach (var err in testGql.GqlResp.Errors)
+                    foreach (GraphQLError err in testGql.GqlResp.Errors)
                     {
                         Console.WriteLine("  " + err.Message);
-                        foreach (var location in err.Locations)
+                        foreach (GraphQLLocation location in err.Locations)
                         {
                             Console.WriteLine("  Line   --> " + location.Line);
                             Console.WriteLine("  Column --> " + location.Column);

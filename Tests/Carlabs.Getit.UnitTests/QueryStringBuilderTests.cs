@@ -310,7 +310,7 @@ namespace Carlabs.Getit.UnitTests
             string buildStr = RemoveWhitespace(queryString.Build(query));
 
             // Assert
-            Assert.AreEqual(RemoveWhitespace("test1Alias:test1(){#AsinglelineCommentmorethingsin_a_selectidsubSelect(subMake:\"honda\",subState:\"ca\",subLimit:1,__debug:DISABLED,SuperQuerySpeed:ENABLED){subNamesubMakesubModel}namemakemodel}"), buildStr);
+            Assert.AreEqual(RemoveWhitespace("test1Alias:test1{#AsinglelineCommentmorethingsin_a_selectidsubSelect(subMake:\"honda\",subState:\"ca\",subLimit:1,__debug:DISABLED,SuperQuerySpeed:ENABLED){subNamesubMakesubModel}namemakemodel}"), buildStr);
         }
     }
 }

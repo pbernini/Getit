@@ -14,7 +14,6 @@ namespace Carlabs.Getit
     public class Query : IQuery
     {
         public List<object> SelectList { get; } = new List<object>();
-     
         public Dictionary<string, object> WhereMap { get; } = new Dictionary<string, object>();
         public string Name { get; private set; }
         public string AliasName { get; private set; }
@@ -59,12 +58,12 @@ namespace Carlabs.Getit
             QueryComment = string.Empty;
         }
 
-    /// <summary>
-    /// Sets the query Name
-    /// </summary>
-    /// <param name="from">The Query Name String</param>
-    /// <returns>Query</returns>
-    public Query From(string from)
+        /// <summary>
+        /// Sets the query Name
+        /// </summary>
+        /// <param name="from">The Query Name String</param>
+        /// <returns>Query</returns>
+        public Query From(string from)
         {
             Name = from;
 
@@ -131,6 +130,24 @@ namespace Carlabs.Getit
         }
 
         /// <summary>
+        /// Adds a sub query to the list
+        /// </summary>
+        /// <param name="subSelect">A sub-selection, which can be just a query</param>
+        /// <returns>Query</returns>
+        /// <exception cref="ArgumentException"></exception>
+        public Query Select(Query subSelect)
+        {
+            if (String.IsNullOrWhiteSpace(subSelect.Name))
+            {
+                throw new ArgumentException("Hey silly, sub-selections must have a `From` attribute set");
+            }
+
+            SelectList.Add(subSelect);
+
+            return this;
+        }
+
+        /// <summary>
         /// Sets up the Parameters part of the GraphQL query. This
         /// accepts a key and a where part that will go into the  
         /// list for later construction into the query. The where part
@@ -152,10 +169,11 @@ namespace Carlabs.Getit
         /// </summary>
         /// <param name="dict">An existing Dictionay that takes &lt;string, object&gt;</param>
         /// <returns>Query</returns>
-        /// <throws>Dupekey and others</throws>
+        /// <exception cref="ArgumentException">Dupe Key</exception>
+        /// <exception cref="ArgumentNullException">Null Argument</exception>
         public Query Where(Dictionary<string, object> dict)
         {
-            foreach (var field in dict)
+            foreach (KeyValuePair<string, object> field in dict)
                 WhereMap.Add(field.Key, field.Value);
 
             return this;
@@ -171,7 +189,7 @@ namespace Carlabs.Getit
         /// MINOR checking and will toss if not formatted correctly
         /// </summary>
         /// <returns>The GrapQL Query String, without outer enclosing block</returns>
-        /// <throws>ArgumentException</throws>
+        /// <exception cref="ArgumentException">Dupe Key</exception>
         public override string ToString()
         {
             // Must have a name 

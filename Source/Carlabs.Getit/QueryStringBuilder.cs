@@ -26,6 +26,14 @@ namespace Carlabs.Getit
         }
 
         /// <summary>
+        /// Clear the QueryStringBuilder and all that entails
+        /// </summary>
+        public void Clear()
+        {
+            QueryString.Clear();
+        }
+
+        /// <summary>
         /// Recurses an object which could be a primitive or more
         /// complex structure. This will return a string of the value
         /// at the current level. Recursion terminates when at a terminal
@@ -69,15 +77,21 @@ namespace Carlabs.Getit
                     StringBuilder listStr = new StringBuilder();
 
                     listStr.Append("[");
+                    bool hasList = false;
                     foreach (var obj in listValue)
                     {
                         listStr.Append(BuildQueryParam(obj) + ", ");
+                        hasList = true;
                     }
 
-                    // strip comma-space from local list
+                    // strip comma-space from local list if not empty
 
-                    listStr.Length--;
-                    listStr.Length--;
+                    if (hasList)
+                    {
+                        listStr.Length--;
+                        listStr.Length--;
+                    }
+
                     listStr.Append("]");
 
                     return listStr.ToString();
@@ -86,15 +100,24 @@ namespace Carlabs.Getit
                     StringBuilder dictStr = new StringBuilder();
 
                     dictStr.Append("{");
+                    bool hasType = false;
                     foreach (var dictObj in (Dictionary<string, object>) dictValue)
                     {
                         dictStr.Append(BuildQueryParam(dictObj) + ", ");
+                        hasType = true;
                     }
 
-                    // strip comma-space from local list
+                    // strip comma-space from type if not empty.
+                    // Not sure if this should generate code
+                    // or Toss, depends on if in GQL `name:{}` is valid in
+                    // any circumstance
 
-                    dictStr.Length--;
-                    dictStr.Length--;
+                    if (hasType)
+                    {
+                        dictStr.Length--;
+                        dictStr.Length--;
+                    }
+
                     dictStr.Append("}");
 
                     return dictStr.ToString();

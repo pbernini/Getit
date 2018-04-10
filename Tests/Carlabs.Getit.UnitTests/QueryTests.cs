@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -236,5 +237,82 @@ namespace Carlabs.Getit.UnitTests
             };
             CollectionAssert.AreEqual(shouldPass, query.WhereMap);
         }
+
+        [TestMethod]
+        public void Check_Required_From()
+        {
+            // Arrange
+            QueryStringBuilder queryString = new QueryStringBuilder();
+            Query query = new Query(queryString);
+
+            // Act
+            query
+                .Select("more", "things", "in_a_select");
+
+            // Assert
+            Assert.ThrowsException<ArgumentException>(() => query.ToString());
+        }
+
+        [TestMethod]
+        public void Check_Required_Select()
+        {
+            // Arrange
+            QueryStringBuilder queryString = new QueryStringBuilder();
+            Query query = new Query(queryString);
+
+            // Act
+            query
+                .From("something");
+
+            // Assert
+            Assert.ThrowsException<ArgumentException>(() => query.ToString());
+
+        }
+
+        [TestMethod] public void Check_Clear()
+        {
+            // Arrange
+            QueryStringBuilder queryString = new QueryStringBuilder();
+            Query query = new Query(queryString);
+
+            const string expectedSelect = "field";
+            const string expectedFrom = "haystack";
+            const string expectedAlias = "calhoon";
+            const string expectedComment = "this is a comment";
+
+            Dictionary<string, object> expectedWhere = new Dictionary<string, object>()
+            {
+                {"dog", "cat"},
+                {"limit", 3}
+            };
+
+            // Act
+            query
+                .From(expectedFrom)
+                .Select(expectedSelect)
+                .Alias(expectedAlias)
+                .Where(expectedWhere)
+                .Comment(expectedComment);
+
+            // Assert to validate stuff has been set first!
+            Assert.AreEqual(expectedFrom, query.Name);
+            Assert.AreEqual(expectedAlias, query.AliasName);
+            CollectionAssert.AreEqual(expectedWhere, query.WhereMap);
+            Assert.AreEqual(expectedSelect, query.SelectList.First());
+
+            // Re-act again to clear, this is the actual test...
+            query.Clear();
+
+            string emptyStr = string.Empty;
+            expectedWhere.Clear();
+
+            // Assert it's all empty
+            Assert.AreEqual(emptyStr, query.Name);
+            Assert.AreEqual(emptyStr, query.AliasName);
+            CollectionAssert.AreEqual(expectedWhere, query.WhereMap);
+            Assert.AreEqual(0, query.SelectList.Count());
+            Assert.AreEqual(emptyStr, query.QueryComment);
+        }
+
     }
 }

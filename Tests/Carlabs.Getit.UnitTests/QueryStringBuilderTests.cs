@@ -23,7 +23,7 @@ namespace Carlabs.Getit.UnitTests
             QueryStringBuilder queryString = new QueryStringBuilder();
 
             // Act
-            string intStr = queryString.BuildQueryParam((int) 123);
+            string intStr = queryString.BuildQueryParam(123);
 
             // Assert
             Assert.AreEqual("123", intStr);
@@ -86,7 +86,6 @@ namespace Carlabs.Getit.UnitTests
             // Assert
             Assert.AreEqual("{from:444.45, to:555.45}", fromToMapStr);
         }
-
 
         [TestMethod]
         public void Check_Int_List_Type_Values()

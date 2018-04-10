@@ -45,11 +45,26 @@ namespace Carlabs.Getit
         }
 
         /// <summary>
-        /// Sets the query Name
+        /// Clear the Query and anything related
         /// </summary>
-        /// <param name="from">The Query Name String</param>
-        /// <returns>Query</returns>
-        public Query From(string from)
+        public void Clear()
+        {
+            // reset all member vars to clean state
+
+            _builder.Clear();
+            SelectList.Clear();
+            WhereMap.Clear();
+            Name = string.Empty;
+            AliasName = string.Empty;
+            QueryComment = string.Empty;
+        }
+
+    /// <summary>
+    /// Sets the query Name
+    /// </summary>
+    /// <param name="from">The Query Name String</param>
+    /// <returns>Query</returns>
+    public Query From(string from)
         {
             Name = from;
 

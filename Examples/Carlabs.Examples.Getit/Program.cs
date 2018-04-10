@@ -1,24 +1,61 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+
+using GraphQL.Client;
+using GraphQL.Common.Request;
+using GraphQL.Common.Response;
+
 using Carlabs.Getit;
 
 namespace Carlabs.Examples.Getit
 {
+    public class GqlTester
+    {
+        public GraphQLResponse GqlResp { get; set; }
+        public string Url { get; set; }
+
+        public async Task Test(string gqlQuery)
+        {
+            GraphQLRequest aQuery = new GraphQLRequest
+            {
+                Query = gqlQuery
+            };
+
+            // string Url = "http://192.168.1.75/clapper/web/graphql";
+            GraphQLClient graphQlClient = new GraphQLClient(Url);
+
+            try
+            {
+                GqlResp = await graphQlClient.PostAsync(aQuery);
+            }
+            catch (Exception)
+            {
+                GqlResp = null;
+            }
+        }
+    }
+
     class Program
     {
+        // need language version 7.1+ to do async on main 
         // ReSharper disable once UnusedParameter.Local
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             QueryStringBuilder subSelectString = new QueryStringBuilder();
             Query subSelect = new Query(subSelectString);
-            // selection of fields to return, not compound sub-selections, only simple types
+
+            // set up a couple of enums for testing
 
             EnumHelper gqlEnumEnabled = new EnumHelper().Enum("ENABLED");
             EnumHelper gqlEnumDisabled = new EnumHelper("DISABLED");
             gqlEnumDisabled.Enum("SOMETHNG_ENUM");
 
-            List<object> subSelList = new List<object>(new object[] { "subName", "subMake", "subModel" });
+            // simple sub selection list
+
+            List<object> subSelList = new List<object>(new object[] {"subName", "subMake", "subModel"});
+
+            // Where (params) part with enums
 
             Dictionary<string, object> mySubDict = new Dictionary<string, object>
             {
@@ -26,8 +63,10 @@ namespace Carlabs.Examples.Getit
                 {"subState", "ca"},
                 {"subLimit", 1},
                 {"__debug", gqlEnumDisabled},
-                {"SuperQuerySpeed", gqlEnumEnabled }
+                {"SuperQuerySpeed", gqlEnumEnabled}
             };
+
+            // create the sub-select part for later use
 
             subSelect
                 .Select(subSelList)
@@ -35,22 +74,26 @@ namespace Carlabs.Examples.Getit
                 .Where(mySubDict)
                 .Comment("SubSelect Below!");
 
-            //List<string> selList = new List<string>(new string[] {"id", "name", "make", "model"});
-            List<object> selList = new List<object>(new object[] { "id", subSelect, "name", "make", "model" });
+            // make a list with a sub-list
+
+            List<object> selList = new List<object>(new object[] {"id", subSelect, "name", "make", "model"});
 
             // try list of ints and list of strings
-            List<int> trimList = new List<int>(new [] {43783, 43784, 43145});
-            List<string> modelList = new List<string>(new [] { "DB7", "DB9", "Vantage" });
-            List<object> recList = new List<object>(new object[] { "aa", "bb", "cc" });
+
+            List<int> trimList = new List<int>(new[] {43783, 43784, 43145});
+            List<string> modelList = new List<string>(new[] {"DB7", "DB9", "Vantage"});
+            List<object> recList = new List<object>(new object[] {"aa", "bb", "cc"});
 
             // try a dict for the typical from to
+
             Dictionary<string, object> recMap = new Dictionary<string, object>
             {
                 {"from", 444.45},
                 {"to", 555.45},
             };
 
-            // try a dict for the typical from to
+            // try a more complicate dict with sub structs, list and map
+
             Dictionary<string, object> fromToPrice = new Dictionary<string, object>
             {
                 {"from", 123},
@@ -70,11 +113,13 @@ namespace Carlabs.Examples.Getit
                 {"__debug", gqlEnumEnabled},
             };
 
+            // finally build some big query with all that stuff
+
             QueryStringBuilder queryString = new QueryStringBuilder();
             Query query = new Query(queryString);
 
             query
-                .From("Dealer")
+                .From("Dealers")
                 .Select("somemore", "things", "inaselect")
                 .Select(selList)
                 .Alias("myDealerAlias")
@@ -87,8 +132,81 @@ namespace Carlabs.Examples.Getit
             Console.WriteLine($"{query}");
 
             // just dump the sub-select alone adding an alias
+
             subSelect.Alias("myDealerSubSelect");
             Console.WriteLine($"{subSelect}");
+
+            // clear it all so we can start over with a REAL example
+
+            query.Clear();
+
+            query
+                .From("Dealer")
+                .Alias("TestDealers")
+                .Select("id", "subId", "name", "make", "makeId", "dealershipHours", "address")
+                .Select("city", "state", "zip", "county", "phone", "website", "latitude", "longitude")
+                .Select("internetManager", "contactEmail", "dteUpdated", "type", "status", "__debug")
+                .Where("limit", 3)
+                .Where("__debug", gqlEnumEnabled);
+
+            // see the shipped query
+
+            Console.WriteLine(query);
+
+            GqlTester testGql = new GqlTester
+            {
+                // set the URL of a clapi gql enabled server here
+                Url = "http://192.168.1.75/clapper/web/graphql"
+            };
+
+            try
+            {
+                await testGql.Test("{" + query + "}");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("In Main");
+                throw;
+            }
+
+            // dump some data if any
+
+            if (testGql.GqlResp != null)
+            {
+
+                if (testGql.GqlResp.Data != null)
+                {
+                    Console.WriteLine(testGql.GqlResp.Data.ToString());
+                }
+                else
+                {
+                    Console.WriteLine("No Data Returned");
+                }
+
+                // peel off some errors if any
+
+                if (testGql.GqlResp.Errors == null)
+                {
+                    Console.WriteLine("No Errors");
+                }
+                else
+                {
+                    Console.WriteLine("Completed with Errors - ");
+                    foreach (var err in testGql.GqlResp.Errors)
+                    {
+                        Console.WriteLine("  " + err.Message);
+                        foreach (var location in err.Locations)
+                        {
+                            Console.WriteLine("  Line   --> " + location.Line);
+                            Console.WriteLine("  Column --> " + location.Column);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid Respone to Query, Possible Sever Error");
+            }
         }
     }
 }

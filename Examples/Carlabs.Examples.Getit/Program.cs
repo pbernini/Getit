@@ -22,7 +22,6 @@ namespace Carlabs.Examples.Getit
                 Query = gqlQuery
             };
 
-            // string Url = "http://192.168.1.75/clapper/web/graphql";
             GraphQLClient graphQlClient = new GraphQLClient(Url);
 
             try
@@ -156,6 +155,7 @@ namespace Carlabs.Examples.Getit
             GqlTester testGql = new GqlTester
             {
                 // set the URL of a clapi gql enabled server here
+
                 Url = "http://192.168.1.75/clapper/web/graphql"
             };
 
@@ -173,21 +173,20 @@ namespace Carlabs.Examples.Getit
 
             if (testGql.GqlResp != null)
             {
-
                 if (testGql.GqlResp.Data != null)
                 {
                     Console.WriteLine(testGql.GqlResp.Data.ToString());
                 }
                 else
                 {
-                    Console.WriteLine("No Data Returned");
+                    Console.WriteLine("Null Returned for data, Query or Server Issue");
                 }
 
                 // peel off some errors if any
 
                 if (testGql.GqlResp.Errors == null)
                 {
-                    Console.WriteLine("No Errors");
+                    Console.WriteLine("No GrapQL Errors");
                 }
                 else
                 {

@@ -61,7 +61,7 @@ namespace Carlabs.Examples.Getit
             {
                 Query = gqlQuery
             };
-
+     
             GraphQLClient graphQlClient = new GraphQLClient(Url);
 
             try
@@ -79,7 +79,7 @@ namespace Carlabs.Examples.Getit
     {
         // need language version 7.1+ to do async on main 
         // ReSharper disable once UnusedParameter.Local
-        static async Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
             QueryStringBuilder subSelectString = new QueryStringBuilder();
             Query subSelect = new Query(subSelectString);

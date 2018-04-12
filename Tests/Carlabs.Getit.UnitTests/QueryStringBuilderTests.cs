@@ -202,7 +202,7 @@ namespace Carlabs.Getit.UnitTests
             };
 
             query
-                .From("test1")
+                .Name("test1")
                 .Select("name")
                 .Where(nestedListMap);
 
@@ -238,13 +238,13 @@ namespace Carlabs.Getit.UnitTests
 
             subSelect
                 .Select(subSelList)
-                .From("subSelect")
+                .Name("subSelect")
                 .Where(mySubDict);
 
             List<object> selList = new List<object>(new object[] { "id", subSelect, "name", "make", "model" });
 
             query
-                .From("test1")
+                .Name("test1")
                 .Select("more", "things", "in_a_select")
                 .Select(selList);
 
@@ -294,13 +294,13 @@ namespace Carlabs.Getit.UnitTests
 
             subSelect
                 .Select(subSelList)
-                .From("subSelect")
+                .Name("subSelect")
                 .Where(mySubDict);
 
             List<object> selList = new List<object>(new object[] { "id", subSelect, "name", "make", "model" });
 
             query
-                .From("test1")
+                .Name("test1")
                 .Alias("test1Alias")
                 .Select("more", "things", "in_a_select")
                 .Select(selList)

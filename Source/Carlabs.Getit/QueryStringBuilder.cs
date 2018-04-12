@@ -236,9 +236,9 @@ namespace Carlabs.Getit
 
             // here we go, start with the name
 
-            QueryString.Append(pad + query.Name);
+            QueryString.Append(pad + query.QueryName);
 
-            // If we have params must add like in parens, if
+            // If we have params must add in parens, if
             // no params in the query then must skip the parens.
             if (query.WhereMap.Count > 0)
             {

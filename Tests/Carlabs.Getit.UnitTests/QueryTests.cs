@@ -47,13 +47,13 @@ namespace Carlabs.Getit.UnitTests
             QueryStringBuilder queryString = new QueryStringBuilder();
             Query query = new Query(queryString);
 
-            const string from = "user";
+            const string name = "user";
 
             // Act
-            query.From(from);
+            query.Name(name);
 
             // Assert
-            Assert.AreEqual(from, query.Name);
+            Assert.AreEqual(name, query.QueryName);
         }
 
         [TestMethod]
@@ -262,7 +262,7 @@ namespace Carlabs.Getit.UnitTests
 
             // Act
             query
-                .From("something");
+                .Name("something");
 
             // Assert
             Assert.ThrowsException<ArgumentException>(() => query.ToString());
@@ -288,14 +288,14 @@ namespace Carlabs.Getit.UnitTests
 
             // Act
             query
-                .From(expectedFrom)
+                .Name(expectedFrom)
                 .Select(expectedSelect)
                 .Alias(expectedAlias)
                 .Where(expectedWhere)
                 .Comment(expectedComment);
 
             // Assert to validate stuff has been set first!
-            Assert.AreEqual(expectedFrom, query.Name);
+            Assert.AreEqual(expectedFrom, query.QueryName);
             Assert.AreEqual(expectedAlias, query.AliasName);
             CollectionAssert.AreEqual(expectedWhere, query.WhereMap);
             Assert.AreEqual(expectedSelect, query.SelectList.First());
@@ -307,12 +307,32 @@ namespace Carlabs.Getit.UnitTests
             expectedWhere.Clear();
 
             // Assert it's all empty
-            Assert.AreEqual(emptyStr, query.Name);
+            Assert.AreEqual(emptyStr, query.QueryName);
             Assert.AreEqual(emptyStr, query.AliasName);
             CollectionAssert.AreEqual(expectedWhere, query.WhereMap);
             Assert.AreEqual(0, query.SelectList.Count());
             Assert.AreEqual(emptyStr, query.QueryComment);
         }
 
+        [TestMethod]
+        public void Check_Raw_Build()
+        {
+            // Arrange
+            QueryStringBuilder queryString = new QueryStringBuilder();
+            Query query = new Query(queryString);
+
+            const string expectedRawQuery = "query{Version}";
+
+            // Act
+            query
+                .Name("Should Not Exists")
+                .Raw(expectedRawQuery);
+
+            // Assert it's exists and returned on build
+
+            Assert.AreEqual(expectedRawQuery, query.RawQuery);
+            Assert.AreEqual(expectedRawQuery, query.ToString());
+            Assert.AreEqual(string.Empty, query.QueryName);
+        }
     }
 }

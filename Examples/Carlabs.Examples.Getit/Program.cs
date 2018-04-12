@@ -42,7 +42,6 @@ namespace Carlabs.Examples.Getit
         public Dealer Dealer;
         public double distance;
     }
-
 #pragma warning restore IDE1006 // Naming Styles
 
     public class TestDealers
@@ -50,31 +49,6 @@ namespace Carlabs.Examples.Getit
         public IList<Dealer> Dealers { get; set; }
     }
     
-    public class GqlTester
-    {
-        public GraphQLResponse GqlResp { get; set; }
-        public string Url { get; set; }
-
-        public async Task Test(string gqlQuery)
-        {
-            GraphQLRequest aQuery = new GraphQLRequest
-            {
-                Query = gqlQuery
-            };
-     
-            GraphQLClient graphQlClient = new GraphQLClient(Url);
-
-            try
-            {
-                GqlResp = await graphQlClient.PostAsync(aQuery);
-            }
-            catch (Exception)
-            {
-                GqlResp = null;
-            }
-        }
-    }
-
     class Program
     {
         // need language version 7.1+ to do async on main 
@@ -88,7 +62,7 @@ namespace Carlabs.Examples.Getit
 
             EnumHelper gqlEnumEnabled = new EnumHelper().Enum("ENABLED");
             EnumHelper gqlEnumDisabled = new EnumHelper("DISABLED");
-            gqlEnumDisabled.Enum("SOMETHNG_ENUM");
+            gqlEnumDisabled.Enum("SOMETHING_ENUM");
 
             // simple sub selection list
 
@@ -109,7 +83,7 @@ namespace Carlabs.Examples.Getit
 
             subSelect
                 .Select(subSelList)
-                .From("subDealer")
+                .Name("subDealer")
                 .Where(mySubDict)
                 .Comment("SubSelect Below!");
 
@@ -158,7 +132,7 @@ namespace Carlabs.Examples.Getit
             Query query = new Query(queryString);
 
             query
-                .From("Dealers")
+                .Name("Dealers")
                 .Select("somemore", "things", "inaselect")
                 .Select(selList)
                 .Alias("myDealerAlias")
@@ -181,7 +155,7 @@ namespace Carlabs.Examples.Getit
             subSelect.Clear();
 
             subSelect
-                .From("Dealer")
+                .Name("Dealer")
                 .Select("id", "subId", "name", "make", "makeId", "dealershipHours", "address")
                 .Select("city", "state", "zip", "county", "phone", "website", "latitude", "longitude")
                 .Select("internetManager", "contactEmail", "dteUpdated", "type", "status");
@@ -190,7 +164,8 @@ namespace Carlabs.Examples.Getit
             Query nearestDealerQuery = new Query(nearestDealerQueryString);
 
             nearestDealerQuery
-                .From("NearestDealer")
+                .Name("NearestDealer")
+                .Alias("XXXXXX")
                 .Select("distance")
                 .Select(subSelect)
                 .Where("zip", "91302")
@@ -198,69 +173,49 @@ namespace Carlabs.Examples.Getit
 
             Console.WriteLine(nearestDealerQuery);
 
-            GqlTester testGql = new GqlTester
+            Console.WriteLine("Testing String Get");
+            Console.WriteLine(await nearestDealerQuery.Get<string>());
+            Console.WriteLine("Done with String Get");
+
+            Console.WriteLine("Testing NearestDealer Get");
+            List<NearestDealer> objResults = await nearestDealerQuery.Get<List<NearestDealer>>("XXXXXX");
+            objResults.Dump();
+            Console.WriteLine("Done with NearestDealer Get");
+
+            nearestDealerQuery.Alias();
+            nearestDealerQuery.Select("bogusField");
+
+            string rawQuery = nearestDealerQuery.ToString();
+
+            nearestDealerQuery.Clear();
+            nearestDealerQuery.Raw(rawQuery);
+
+            Console.WriteLine("Testing Raw Query Get");
+            Console.WriteLine(await nearestDealerQuery.Get<string>());
+            Console.WriteLine("Done with Raw Query Get");
+
+            Console.WriteLine("Testing Raw NearestDealer Query Get");
+            objResults = await nearestDealerQuery.Get<List<NearestDealer>>("NearestDealer");
+            objResults.Dump();
+
+            if (nearestDealerQuery.HasErrors())
             {
-                // set the URL of a clapi gql enabled server
-
-                Url = "http://192.168.1.75/clapper/web/graphql"
-            };
-
-            // ship the query, but since we are only generating it out
-            // of the main block, add it to a block
-
-            try
-            {
-                await testGql.Test("{" + nearestDealerQuery + "}");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("In Main, with Exception - " + e);
-                throw;
-            }
-
-            // dump some data if any
-
-            if (testGql.GqlResp != null)
-            {
-                if (testGql.GqlResp.Data != null)
+                foreach (GraphQLError gqlErr in nearestDealerQuery.GqlErrors)
                 {
-                    // using an explicit map of data from the Dealer Query to Dealer Object
-
-                    List<NearestDealer> dealerList = testGql.GqlResp.GetDataFieldAs <List<NearestDealer>>("NearestDealer");
-                    dealerList.Dump();
-
-                    // show the raw JSON if you want 
-                    Console.WriteLine(testGql.GqlResp.Data.ToString());
-                }
-                else
-                {
-                    Console.WriteLine("Null Returned for data, Query or Server Issue");
-                }
-
-                // peel off some errors if any
-
-                if (testGql.GqlResp.Errors == null)
-                {
-                    Console.WriteLine("No GrapQL Errors");
-                }
-                else
-                {
-                    Console.WriteLine("Completed with Errors - ");
-                    foreach (GraphQLError err in testGql.GqlResp.Errors)
+                    Console.WriteLine("Error : " + gqlErr.Message);
+                    foreach (var loc in gqlErr.Locations)
                     {
-                        Console.WriteLine("  " + err.Message);
-                        foreach (GraphQLLocation location in err.Locations)
-                        {
-                            Console.WriteLine("  Line   --> " + location.Line);
-                            Console.WriteLine("  Column --> " + location.Column);
-                        }
+                        Console.WriteLine("  -->Location Line : " + loc.Line + ", Column : " + loc.Column);
                     }
                 }
             }
             else
             {
-                Console.WriteLine("Invalid Respone to Query, Possible Sever Error");
+                Console.WriteLine("No Errors Found");
             }
+
+            Console.WriteLine("Done with Raw NearestDealer Query Get");
+
         }
     }
 }

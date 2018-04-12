@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+
+using GraphQL.Common.Response;
 
 namespace Carlabs.Getit
 {
@@ -6,21 +9,24 @@ namespace Carlabs.Getit
     {
         List<object> SelectList { get; }
         Dictionary<string, object> WhereMap { get; }
-        string Name { get; }
+        List<GraphQLError> GqlErrors { get; }
+
+        string QueryName { get; }
         string AliasName { get; }
         string QueryComment { get; }
 
         /// <summary>
         /// Sets the query Name
         /// </summary>
-        /// <param name="from">The Query Name String</param>
+        /// <param name="queryName">The Query Name String</param>
         /// <returns>Query</returns>
-        Query From(string from);
+        Query Name(string queryName);
 
         /// <summary>
         /// Sets the Query Alias name. This is used in graphQL to allow 
         /// multipe queries with the same endpoint (name) to be assembled
-        /// into a batch like query. This will prefix the From Name as specified.
+        /// into a batch like query. This will prefix the Name in the query.
+        /// It will also be used for the Response name processing.
         /// Note that this can be applied to any sub-select as well. GraphQL will
         /// rename the query with the alias name in the response.
         /// </summary>
@@ -76,7 +82,27 @@ namespace Carlabs.Getit
         /// <throws>Dupekey and others</throws>
         Query Where(Dictionary<string, object> dict);
 
-        T Get<T>();
+        /// <summary>
+        /// Helper to see if any errors were returned with the
+        /// last query. No errors does not mean data, just means
+        /// no errors found in the GQL client results
+        /// </summary>
+        /// <returns>Bool true if errors exist, false if not</returns>
+        bool HasErrors();
+
+        /// <summary>
+        /// Given a type return the results of a GraphQL query in it. If
+        /// the type is a string then will return the JSON string. The resultName
+        /// will be automatically set the Name or Alias name if not specified.
+        /// For Raw queries you must set the resultName param OR set the Name() in
+        /// the query to match.
+        /// </summary>
+        /// <typeparam name="T">Data Type, typically a list of the record but not always. 
+        /// </typeparam>
+        /// <param name="resultName">Overide of the Name/Alias of the query</param>
+        /// <returns>The type of object stuffed with data from the query</returns>
+        /// <exception cref="ArgumentException">Dupe Key</exception>
+        Task<T> Get<T>(string resultName = null);
 
         /// <summary>
         /// Gets the string representation of the GraphQL query. This does some

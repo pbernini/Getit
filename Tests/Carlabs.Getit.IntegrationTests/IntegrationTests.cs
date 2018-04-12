@@ -47,7 +47,7 @@ namespace Carlabs.Getit.IntegrationTests
             // Create a Sub Select Query
             subSelect
                 .Select(subSelList)
-                .From("subDealer")
+                .Name("subDealer")
                 .Where(mySubDict)
                 .Comment("SubSelect Below!");
 
@@ -94,7 +94,7 @@ namespace Carlabs.Getit.IntegrationTests
             // Generate the query with an alias and multi-line comment
             query
                 .Select(selList)
-                .From("Dealer")
+                .Name("Dealer")
                 .Alias("myDealerAlias")
                 .Where(myDict)
                 .Comment("My First F'n GQL Query with geTit\na second line of comments\nand yet another line of comments");

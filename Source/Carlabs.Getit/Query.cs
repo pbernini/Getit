@@ -264,8 +264,7 @@ namespace Carlabs.Getit
 
                     GqlErrors.AddRange(GqlResp.Errors);
                 }
-
-
+            
             if (GqlResp.Data == null)
             {
                 return (T)(object)null;

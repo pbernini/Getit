@@ -8,6 +8,7 @@ using GraphQL.Common.Response;
 
 using Carlabs.Getit;
 using ConsoleDump;
+using Newtonsoft.Json;
 
 namespace Carlabs.Examples.Getit
 {
@@ -215,7 +216,6 @@ namespace Carlabs.Examples.Getit
             }
 
             Console.WriteLine("Done with Raw NearestDealer Query Get");
-
         }
     }
 }

@@ -266,7 +266,6 @@ namespace Carlabs.Getit.UnitTests
 
             // Assert
             Assert.ThrowsException<ArgumentException>(() => query.ToString());
-
         }
 
         [TestMethod] public void Check_Clear()

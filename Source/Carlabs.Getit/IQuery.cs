@@ -14,6 +14,7 @@ namespace Carlabs.Getit
         string QueryName { get; }
         string AliasName { get; }
         string QueryComment { get; }
+        string RawQuery { get; }
 
         /// <summary>
         /// Sets the query Name

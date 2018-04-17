@@ -129,18 +129,26 @@ namespace Carlabs.Getit
         }
 
         /// <summary>
-        /// This take all paramter data
+        /// This take all parameter data
         /// and builds the string. This will look in the query and
         /// use the WhereMap for the list of data. The data can be
         /// most any type as long as it's one that we support. Will
         /// resolve nested structures
         /// </summary>
         /// <param name="query">The Query</param>
-        public void AddParams(Query query)
+        public void AddParams(IQuery query)
         {
+            // safe-tee check
+
+            if (query == null)
+            {
+                return;
+            }
+
             // Build the param list from the name value pairs.
             // All entries have a `name`:`value` looking format. The
             // BuildQueryParam's will recurse any nested data elements
+
             bool hasParams = false;
             foreach (var param in query.WhereMap)
             {
@@ -167,7 +175,7 @@ namespace Carlabs.Getit
         /// <param name="query">The Query</param>
         /// <param name="indent">Indent characters, default 0</param>
         /// <exception cref="ArgumentException">Invalid Object in Field List</exception>
-        public void AddFields(Query query, int indent = 0)
+        public void AddFields(IQuery query, int indent = 0)
         {
             // Build the param list from the name value pairs. NOTE
             // This will build array or objects differently based on the
@@ -221,7 +229,7 @@ namespace Carlabs.Getit
         /// <param name="query">The Query</param>
         /// <param name="indent">Indent characters, default = 0</param>
         /// <returns>GraphQL query string wihout outer block</returns>
-        public string Build(Query query, int indent = 0)
+        public string Build(IQuery query, int indent = 0)
         {
             string pad = new String(' ', indent);
             string prevPad = pad;

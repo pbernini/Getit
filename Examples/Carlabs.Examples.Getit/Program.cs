@@ -8,7 +8,6 @@ using GraphQL.Common.Response;
 
 using Carlabs.Getit;
 using ConsoleDump;
-using Newtonsoft.Json;
 
 namespace Carlabs.Examples.Getit
 {
@@ -58,6 +57,8 @@ namespace Carlabs.Examples.Getit
         {
             QueryStringBuilder subSelectString = new QueryStringBuilder();
             Query subSelect = new Query(subSelectString);
+
+            // Getit.Config.SetUrl("http://172.17.0.1/clapper/web/graphql");
 
             // set up a couple of enums for testing
 

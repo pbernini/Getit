@@ -23,7 +23,7 @@ namespace Carlabs.Getit
         public string AliasName { get; private set; }
         public string QueryComment { get; private set; }
         public string RawQuery { get; private set; }
-        private readonly QueryStringBuilder _builder;
+        private readonly IQueryStringBuilder _builder;
 
         private GraphQLClient GqlClient { get; set; } = new GraphQLClient("http://192.168.1.75/clapper/web/graphql");
         private GraphQLRequest GqlQuery { get; set; } = new GraphQLRequest();
@@ -34,21 +34,9 @@ namespace Carlabs.Getit
         /// Constructor needing a QueryStringBuilder to
         /// Hold the results. 
         /// </summary>
-        /// <param name="builder">The QueryStringBuilder to use to build it</param>
-        public Query(QueryStringBuilder builder)
+        /// <param name="builder">The IQueryStringBuilder to use to build it</param>
+        public Query(IQueryStringBuilder builder)
         {
-            _builder = builder;
-        }
-
-        /// <summary>
-        /// Constructor needing a the name and a QueryStringBuilder to
-        /// Hold the results. 
-        /// </summary>
-        /// <param name="queryName">The graphQL query name</param>
-        /// <param name="builder">The QueryStringBuilder to use to build it</param>
-        public Query(string queryName, QueryStringBuilder builder)
-        {
-            QueryName = queryName;
             _builder = builder;
         }
 
@@ -80,7 +68,7 @@ namespace Carlabs.Getit
         /// 
         /// </summary>
         /// <param name="rawQuery">The full valid query to be sent to the endpoint</param>
-        public Query Raw(string rawQuery)
+        public IQuery Raw(string rawQuery)
         {
             Clear();
             RawQuery = rawQuery;
@@ -93,7 +81,7 @@ namespace Carlabs.Getit
         /// </summary>
         /// <param name="queryName">The Query Name String</param>
         /// <returns>Query</returns>
-        public Query Name(string queryName)
+        public IQuery Name(string queryName)
         {
             QueryName = queryName;
 
@@ -109,7 +97,7 @@ namespace Carlabs.Getit
         /// </summary>
         /// <param name="alias">The alias name</param>
         /// <returns>Query</returns>
-        public Query Alias(string alias = "")
+        public IQuery Alias(string alias = "")
         {
             AliasName = alias;
 
@@ -125,7 +113,7 @@ namespace Carlabs.Getit
         /// </summary>
         /// <param name="comment">The comment string</param>
         /// <returns>Query</returns>
-        public Query Comment(string comment = "")
+        public IQuery Comment(string comment = "")
         {
             QueryComment = comment;
 
@@ -139,7 +127,7 @@ namespace Carlabs.Getit
         /// </summary>
         /// <param name="objectList">Generic List of select fields</param>
         /// <returns>Query</returns>
-        public Query Select(IEnumerable<object> objectList)
+        public IQuery Select(IEnumerable<object> objectList)
         {
             SelectList.AddRange(objectList);
 
@@ -152,7 +140,7 @@ namespace Carlabs.Getit
         /// </summary>
         /// <param name="selects">List of strings</param>
         /// <returns>Query</returns>
-        public Query Select(params string[] selects)
+        public IQuery Select(params string[] selects)
         {
             SelectList.AddRange(selects);
 
@@ -165,7 +153,7 @@ namespace Carlabs.Getit
         /// <param name="subSelect">A sub-selection, which can be just a query</param>
         /// <returns>Query</returns>
         /// <exception cref="ArgumentException"></exception>
-        public Query Select(Query subSelect)
+        public IQuery Select(IQuery subSelect)
         {
             if (String.IsNullOrWhiteSpace(subSelect.QueryName))
             {
@@ -187,7 +175,7 @@ namespace Carlabs.Getit
         /// <param name="key">The Parameter Name</param>
         /// <param name="where">The value of the parameter, primitive or object</param>
         /// <returns></returns>
-        public Query Where(string key, object where)
+        public IQuery Where(string key, object where)
         {
             WhereMap.Add(key, where);
 
@@ -201,7 +189,7 @@ namespace Carlabs.Getit
         /// <returns>Query</returns>
         /// <exception cref="ArgumentException">Dupe Key</exception>
         /// <exception cref="ArgumentNullException">Null Argument</exception>
-        public Query Where(Dictionary<string, object> dict)
+        public IQuery Where(Dictionary<string, object> dict)
         {
             foreach (KeyValuePair<string, object> field in dict)
                 WhereMap.Add(field.Key, field.Value);

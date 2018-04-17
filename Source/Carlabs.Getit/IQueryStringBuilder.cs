@@ -1,7 +1,15 @@
-﻿namespace Carlabs.Getit
+﻿using System.Text;
+
+namespace Carlabs.Getit
 {
     public interface IQueryStringBuilder
     {
+
+        /// <summary>
+        /// Clear the QueryStringBuilder and all that entails
+        /// </summary>
+        void Clear();
+
         /// <summary>
         /// Recurses an object which could be a primitive or more
         /// complex structure. This will return a string of the value
@@ -20,7 +28,7 @@
         /// resolve nested structures
         /// </summary>
         /// <param name="query">The Query</param>
-        void AddParams(Query query);
+        void AddParams(IQuery query);
 
         /// <summary>
         /// Adds fields to the query sting. This will use the SelectList
@@ -30,7 +38,7 @@
         /// </summary>
         /// <param name="query">The Query</param>
         /// <param name="indent">Indent characters, default 0</param>
-        void AddFields(Query query, int indent = 0);
+        void AddFields(IQuery query, int indent = 0);
 
         /// <summary>
         /// Adds a comment to the Select list part of the Query. Comments
@@ -50,6 +58,6 @@
         /// <param name="query">The Query</param>
         /// <param name="indent">Indent characters, default = 0</param>
         /// <returns>GraphQL query string wihout outer block</returns>
-        string Build(Query query, int indent = 0);
+        string Build(IQuery query, int indent = 0);
     }
 }

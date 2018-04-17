@@ -17,11 +17,24 @@ namespace Carlabs.Getit
         string RawQuery { get; }
 
         /// <summary>
+        /// Accepts a string and will use this as the query. Setting
+        /// this will overide any other settings and ignore any 
+        /// validation checks. If the string is empty it will be
+        /// ignored and the existing query builder actions will be 
+        /// at play. 
+        /// 
+        /// WARNING : Calling this will clear all other query elements.
+        /// 
+        /// </summary>
+        /// <param name="rawQuery">The full valid query to be sent to the endpoint</param>
+        IQuery Raw(string rawQuery);
+
+        /// <summary>
         /// Sets the query Name
         /// </summary>
         /// <param name="queryName">The Query Name String</param>
         /// <returns>Query</returns>
-        Query Name(string queryName);
+        IQuery Name(string queryName);
 
         /// <summary>
         /// Sets the Query Alias name. This is used in graphQL to allow 
@@ -33,7 +46,7 @@ namespace Carlabs.Getit
         /// </summary>
         /// <param name="alias">The alias name</param>
         /// <returns>Query</returns>
-        Query Alias(string alias);
+        IQuery Alias(string alias);
 
         /// <summary>
         /// Add a comment to the Query. This will take a simple string comment
@@ -44,7 +57,7 @@ namespace Carlabs.Getit
         /// </summary>
         /// <param name="comment">The comment string</param>
         /// <returns>Query</returns>
-        Query Comment(string comment);
+        IQuery Comment(string comment);
 
         /// <summary>
         /// Add this list to the select part of the query. This
@@ -53,7 +66,7 @@ namespace Carlabs.Getit
         /// </summary>
         /// <param name="objectList">Generic List of select fields</param>
         /// <returns>Query</returns>
-        Query Select(IEnumerable<object> objectList);
+        IQuery Select(IEnumerable<object> objectList);
 
         /// <summary>
         /// Add a list of simple strings to the selection part of the 
@@ -61,7 +74,7 @@ namespace Carlabs.Getit
         /// </summary>
         /// <param name="selects">List of strings</param>
         /// <returns>Query</returns>
-        Query Select(params string[] selects);
+        IQuery Select(params string[] selects);
 
         /// <summary>
         /// Sets up the Parameters part of the GraphQL query. This
@@ -73,7 +86,7 @@ namespace Carlabs.Getit
         /// <param name="key">The Parameter Name</param>
         /// <param name="where">The value of the parameter, primitive or object</param>
         /// <returns></returns>
-        Query Where(string key, object where);
+        IQuery Where(string key, object where);
 
         /// <summary>
         /// Add a dict of key value pairs &lt;string, object&gt; to the existing where part
@@ -81,7 +94,7 @@ namespace Carlabs.Getit
         /// <param name="dict">An existing Dictionay that takes &lt;string, object&gt;</param>
         /// <returns>Query</returns>
         /// <throws>Dupekey and others</throws>
-        Query Where(Dictionary<string, object> dict);
+        IQuery Where(Dictionary<string, object> dict);
 
         /// <summary>
         /// Helper to see if any errors were returned with the

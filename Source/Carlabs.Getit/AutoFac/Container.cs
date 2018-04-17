@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Autofac;
+﻿using Autofac;
 
-//using Carlabs.Rlp.Clients;
-//using Carlabs.Getit.Containers;
-//using Carlabs.Rlp.Http;
-
-namespace Carlabs.Getit.AutoFac
+namespace Carlabs.Getit.Autofac
 {
     public static class Container
     {
@@ -30,6 +23,8 @@ namespace Carlabs.Getit.AutoFac
             ContainerBuilder containerBuilder = new ContainerBuilder();
 
             containerBuilder.RegisterType<Config>().As<IConfig>().SingleInstance();
+            containerBuilder.RegisterType<Query>().As<IQuery>().InstancePerDependency();
+            containerBuilder.RegisterType<QueryStringBuilder>().As<IQueryStringBuilder>().InstancePerDependency();
 
             _container = containerBuilder.Build();
         }

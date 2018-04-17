@@ -1,30 +1,65 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Carlabs.Getit.IntegrationTests
 {
     [TestClass]
-    public class IntegrationTests
+    public class GetitTests
     {
-        private static string RemoveWhitespace(string input)
+        public static string RemoveWhitespace(string input)
         {
             return new string(input.ToCharArray()
                 .Where(c => !Char.IsWhiteSpace(c))
                 .ToArray());
         }
 
+        // Property/Method, What we are testing, Expecting
+
         [TestMethod]
-        public void Big_Query_Check()
+        public void Query_SelectParams_ReturnsCorrect()
+        {
+            const string select = "zip";
+
+            // Arrange
+            IQuery query = Getit.Query().Select(select);
+
+            // Assert
+            Assert.AreEqual(select, query.SelectList.First());
+        }
+
+        [TestMethod]
+        public void Query_Unique_ReturnsCorrect()
         {
             // Arrange
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString);
+            IQuery query = Getit.Query().Select("zip");
+            IQuery query1 = Getit.Query().Select("pitydodah");
 
-            QueryStringBuilder subSelectString = new QueryStringBuilder();
-            Query subSelect = new Query(subSelectString);
+            // Assert counts and not the same
+            Assert.IsTrue(query.SelectList.Count == 1);
+            Assert.IsTrue(query1.SelectList.Count == 1);
+            Assert.AreNotEqual(query.SelectList.First(), query1.SelectList.First());
+        }
+
+        [TestMethod]
+        public void Query_ToString_ReturnsCorrect()
+        {
+            // Arrange
+            IQuery query = Getit.Query().Name("test1").Select("id");
+
+            // Assert
+            Assert.AreEqual("test1{id}", RemoveWhitespace(query.ToString()));
+        }
+
+        [TestMethod]
+        public void ComplexQuery_ToString_Check()
+        {
+            // Arrange
+            IQuery query = Getit.Query();
+            IQuery subSelect = Getit.Query();
 
             // set up a couple of ENUMS
             EnumHelper gqlEnumEnabled = new EnumHelper().Enum("ENABLED");
@@ -125,3 +160,4 @@ namespace Carlabs.Getit.IntegrationTests
         }
     }
 }
+

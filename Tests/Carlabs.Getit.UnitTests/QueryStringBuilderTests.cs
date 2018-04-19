@@ -16,6 +16,14 @@ namespace Carlabs.Getit.UnitTests
                 .ToArray());
         }
 
+        [ClassInitialize()]
+        public static void ClassInit(TestContext context)
+        {
+            // set up any needed config stuff for Getit here
+
+            Getit.Config.SetUrl("http://192.168.1.75/clapper/web/graphql");
+        }
+
         [TestMethod]
         public void Check_Int_Type_Value()
         {
@@ -181,7 +189,7 @@ namespace Carlabs.Getit.UnitTests
         {
             // Arrange
             QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString);
+            Query query = new Query(queryString, Getit.Config);
 
             List<object> objList = new List<object>(new object[] { "aa", "bb", "cc" });
             EnumHelper enumHaystack = new EnumHelper("HAYstack");
@@ -219,9 +227,10 @@ namespace Carlabs.Getit.UnitTests
         {
             // Arrange
             QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString);
+            Query query = new Query(queryString, Getit.Config);
             QueryStringBuilder subSelectString = new QueryStringBuilder();
-            Query subSelect = new Query(subSelectString);
+            Query subSelect = new Query(subSelectString, Getit.Config);
+
             EnumHelper gqlEnumEnabled = new EnumHelper().Enum("ENABLED");
             EnumHelper gqlEnumDisabled = new EnumHelper("DISABLED");
 
@@ -275,9 +284,9 @@ namespace Carlabs.Getit.UnitTests
         {
             // Arrange
             QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString);
+            Query query = new Query(queryString, Getit.Config);
             QueryStringBuilder subSelectString = new QueryStringBuilder();
-            Query subSelect = new Query(subSelectString);
+            Query subSelect = new Query(subSelectString, Getit.Config);
             EnumHelper gqlEnumEnabled = new EnumHelper().Enum("ENABLED");
             EnumHelper gqlEnumDisabled = new EnumHelper("DISABLED");
 

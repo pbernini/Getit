@@ -2,8 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Threading.Tasks.Dataflow;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NSubstitute;
 
 namespace Carlabs.Getit.UnitTests
 {
@@ -19,13 +20,21 @@ namespace Carlabs.Getit.UnitTests
         //            public string Value;
         //        }
 
+        [ClassInitialize()]
+        public static void ClassInit(TestContext context)
+        {
+            // set up any needed config stuff for Getit here
+
+            Getit.Config.SetUrl("http://192.168.1.75/clapper/web/graphql");
+        }
+
         [TestMethod]
         public void Select_StringList_AddsToQuery()
         {
             // Arrange
 
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString);
+            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
+            Query query = new Query(queryStringBuilder, Getit.Config);
 
             List<string> selectList = new List<string>()
             {
@@ -44,8 +53,8 @@ namespace Carlabs.Getit.UnitTests
         public void From_String_AddsToQuery()
         {
             // Arrange
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString);
+            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
+            Query query = new Query(queryStringBuilder, Getit.Config);
 
             const string name = "user";
 
@@ -60,8 +69,8 @@ namespace Carlabs.Getit.UnitTests
         public void Select_String_AddsToQuery()
         {
             // Arrange
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString);
+            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
+            Query query = new Query(queryStringBuilder, Getit.Config);
 
             const string select = "id";
 
@@ -76,8 +85,8 @@ namespace Carlabs.Getit.UnitTests
         public void Select_DynamicArguments_AddsToQuery()
         {
             // Arrange
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString);
+            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
+            Query query = new Query(queryStringBuilder, Getit.Config);
 
             // Act
             query.Select("some", "thing", "else");
@@ -96,8 +105,8 @@ namespace Carlabs.Getit.UnitTests
         public void Select_ArrayOfString_AddsToQuery()
         {
             // Arrange
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString);
+            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
+            Query query = new Query(queryStringBuilder, Getit.Config);
 
             string[] selects =
             {
@@ -121,8 +130,8 @@ namespace Carlabs.Getit.UnitTests
         public void Select_ChainCombinationOfStringAndList_AddsToQuery()
         {
             // Arrange
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString);
+            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
+            Query query = new Query(queryStringBuilder, Getit.Config);
 
             const string select = "id";
             List<string> selectList = new List<string>()
@@ -162,8 +171,8 @@ namespace Carlabs.Getit.UnitTests
         public void Where_IntegerArgumentWhere_AddsToWhere()
         {
             // Arrange
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString);
+            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
+            Query query = new Query(queryStringBuilder, Getit.Config);
 
             // Act
             query.Where("id", 1);
@@ -176,8 +185,8 @@ namespace Carlabs.Getit.UnitTests
         public void Where_StringArgumentWhere_AddsToWhere()
         {
             // Arrange
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString);
+            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
+            Query query = new Query(queryStringBuilder, Getit.Config);
 
             // Act
             query.Where("name", "danny");
@@ -190,8 +199,8 @@ namespace Carlabs.Getit.UnitTests
         public void Where_DictionaryArgumentWhere_AddsToWhere()
         {
             // Arrange
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString);
+            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
+            Query query = new Query(queryStringBuilder, Getit.Config);
 
             Dictionary<string, int> dict = new Dictionary<string, int>()
             {
@@ -213,8 +222,8 @@ namespace Carlabs.Getit.UnitTests
         public void Where_ChainedWhere_AddsToWhere()
         {
             // Arrange
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString);
+            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
+            Query query = new Query(queryStringBuilder, Getit.Config);
 
             Dictionary<string, int> dict = new Dictionary<string, int>()
             {
@@ -239,26 +248,26 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
-        public void Check_Required_From()
+        public void Check_Required_Select()
         {
             // Arrange
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString);
+            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
+            Query query = new Query(queryStringBuilder, Getit.Config);
 
             // Act
             query
-                .Select("more", "things", "in_a_select");
+                .Select("something");
 
             // Assert
             Assert.ThrowsException<ArgumentException>(() => query.ToString());
         }
 
         [TestMethod]
-        public void Check_Required_Select()
+        public void Check_Required_Name()
         {
             // Arrange
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString);
+            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
+            Query query = new Query(queryStringBuilder, Getit.Config);
 
             // Act
             query
@@ -268,16 +277,37 @@ namespace Carlabs.Getit.UnitTests
             Assert.ThrowsException<ArgumentException>(() => query.ToString());
         }
 
+        [TestMethod]
+        public void Check_RawNotRequired_NameSelect()
+        {
+            // Arrange
+            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
+            Query query = new Query(queryStringBuilder, Getit.Config);
+
+            const string rawStr = "something(a:123){id}";
+
+            // Act
+            query
+                .Raw(rawStr);
+
+            // Assert
+            Assert.AreEqual(rawStr, query.ToString());
+        }
+
         [TestMethod] public void Check_Clear()
         {
             // Arrange
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString);
+            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
+            Query query = new Query(queryStringBuilder, Getit.Config);
+
+            IQueryStringBuilder batchQueryStringBuilder = Substitute.For<IQueryStringBuilder>();
+            Query batchQuery = new Query(batchQueryStringBuilder, Getit.Config);
 
             const string expectedSelect = "field";
             const string expectedFrom = "haystack";
             const string expectedAlias = "calhoon";
             const string expectedComment = "this is a comment";
+            const string expectedBatchQuery = "someEndpoint(id:1){name}";
 
             Dictionary<string, object> expectedWhere = new Dictionary<string, object>()
             {
@@ -286,18 +316,21 @@ namespace Carlabs.Getit.UnitTests
             };
 
             // Act
+            batchQuery.Raw(expectedBatchQuery);
             query
                 .Name(expectedFrom)
                 .Select(expectedSelect)
                 .Alias(expectedAlias)
                 .Where(expectedWhere)
-                .Comment(expectedComment);
-
+                .Comment(expectedComment)
+                .Batch(batchQuery);
+                
             // Assert to validate stuff has been set first!
             Assert.AreEqual(expectedFrom, query.QueryName);
             Assert.AreEqual(expectedAlias, query.AliasName);
             CollectionAssert.AreEqual(expectedWhere, query.WhereMap);
             Assert.AreEqual(expectedSelect, query.SelectList.First());
+            Assert.AreEqual(1, query.BatchQueryList.Count);
 
             // Re-act again to clear, this is the actual test...
             query.Clear();
@@ -311,6 +344,7 @@ namespace Carlabs.Getit.UnitTests
             CollectionAssert.AreEqual(expectedWhere, query.WhereMap);
             Assert.AreEqual(0, query.SelectList.Count());
             Assert.AreEqual(emptyStr, query.QueryComment);
+            Assert.AreEqual(0, query.BatchQueryList.Count);
         }
 
         [TestMethod]
@@ -318,7 +352,7 @@ namespace Carlabs.Getit.UnitTests
         {
             // Arrange
             QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString);
+            Query query = new Query(queryString, Getit.Config);
 
             const string expectedRawQuery = "query{Version}";
 

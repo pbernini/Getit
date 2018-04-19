@@ -33,7 +33,7 @@ namespace Carlabs.Getit
         /// gets called one time. This will dispence a 
         /// new IQuery fresh each time
         /// </summary>
-        /// <returns></returns>
+        /// <returns>IQuery</returns>
         public static IQuery Query()
         {
             return Container.Resolve<IQuery>();

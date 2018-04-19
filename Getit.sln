@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Carlabs.Getit", "Source\Car
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Carlabs.Getit.UnitTests", "Tests\Carlabs.Getit.UnitTests\Carlabs.Getit.UnitTests.csproj", "{2E566CF3-AC44-49DC-A124-6CAE2189DAA1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Carlabs.Examples.Getit", "Examples\Carlabs.Examples.Getit\Carlabs.Examples.Getit.csproj", "{C26AB272-35DA-434A-8FDC-7D0441DAE607}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Carlabs.Getit.Examples", "Examples\Carlabs.Examples.Getit\Carlabs.Getit.Examples.csproj", "{C26AB272-35DA-434A-8FDC-7D0441DAE607}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carlabs.Getit.IntegrationTests", "Tests\Carlabs.Getit.IntegrationTests\Carlabs.Getit.IntegrationTests.csproj", "{7162D175-18DA-4AE2-B208-C8CCFE914B2C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Carlabs.Getit.IntegrationTests", "Tests\Carlabs.Getit.IntegrationTests\Carlabs.Getit.IntegrationTests.csproj", "{7162D175-18DA-4AE2-B208-C8CCFE914B2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using GraphQL.Client;
 using GraphQL.Common.Request;
@@ -23,9 +24,11 @@ namespace Carlabs.Getit
         public string AliasName { get; private set; }
         public string QueryComment { get; private set; }
         public string RawQuery { get; private set; }
+        public List<IQuery> BatchQueryList { get; private set; } = new List<IQuery>();
+        private readonly IConfig _config;
         private readonly IQueryStringBuilder _builder;
 
-        private GraphQLClient GqlClient { get; set; } = new GraphQLClient("http://192.168.1.75/clapper/web/graphql");
+        private GraphQLClient GqlClient { get; set; }
         private GraphQLRequest GqlQuery { get; set; } = new GraphQLRequest();
         private GraphQLResponse GqlResp { get; set; }
         public List<GraphQLError> GqlErrors { get; private set; } = new List<GraphQLError>();
@@ -35,9 +38,14 @@ namespace Carlabs.Getit
         /// Hold the results. 
         /// </summary>
         /// <param name="builder">The IQueryStringBuilder to use to build it</param>
-        public Query(IQueryStringBuilder builder)
+        /// <param name="config">The ICongig to use to set it up</param>
+        public Query(IQueryStringBuilder builder, IConfig config)
         {
             _builder = builder;
+            _config = config;
+
+            // create the GraphQLClient with the configs URL to the endpoint
+            GqlClient = new GraphQLClient(_config.Url);
         }
 
         /// <summary>
@@ -55,6 +63,7 @@ namespace Carlabs.Getit
             QueryComment = string.Empty;
             RawQuery = string.Empty;
             GqlErrors.Clear();
+            BatchQueryList.Clear();
         }
 
         /// <summary>
@@ -209,6 +218,28 @@ namespace Carlabs.Getit
         }
 
         /// <summary>
+        /// Add additional queries to the request. These
+        /// will get bundled in as additional queries. This
+        /// will affect the query that is executed in the Get()
+        /// method and the ToString() output, but will not
+        /// change any items specific to this query. Each
+        /// query will individually be calling it's ToString()
+        /// to get the query to be batched. Use Alias names
+        /// where appropriate
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns>IQuery</returns>
+        public IQuery Batch(IQuery query)
+        {
+            if (query != null)
+            {
+                BatchQueryList.Add(query);
+            }
+
+            return this;
+        }
+
+        /// <summary>
         /// Given a type return the results of a GraphQL query in it. If
         /// the type is a string then will return the JSON string. The resultName
         /// will be automatically set the Name or Alias name if not specified.
@@ -238,13 +269,15 @@ namespace Carlabs.Getit
             }
 
             // check for no results, errors
+            // Todo: may want create error here if null
 
             if (GqlResp == null)
             {
                 return (T) (object) null;
             }
 
-            // see if any errors
+            // see if any Gql errors
+
             if (GqlResp.Errors != null)
                 if (GqlResp.Errors.Length > 0)
                 {
@@ -273,9 +306,9 @@ namespace Carlabs.Getit
                 resultName = string.IsNullOrWhiteSpace(AliasName) ? QueryName : AliasName;
 
             // Let the client do the mapping , all sorts of things can thow at this point!
-            // caller should check for exceptions!
+            // caller should check for exceptions, Generally invalid mapping into the type
 
-            return  GqlResp.GetDataFieldAs<T>(resultName);
+            return GqlResp.GetDataFieldAs<T>(resultName);
        }
 
         /// <summary>
@@ -286,30 +319,46 @@ namespace Carlabs.Getit
         /// <exception cref="ArgumentException">Dupe Key</exception>
         public override string ToString()
         {
-            // if we have a RawQuery send that back, ignore
-            // everything else. 
+
+            StringBuilder strQuery = new StringBuilder();
+
+            // If we have a RawQuery set, use that instead
+            // of generating it since it can't mix with the
+            // regular generation of a query, it's all or nothing
+            // except for items in the batch list
 
             if (!string.IsNullOrWhiteSpace(RawQuery))
             {
-                return RawQuery;
+                strQuery.Append(RawQuery);
             }
-
-            // Must have a name
-
-            if (string.IsNullOrWhiteSpace(QueryName))
+            else
             {
-                throw new ArgumentException("Must have a `Name` specified in the Query");
+                // Build the regular query, validate here
+
+                if (string.IsNullOrWhiteSpace(QueryName))
+                {
+                    throw new ArgumentException("Must have a `Name` specified in the Query");
+                }
+
+                // and also a select list
+
+                if (SelectList.Count == 0)
+                {
+                    throw new ArgumentException("Must have a one or more `Select` fields in the Query");
+                }
+
+                _builder.Clear();
+                strQuery.Append(_builder.Build(this));
             }
 
-            // and also a select list
+            // Now we have a query, check to see if we are batching
 
-            if (SelectList.Count == 0)
+            foreach (IQuery batchQuery in BatchQueryList)
             {
-                throw new ArgumentException("Must have a one or more `Select` fields in the Query");
+                strQuery.Append(batchQuery.ToString());
             }
 
-            _builder.Clear();
-            return _builder.Build(this);
+            return strQuery.ToString();
         }
     }
 }

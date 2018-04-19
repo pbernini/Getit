@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Carlabs.Getit.IntegrationTests
@@ -15,6 +15,14 @@ namespace Carlabs.Getit.IntegrationTests
             return new string(input.ToCharArray()
                 .Where(c => !Char.IsWhiteSpace(c))
                 .ToArray());
+        }
+
+        [ClassInitialize()]
+        public static void ClassInit(TestContext context)
+        {
+            // set up any needed config stuff for Getit here
+
+            Getit.Config.SetUrl("http://192.168.1.75/clapper/web/graphql");
         }
 
         // Property/Method, What we are testing, Expecting
@@ -158,6 +166,89 @@ namespace Carlabs.Getit.IntegrationTests
             // Best be the same!
             Assert.AreEqual(packedResults, packedCheck);
         }
+
+        [TestMethod]
+        public async Task Query_Get_ReturnsCorrect()
+        {
+            // Arrange (set for a honda endpoint or what ever vendor (makeId is used)
+            Getit.Config.SetUrl("http://192.168.1.75/clapper/web/graphql");
+
+            IQuery query = Getit.Query();
+            IQuery subSelect = Getit.Query();
+
+            // Nearest Dealer has a sub-select of a dealer
+            subSelect
+                .Name("Dealer")
+                .Select("id", "subId", "name", "make");
+
+            // main query, with distance, and sub-select
+            query
+                .Name("NearestDealer")
+                .Select("distance")
+                .Select(subSelect)
+                .Where("zip", "91302")
+                .Where("makeId", 16);   // honda
+
+            string results = await query.Get<string>();
+
+            // Assert
+            Assert.IsNotNull(results);
+            Assert.IsTrue(results.IndexOf("Galpin Honda") >= 0); 
+        }
+
+        [TestMethod]
+        public async Task Query_BatchGet_ReturnsCorrect()
+        {
+            // Arrange (set for a honda endpoint or what ever vendor (makeId is used)
+            Getit.Config.SetUrl("http://192.168.1.75/clapper/web/graphql");
+
+            IQuery query = Getit.Query();
+            IQuery subSelect = Getit.Query();
+            IQuery batchQuery = Getit.Query();
+            IQuery batchSubSelectQuery = Getit.Query();
+
+            // Nearest Dealer has a sub-select of a dealer
+            subSelect
+                .Name("Dealer")
+                .Select("id", "subId", "name", "make");
+
+            // query, with distance, and sub-select
+            query
+                .Name("NearestDealer")
+                .Alias("SecondQuery")
+                .Select("distance")
+                .Select(subSelect)
+                .Where("zip", "91302")
+                .Where("makeId", 16);   // honda makeid = 16
+
+            // Nearest Dealer has a sub-select of a dealer
+            batchSubSelectQuery
+                .Name("Dealer")
+                .Select("id", "subId", "name");
+
+            // main query, with distance, and sub-select
+            batchQuery
+                .Name("NearestDealer")
+                .Alias("BatchQuery")
+                .Select("distance")
+                .Select(batchSubSelectQuery)
+                .Where("zip", "91302")
+                .Where("makeId", 16)
+                .Batch(query);
+
+            // get the json results as a strings
+            string results = await batchQuery.Get<string>();
+
+            // Assert
+            Assert.IsNotNull(results);
+
+            // check for 2 as the query is the same, should be
+            // further down the line...
+            int firstIndex = results.IndexOf("Galpin Honda");
+            int secondIndex = results.IndexOf("Galpin Honda", 11 + firstIndex);
+
+            // will fail if both -1
+            Assert.IsTrue(secondIndex > firstIndex);
+        }
     }
 }
-

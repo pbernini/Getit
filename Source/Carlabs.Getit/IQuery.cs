@@ -17,6 +17,11 @@ namespace Carlabs.Getit
         string RawQuery { get; }
 
         /// <summary>
+        /// Clear the Query and anything related
+        /// </summary>
+        void Clear();
+
+        /// <summary>
         /// Accepts a string and will use this as the query. Setting
         /// this will overide any other settings and ignore any 
         /// validation checks. If the string is empty it will be
@@ -77,6 +82,14 @@ namespace Carlabs.Getit
         IQuery Select(params string[] selects);
 
         /// <summary>
+        /// Adds a sub query to the list
+        /// </summary>
+        /// <param name="subSelect">A sub-selection, which can be just a query</param>
+        /// <returns>Query</returns>
+        /// <exception cref="ArgumentException"></exception>
+        IQuery Select(IQuery subSelect);
+
+        /// <summary>
         /// Sets up the Parameters part of the GraphQL query. This
         /// accepts a key and a where part that will go into the  
         /// list for later construction into the query. The where part
@@ -103,6 +116,20 @@ namespace Carlabs.Getit
         /// </summary>
         /// <returns>Bool true if errors exist, false if not</returns>
         bool HasErrors();
+
+        /// <summary>
+        /// Add additional queries to the request. These
+        /// will get bundled in as additional queries. This
+        /// will affect the query that is executed in the Get()
+        /// method and the ToString() output, but will not
+        /// change any items specific to this query. Each
+        /// query will individually be calling it's ToString()
+        /// to get the query to be batched. Use Alias names
+        /// where appropriate
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns>IQuery</returns>
+        IQuery Batch(IQuery query);
 
         /// <summary>
         /// Given a type return the results of a GraphQL query in it. If

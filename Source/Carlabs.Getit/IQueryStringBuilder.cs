@@ -4,6 +4,7 @@ namespace Carlabs.Getit
 {
     public interface IQueryStringBuilder
     {
+        StringBuilder QueryString { get; }
 
         /// <summary>
         /// Clear the QueryStringBuilder and all that entails

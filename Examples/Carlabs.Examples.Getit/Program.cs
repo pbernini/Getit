@@ -7,9 +7,10 @@ using GraphQL.Common.Request;
 using GraphQL.Common.Response;
 
 using Carlabs.Getit;
+
 using ConsoleDump;
 
-namespace Carlabs.Examples.Getit
+namespace Carlabs.Getit.Examples
 {
 #pragma warning disable IDE1006 // Naming Styles off for GQL structs
     public class Dealer
@@ -55,10 +56,9 @@ namespace Carlabs.Examples.Getit
         // ReSharper disable once UnusedParameter.Local
         private static async Task Main(string[] args)
         {
-            QueryStringBuilder subSelectString = new QueryStringBuilder();
-            Query subSelect = new Query(subSelectString);
-
-            // Getit.Config.SetUrl("http://172.17.0.1/clapper/web/graphql");
+            // Must set the URL for the client connection or expect a Autofac throw!
+            Getit.Config.SetUrl("http://192.168.1.75/clapper/web/graphql");
+            IQuery subSelect = Getit.Query();
 
             // set up a couple of enums for testing
 
@@ -131,7 +131,7 @@ namespace Carlabs.Examples.Getit
             // finally build some big query with all that stuff
 
             QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString);
+            Query query = new Query(queryString, Getit.Config);
 
             query
                 .Name("Dealers")
@@ -163,41 +163,49 @@ namespace Carlabs.Examples.Getit
                 .Select("internetManager", "contactEmail", "dteUpdated", "type", "status");
 
             QueryStringBuilder nearestDealerQueryString = new QueryStringBuilder();
-            Query nearestDealerQuery = new Query(nearestDealerQueryString);
+            Query nearestDealerQuery = new Query(nearestDealerQueryString, Getit.Config);
+
+            QueryStringBuilder batchQueryString = new QueryStringBuilder();
+            Query batchQuery = new Query(batchQueryString, Getit.Config);
 
             nearestDealerQuery
                 .Name("NearestDealer")
-                .Alias("XXXXXX")
+                .Alias("TheNearest")
                 .Select("distance")
                 .Select(subSelect)
                 .Where("zip", "91302")
                 .Where("makeId", 16);
 
+            Console.WriteLine("Nearest Dealer Query");
             Console.WriteLine(nearestDealerQuery);
-
             Console.WriteLine("Testing String Get");
             Console.WriteLine(await nearestDealerQuery.Get<string>());
             Console.WriteLine("Done with String Get");
 
             Console.WriteLine("Testing NearestDealer Get");
-            List<NearestDealer> objResults = await nearestDealerQuery.Get<List<NearestDealer>>("XXXXXX");
+            List<NearestDealer> objResults = await nearestDealerQuery.Get<List<NearestDealer>>("TheNearest");
             objResults.Dump();
             Console.WriteLine("Done with NearestDealer Get");
 
-            nearestDealerQuery.Alias();
-            nearestDealerQuery.Select("bogusField");
+            // nearestDealerQuery.Alias("batched");
+           // nearestDealerQuery.Select("bogusField");
 
             string rawQuery = nearestDealerQuery.ToString();
 
-            nearestDealerQuery.Clear();
-            nearestDealerQuery.Raw(rawQuery);
+            //nearestDealerQuery.Clear();
+            batchQuery.Raw(rawQuery);
+            nearestDealerQuery.Alias("batchedNearest");
+            batchQuery.Batch(nearestDealerQuery);
 
-            Console.WriteLine("Testing Raw Query Get");
-            Console.WriteLine(await nearestDealerQuery.Get<string>());
-            Console.WriteLine("Done with Raw Query Get");
+            Console.WriteLine("Testing Batch Raw Query Get");
+            Console.WriteLine(await batchQuery.Get<string>());
+            Console.WriteLine("Done with Batch Raw Query Get");
+            Console.WriteLine("Batched Query String -");
+            Console.WriteLine(batchQuery.ToString());
 
+/*
             Console.WriteLine("Testing Raw NearestDealer Query Get");
-            objResults = await nearestDealerQuery.Get<List<NearestDealer>>("NearestDealer");
+            objResults = await nearestDealerQuery.Get<List<NearestDealer>>("TheNearest");
             objResults.Dump();
 
             if (nearestDealerQuery.HasErrors())
@@ -217,6 +225,8 @@ namespace Carlabs.Examples.Getit
             }
 
             Console.WriteLine("Done with Raw NearestDealer Query Get");
+*/
+
         }
     }
 }

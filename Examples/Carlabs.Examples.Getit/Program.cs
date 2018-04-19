@@ -203,10 +203,24 @@ namespace Carlabs.Getit.Examples
             Console.WriteLine("Batched Query String -");
             Console.WriteLine(batchQuery.ToString());
 
-/*
-            Console.WriteLine("Testing Raw NearestDealer Query Get");
+            nearestDealerQuery.Clear();
+            nearestDealerQuery
+                .Name("NearestDealer")
+                .Alias("TheNearest")
+                .Select("XXXXdistance")
+                .Select(subSelect)
+                .Where("zip", "91302")
+                .Where("makeId", 16);
+
+            Console.WriteLine("Testing NearestDealer Query Get with Error Check");
             objResults = await nearestDealerQuery.Get<List<NearestDealer>>("TheNearest");
-            objResults.Dump();
+
+            if(objResults == null)
+                Console.WriteLine("No Data in Results");
+            else
+                objResults.Dump();
+
+            // check the query to see if it captured any errors
 
             if (nearestDealerQuery.HasErrors())
             {
@@ -224,9 +238,7 @@ namespace Carlabs.Getit.Examples
                 Console.WriteLine("No Errors Found");
             }
 
-            Console.WriteLine("Done with Raw NearestDealer Query Get");
-*/
-
+            Console.WriteLine("Done with NearestDealer Query Get with Error Check");
         }
     }
 }

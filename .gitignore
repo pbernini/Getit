@@ -41,3 +41,10 @@ Thumbs.db
 
 # IDE
 .idea
+/.vs/Getit/v15/Server/sqlite3/db.lock
+/.vs/Getit/v15/Server/sqlite3/storage.ide
+/.vs/Getit/v15/Server/sqlite3/storage.ide-shm
+/.vs/Getit/v15/Server/sqlite3/storage.ide-wal
+/.vs/slnx.sqlite
+/.vs/ProjectSettings.json
+/.vs

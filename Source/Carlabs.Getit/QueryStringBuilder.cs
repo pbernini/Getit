@@ -89,8 +89,7 @@ namespace Carlabs.Getit
 
                     if (hasList)
                     {
-                        listStr.Length--;
-                        listStr.Length--;
+                        listStr.Length -= 2;
                     }
 
                     listStr.Append("]");
@@ -115,8 +114,7 @@ namespace Carlabs.Getit
 
                     if (hasType)
                     {
-                        dictStr.Length--;
-                        dictStr.Length--;
+                        dictStr.Length -= 2;
                     }
 
                     dictStr.Append("}");

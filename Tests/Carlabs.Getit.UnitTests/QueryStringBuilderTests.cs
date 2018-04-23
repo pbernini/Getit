@@ -25,7 +25,10 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
-        public void Check_Int_Type_Value()
+
+        // UnitOfWork_StateUnderTest_ExpectedBehavior
+
+        public void BuildQueryParam_IntType_ParseInt()
         {
             // Arrange
             QueryStringBuilder queryString = new QueryStringBuilder();
@@ -38,7 +41,7 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
-        public void Check_String_Type_Value()
+        public void BuildQueryParam_QuotedStringType_ParseString()
         {
             // Arrange
             QueryStringBuilder queryString = new QueryStringBuilder();
@@ -51,7 +54,7 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
-        public void Check_Double_Type_Value()
+        public void BuildQueryParam_DoubleType_ParseDouble()
         {
             // Arrange
             QueryStringBuilder queryString = new QueryStringBuilder();
@@ -64,7 +67,7 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
-        public void Check_Enum_Type_Value()
+        public void BuildQueryParam_EnumType_ParseEnum()
         {
             // Arrange
             QueryStringBuilder queryString = new QueryStringBuilder();
@@ -78,7 +81,7 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
-        public void Check_Custom_Type_Values()
+        public void BuildQueryParam_CustomType_ParseCustom()
         {
             // Arrange
             QueryStringBuilder queryString = new QueryStringBuilder();
@@ -96,7 +99,7 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
-        public void Check_Int_List_Type_Values()
+        public void BuildQueryParam_ListType_ParseList()
         {
             // Arrange
             QueryStringBuilder queryString = new QueryStringBuilder();
@@ -110,7 +113,7 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
-        public void Check_String_List_Type_Values()
+        public void BuildQueryParam_StringListType_ParseStringList()
         {
             // Arrange
             QueryStringBuilder queryString = new QueryStringBuilder();
@@ -124,7 +127,7 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
-        public void Check_Double_List_Type_Values()
+        public void BuildQueryParam_DoubleListType_ParseDoubleList()
         {
             // Arrange
             QueryStringBuilder queryString = new QueryStringBuilder();
@@ -138,7 +141,7 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
-        public void Check_Enum_List_Type_Values()
+        public void BuildQueryParam_EnumListType_ParseEnumList()
         {
             // Arrange
             QueryStringBuilder queryString = new QueryStringBuilder();
@@ -155,7 +158,7 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
-        public void Check_Custom_Nested_Type_Values()
+        public void BuildQueryParam_NestedListType_ParseNestedList()
         {
             // Arrange
             QueryStringBuilder queryString = new QueryStringBuilder();
@@ -185,7 +188,7 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
-        public void Check_Add_Params()
+        public void Where_QueryString_ParseQueryString()
         {
             // Arrange
             QueryStringBuilder queryString = new QueryStringBuilder();
@@ -223,7 +226,7 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
-        public void Check_Add_Fields()
+        public void Select_QueryString_ParseQueryString()
         {
             // Arrange
             QueryStringBuilder queryString = new QueryStringBuilder();
@@ -250,6 +253,7 @@ namespace Carlabs.Getit.UnitTests
                 .Name("subSelect")
                 .Where(mySubDict);
 
+            // create a sub-select too
             List<object> selList = new List<object>(new object[] { "id", subSelect, "name", "make", "model" });
 
             query
@@ -266,7 +270,7 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
-        public void Check_Add_Comment()
+        public void Comment_AddComment_Match()
         {
             // Arrange
             QueryStringBuilder queryString = new QueryStringBuilder();
@@ -280,7 +284,7 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
-        public void Check_Build()
+        public void Build_AllElements_StringMatch()
         {
             // Arrange
             QueryStringBuilder queryString = new QueryStringBuilder();

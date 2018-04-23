@@ -56,8 +56,9 @@ namespace Carlabs.Getit.Examples
         // ReSharper disable once UnusedParameter.Local
         private static async Task Main(string[] args)
         {
-            // Must set the URL for the client connection or expect a Autofac throw!
-            Getit.Config.SetUrl("http://192.168.1.75/clapper/web/graphql");
+            // Arrange (set for a honda endpoint or what ever vendor (makeId is used)
+            // NOTE : THIS TEST WILL FAIL WITHOUT A VALID WORKING GQL ENDPOINT TO HONDA DATA
+            Getit.Config.SetUrl("http://hondadevclapperng.us-east-1.elasticbeanstalk.com/graphql");
             IQuery subSelect = Getit.Query();
 
             // set up a couple of enums for testing
@@ -187,12 +188,8 @@ namespace Carlabs.Getit.Examples
             objResults.Dump();
             Console.WriteLine("Done with NearestDealer Get");
 
-            // nearestDealerQuery.Alias("batched");
-           // nearestDealerQuery.Select("bogusField");
-
             string rawQuery = nearestDealerQuery.ToString();
 
-            //nearestDealerQuery.Clear();
             batchQuery.Raw(rawQuery);
             nearestDealerQuery.Alias("batchedNearest");
             batchQuery.Batch(nearestDealerQuery);

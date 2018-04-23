@@ -171,7 +171,8 @@ namespace Carlabs.Getit.IntegrationTests
         public async Task Query_Get_ReturnsCorrect()
         {
             // Arrange (set for a honda endpoint or what ever vendor (makeId is used)
-            Getit.Config.SetUrl("http://192.168.1.75/clapper/web/graphql");
+            // NOTE : THIS TEST WILL FAIL WITHOUT A VALID WORKING GQL ENDPOINT TO HONDA DATA
+            Getit.Config.SetUrl("http://hondadevclapperng.us-east-1.elasticbeanstalk.com/graphql");
 
             IQuery query = Getit.Query();
             IQuery subSelect = Getit.Query();
@@ -200,7 +201,8 @@ namespace Carlabs.Getit.IntegrationTests
         public async Task Query_BatchGet_ReturnsCorrect()
         {
             // Arrange (set for a honda endpoint or what ever vendor (makeId is used)
-            Getit.Config.SetUrl("http://192.168.1.75/clapper/web/graphql");
+            // NOTE : THIS TEST WILL FAIL WITHOUT A VALID WORKING GQL ENDPOINT TO HONDA DATA
+            Getit.Config.SetUrl("http://hondadevclapperng.us-east-1.elasticbeanstalk.com/graphql");
 
             IQuery query = Getit.Query();
             IQuery subSelect = Getit.Query();

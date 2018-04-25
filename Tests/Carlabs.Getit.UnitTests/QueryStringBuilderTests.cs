@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Carlabs.Getit.UnitTests
@@ -223,6 +222,45 @@ namespace Carlabs.Getit.UnitTests
 
             // Assert
             Assert.AreEqual(RemoveWhitespace("from:123,to:454,recurse:[\"aa\",\"bb\",\"cc\"],map:{from:444.45,to:555.45},name:HAYstack"), addParamStr);
+        }
+
+        [TestMethod]
+        public void Where_ClearQueryString_EmptyQueryString()
+        {
+            // Arrange
+            QueryStringBuilder queryString = new QueryStringBuilder();
+            Query query = new Query(queryString, Getit.Config);
+
+            List<object> objList = new List<object>(new object[] { "aa", "bb", "cc" });
+            EnumHelper enumHaystack = new EnumHelper("HAYstack");
+
+            Dictionary<string, object> fromToMap = new Dictionary<string, object>
+            {
+                {"from", 444.45},
+                {"to", 555.45},
+            };
+
+            Dictionary<string, object> nestedListMap = new Dictionary<string, object>
+            {
+                {"from", 123},
+                {"to", 454},
+                {"recurse", objList},
+                {"map", fromToMap},
+                {"name",  enumHaystack}
+            };
+
+            query
+                .Name("test1")
+                .Select("name")
+                .Where(nestedListMap);
+
+            queryString.AddParams(query);
+
+            // Act
+            queryString.Clear();
+
+            // Assert
+            Assert.IsTrue(string.IsNullOrEmpty(queryString.QueryString.ToString()));
         }
 
         [TestMethod]

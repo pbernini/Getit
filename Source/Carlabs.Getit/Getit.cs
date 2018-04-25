@@ -23,9 +23,6 @@ namespace Carlabs.Getit
         /// new IQuery fresh each time
         /// </summary>
         /// <returns>IQuery</returns>
-        public static IQuery Query()
-        {
-            return Container.Resolve<IQuery>();
-        }
+        public static IQuery Query => Container.Resolve<IQuery>();
     }
 }

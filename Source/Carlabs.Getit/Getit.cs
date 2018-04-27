@@ -14,18 +14,7 @@ namespace Carlabs.Getit
         /// Getit.Config.SetUrl("http://example.com/graphql/endpoint");
         /// </code>
         /// </example>
-        public static IConfig Config { get; }
-
-        /// <summary>
-        /// Getit static constructor.
-        /// Resolves dependencies with IoCContainer.
-        /// </summary>
-        static Getit()
-        {
-            // Load the Config
-
-            Config = Container.Resolve<IConfig>();
-        }
+        public static IConfig Config => Container.Resolve<IConfig>();
 
         /// <summary>
         /// Get's a new query instances. Must not
@@ -34,9 +23,6 @@ namespace Carlabs.Getit
         /// new IQuery fresh each time
         /// </summary>
         /// <returns>IQuery</returns>
-        public static IQuery Query()
-        {
-            return Container.Resolve<IQuery>();
-        }
+        public static IQuery Query => Container.Resolve<IQuery>();
     }
 }

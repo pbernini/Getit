@@ -59,7 +59,7 @@ namespace Carlabs.Getit.Examples
             // Arrange (set for a honda endpoint or what ever vendor (makeId is used)
             // NOTE : THIS TEST WILL FAIL WITHOUT A VALID WORKING GQL ENDPOINT TO HONDA DATA
             Getit.Config.SetUrl("http://hondadevclapperng.us-east-1.elasticbeanstalk.com/graphql");
-            IQuery subSelect = Getit.Query();
+            IQuery subSelect = Getit.Query;
 
             // set up a couple of enums for testing
 

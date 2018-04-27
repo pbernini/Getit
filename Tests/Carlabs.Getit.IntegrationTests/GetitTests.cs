@@ -33,7 +33,7 @@ namespace Carlabs.Getit.IntegrationTests
             const string select = "zip";
 
             // Arrange
-            IQuery query = Getit.Query().Select(select);
+            IQuery query = Getit.Query.Select(select);
 
             // Assert
             Assert.AreEqual(select, query.SelectList.First());
@@ -43,8 +43,8 @@ namespace Carlabs.Getit.IntegrationTests
         public void Query_Unique_ReturnsCorrect()
         {
             // Arrange
-            IQuery query = Getit.Query().Select("zip");
-            IQuery query1 = Getit.Query().Select("pitydodah");
+            IQuery query = Getit.Query.Select("zip");
+            IQuery query1 = Getit.Query.Select("pitydodah");
 
             // Assert counts and not the same
             Assert.IsTrue(query.SelectList.Count == 1);
@@ -56,7 +56,7 @@ namespace Carlabs.Getit.IntegrationTests
         public void Query_ToString_ReturnsCorrect()
         {
             // Arrange
-            IQuery query = Getit.Query().Name("test1").Select("id");
+            IQuery query = Getit.Query.Name("test1").Select("id");
 
             // Assert
             Assert.AreEqual("test1{id}", RemoveWhitespace(query.ToString()));
@@ -66,8 +66,8 @@ namespace Carlabs.Getit.IntegrationTests
         public void ComplexQuery_ToString_Check()
         {
             // Arrange
-            IQuery query = Getit.Query();
-            IQuery subSelect = Getit.Query();
+            IQuery query = Getit.Query;
+            IQuery subSelect = Getit.Query;
 
             // set up a couple of ENUMS
             EnumHelper gqlEnumEnabled = new EnumHelper().Enum("ENABLED");
@@ -174,8 +174,8 @@ namespace Carlabs.Getit.IntegrationTests
             // NOTE : THIS TEST WILL FAIL WITHOUT A VALID WORKING GQL ENDPOINT TO HONDA DATA
             Getit.Config.SetUrl("http://hondadevclapperng.us-east-1.elasticbeanstalk.com/graphql");
 
-            IQuery query = Getit.Query();
-            IQuery subSelect = Getit.Query();
+            IQuery query = Getit.Query;
+            IQuery subSelect = Getit.Query;
 
             // Nearest Dealer has a sub-select of a dealer
             subSelect
@@ -204,10 +204,10 @@ namespace Carlabs.Getit.IntegrationTests
             // NOTE : THIS TEST WILL FAIL WITHOUT A VALID WORKING GQL ENDPOINT TO HONDA DATA
             Getit.Config.SetUrl("http://hondadevclapperng.us-east-1.elasticbeanstalk.com/graphql");
 
-            IQuery query = Getit.Query();
-            IQuery subSelect = Getit.Query();
-            IQuery batchQuery = Getit.Query();
-            IQuery batchSubSelectQuery = Getit.Query();
+            IQuery query = Getit.Query;
+            IQuery subSelect = Getit.Query;
+            IQuery batchQuery = Getit.Query;
+            IQuery batchSubSelectQuery = Getit.Query;
 
             // Nearest Dealer has a sub-select of a dealer
             subSelect

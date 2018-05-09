@@ -295,7 +295,7 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
-        public void Check_RawNotRequired_NameSelect()
+        public void Check_RawNotRequired_Match()
         {
             // Arrange
             IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
@@ -311,6 +311,46 @@ namespace Carlabs.Getit.UnitTests
 
             // Assert
             Assert.AreEqual(rawStr, query.ToString());
+        }
+
+        [TestMethod]
+        public void Check_RawBraces_Match()
+        {
+            // Arrange
+            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
+            IConfig config = Substitute.For<IConfig>();
+            config.Url.Returns("http://www.somesite.com");
+            Query query = new Query(queryStringBuilder, config);
+
+            const string rawStr = "{something(a:123){id}}";
+            const string expectedRawStr = "something(a:123){id}";
+
+            // Act
+            query
+                .Raw(rawStr);
+
+            // Assert
+            Assert.AreEqual(expectedRawStr, query.ToString());
+        }
+
+        [TestMethod]
+        public void Check_WhiteSpaceRawBraces_Match()
+        {
+            // Arrange
+            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
+            IConfig config = Substitute.For<IConfig>();
+            config.Url.Returns("http://www.somesite.com");
+            Query query = new Query(queryStringBuilder, config);
+
+            const string rawStr = "   {something(a:123){id}}   ";
+            const string expectedRawStr = "   something(a:123){id}   ";
+
+            // Act
+            query
+                .Raw(rawStr);
+
+            // Assert
+            Assert.AreEqual(expectedRawStr, query.ToString());
         }
 
         [TestMethod] public void Check_Clear()

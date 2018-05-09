@@ -71,7 +71,9 @@ namespace Carlabs.Getit
         /// this will overide any other settings and ignore any 
         /// validation checks. If the string is empty it will be
         /// ignored and the existing query builder actions will be 
-        /// at play. 
+        /// at play.
+        ///
+        /// NOTE : This will strip out any leading or trailing braces if found
         /// 
         /// WARNING : Calling this will clear all other query elements.
         /// 
@@ -80,8 +82,39 @@ namespace Carlabs.Getit
         public IQuery Raw(string rawQuery)
         {
             Clear();
-            RawQuery = rawQuery;
 
+            // scan string and find if the first nonwhitespace
+            // is a brace, if so we need to strip beginning and
+            // ending. Otherwise leave it be.
+
+            bool stripBraces = false;
+
+            foreach (char c in rawQuery)
+            {
+                if (Char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
+                // did we land on a open brace?
+
+                if (c == '{')
+                {
+                    stripBraces = true;
+                }
+
+                break;
+            }
+
+            // Got the word to remove surrounging braces
+
+            if (stripBraces)
+            {
+                rawQuery = rawQuery.Remove(rawQuery.IndexOf("{"), 1);
+                rawQuery = rawQuery.Remove(rawQuery.LastIndexOf("}"), 1);
+            }
+
+            RawQuery = rawQuery;
             return this;
         }
 

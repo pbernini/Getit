@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+
 using GraphQL.Client;
 using GraphQL.Common.Request;
 using GraphQL.Common.Response;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Carlabs.Getit
 {
@@ -331,11 +335,18 @@ namespace Carlabs.Getit
                 return GqlResp.Data.ToString();
             }
 
+            // If the smart user passes in a JObject get it that way instead of fixed T type
+
+            if(typeof(T) == typeof(JObject))
+            {
+                return JsonConvert.DeserializeObject<JObject>(GqlResp.Data.ToString());
+            }
+
             // Now we need to get the results name. This is EITHER the Name, or the Alias
             // name. If Alias was set then use it. If the user does specify it in
             // the Get call it's an overide. This might be needed with raw query
 
-            if(resultName == null)
+            if (resultName == null)
                 resultName = string.IsNullOrWhiteSpace(AliasName) ? QueryName : AliasName;
 
             // Let the client do the mapping , all sorts of things can thow at this point!

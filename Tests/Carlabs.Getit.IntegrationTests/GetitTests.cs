@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 
 namespace Carlabs.Getit.IntegrationTests
 {
@@ -251,6 +251,36 @@ namespace Carlabs.Getit.IntegrationTests
 
             // will fail if both -1
             Assert.IsTrue(secondIndex > firstIndex);
+        }
+
+        [TestMethod]
+        public async Task Query_Get_ReturnsJObjectCorrect()
+        {
+            // Arrange (set for a honda endpoint or what ever vendor (makeId is used)
+            // NOTE : THIS TEST WILL FAIL WITHOUT A VALID WORKING GQL ENDPOINT TO HONDA DATA
+            Getit.Config.SetUrl("http://hondadevclapperng.us-east-1.elasticbeanstalk.com/graphql");
+
+            IQuery query = Getit.Query;
+            IQuery subSelect = Getit.Query;
+
+            // Nearest Dealer has a sub-select of a dealer
+            subSelect
+                .Name("Dealer")
+                .Select("id", "subId", "name", "make");
+
+            // main query, with distance, and sub-select
+            query
+                .Name("NearestDealer")
+                .Select("distance")
+                .Select(subSelect)
+                .Where("zip", "91302")
+                .Where("makeId", 16);   // honda
+
+            JObject results = await query.Get<JObject>();
+
+            // Assert
+            Assert.IsNotNull(results);
+            Assert.IsTrue(results.Value<JArray>("NearestDealer")[0].Value<double>("distance") >= 0.0);
         }
     }
 }

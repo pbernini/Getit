@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using GraphQL.Client;
-using GraphQL.Common.Request;
 using GraphQL.Common.Response;
 
-using Carlabs.Getit;
+using Newtonsoft.Json.Linq;
 
 using ConsoleDump;
 
@@ -236,6 +234,18 @@ namespace Carlabs.Getit.Examples
             }
 
             Console.WriteLine("Done with NearestDealer Query Get with Error Check");
+
+            Console.WriteLine("Begin Testing with JObject");
+            QueryStringBuilder jsonQueryString = new QueryStringBuilder();
+            Query jsonQuery = new Query(jsonQueryString, Getit.Config);
+
+            jsonQuery.Raw(rawQuery);
+            JObject jO = await jsonQuery.Get<JObject>();
+            Console.WriteLine(jO);
+            Console.WriteLine(jO.Value<JArray>("TheNearest")[0].Value<double>("distance"));
+    
+
+            Console.WriteLine("End Testing with JObject");
         }
     }
 }

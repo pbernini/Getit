@@ -243,7 +243,6 @@ namespace Carlabs.Getit.Examples
             JObject jO = await jsonQuery.Get<JObject>();
             Console.WriteLine(jO);
             Console.WriteLine(jO.Value<JArray>("TheNearest")[0].Value<double>("distance"));
-    
 
             Console.WriteLine("End Testing with JObject");
         }

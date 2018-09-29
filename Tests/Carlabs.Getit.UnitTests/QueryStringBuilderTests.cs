@@ -15,18 +15,7 @@ namespace Carlabs.Getit.UnitTests
                 .ToArray());
         }
 
-        [ClassInitialize()]
-        public static void ClassInit(TestContext context)
-        {
-            // set up any needed config stuff for Getit here
-
-            Getit.Config.SetUrl("http://192.168.1.75/clapper/web/graphql");
-        }
-
         [TestMethod]
-
-        // UnitOfWork_StateUnderTest_ExpectedBehavior
-
         public void BuildQueryParam_IntType_ParseInt()
         {
             // Arrange
@@ -190,8 +179,9 @@ namespace Carlabs.Getit.UnitTests
         public void Where_QueryString_ParseQueryString()
         {
             // Arrange
+            Config config = new Config("https://clapper.honda-dev.car-labs.com/graphql");
             QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString, Getit.Config);
+            Query query = new Query(queryString, config);
 
             List<object> objList = new List<object>(new object[] { "aa", "bb", "cc" });
             EnumHelper enumHaystack = new EnumHelper("HAYstack");
@@ -228,8 +218,9 @@ namespace Carlabs.Getit.UnitTests
         public void Where_ClearQueryString_EmptyQueryString()
         {
             // Arrange
+            Config config = new Config("https://clapper.honda-dev.car-labs.com/graphql");
             QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString, Getit.Config);
+            Query query = new Query(queryString, config);
 
             List<object> objList = new List<object>(new object[] { "aa", "bb", "cc" });
             EnumHelper enumHaystack = new EnumHelper("HAYstack");
@@ -267,10 +258,11 @@ namespace Carlabs.Getit.UnitTests
         public void Select_QueryString_ParseQueryString()
         {
             // Arrange
+            Config config = new Config("https://clapper.honda-dev.car-labs.com/graphql");
             QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString, Getit.Config);
+            Query query = new Query(queryString, config);
             QueryStringBuilder subSelectString = new QueryStringBuilder();
-            Query subSelect = new Query(subSelectString, Getit.Config);
+            Query subSelect = new Query(subSelectString, config);
 
             EnumHelper gqlEnumEnabled = new EnumHelper().Enum("ENABLED");
             EnumHelper gqlEnumDisabled = new EnumHelper("DISABLED");
@@ -325,10 +317,12 @@ namespace Carlabs.Getit.UnitTests
         public void Build_AllElements_StringMatch()
         {
             // Arrange
+            Config config = new Config("https://clapper.honda-dev.car-labs.com/graphql");
             QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString, Getit.Config);
+            Query query = new Query(queryString, config);
             QueryStringBuilder subSelectString = new QueryStringBuilder();
-            Query subSelect = new Query(subSelectString, Getit.Config);
+            Query subSelect = new Query(subSelectString, config);
+
             EnumHelper gqlEnumEnabled = new EnumHelper().Enum("ENABLED");
             EnumHelper gqlEnumDisabled = new EnumHelper("DISABLED");
 

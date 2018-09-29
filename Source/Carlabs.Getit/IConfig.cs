@@ -15,6 +15,7 @@ namespace Carlabs.Getit
         /// </summary>
         /// <param name="url"></param>
         /// <exception cref="ArgumentException">Thrown when url is empty or null</exception>
+        // ReSharper disable once UnusedMemberInSuper.Global
         void SetUrl(string url);
     }
 }

@@ -1,28 +1,16 @@
-﻿using System;
-using Carlabs.Getit.Autofac;
-
-namespace Carlabs.Getit
+﻿namespace Carlabs.Getit
 {
-    public static class Getit
+    public class Getit : IGetit
     {
         /// <summary>
-        /// The <c>Config</c> class used to set and get configuration values.
-        /// </summary>
-        /// <example>
-        /// <code>
-        /// // Set the Config URL to the GraphQL endpoint
-        /// Getit.Config.SetUrl("http://example.com/graphql/endpoint");
-        /// </code>
-        /// </example>
-        public static IConfig Config => Container.Resolve<IConfig>();
-
-        /// <summary>
-        /// Get's a new query instances. Must not
-        /// be done in the constructor since that only
-        /// gets called one time. This will dispence a 
-        /// new IQuery fresh each time
+        /// Wrapper class that dispenses Query's. Each
+        /// Query needs a new StringBuilder and a Set Up config
+        /// which has a URL set.
         /// </summary>
         /// <returns>IQuery</returns>
-        public static IQuery Query => Container.Resolve<IQuery>();
+        public IQuery Query(IConfig config)
+        {
+            return new Query(new QueryStringBuilder(), config);
+        }
     }
 }

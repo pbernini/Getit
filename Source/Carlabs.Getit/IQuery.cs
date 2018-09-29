@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using GraphQL.Common.Response;
@@ -14,7 +15,6 @@ namespace Carlabs.Getit
         string QueryName { get; }
         string AliasName { get; }
         string QueryComment { get; }
-        string RawQuery { get; }
 
         /// <summary>
         /// Clear the Query and anything related
@@ -23,15 +23,16 @@ namespace Carlabs.Getit
 
         /// <summary>
         /// Accepts a string and will use this as the query. Setting
-        /// this will overide any other settings and ignore any 
+        /// this will overide any other settings and ignore any
         /// validation checks. If the string is empty it will be
-        /// ignored and the existing query builder actions will be 
-        /// at play. 
-        /// 
+        /// ignored and the existing query builder actions will be
+        /// at play.
+        ///
         /// WARNING : Calling this will clear all other query elements.
-        /// 
+        ///
         /// </summary>
         /// <param name="rawQuery">The full valid query to be sent to the endpoint</param>
+        // ReSharper disable once UnusedMethodReturnValue.Global
         IQuery Raw(string rawQuery);
 
         /// <summary>
@@ -42,7 +43,7 @@ namespace Carlabs.Getit
         IQuery Name(string queryName);
 
         /// <summary>
-        /// Sets the Query Alias name. This is used in graphQL to allow 
+        /// Sets the Query Alias name. This is used in graphQL to allow
         /// multipe queries with the same endpoint (name) to be assembled
         /// into a batch like query. This will prefix the Name in the query.
         /// It will also be used for the Response name processing.
@@ -74,7 +75,7 @@ namespace Carlabs.Getit
         IQuery Select(IEnumerable<object> objectList);
 
         /// <summary>
-        /// Add a list of simple strings to the selection part of the 
+        /// Add a list of simple strings to the selection part of the
         /// query.
         /// </summary>
         /// <param name="selects">List of strings</param>
@@ -91,9 +92,9 @@ namespace Carlabs.Getit
 
         /// <summary>
         /// Sets up the Parameters part of the GraphQL query. This
-        /// accepts a key and a where part that will go into the  
+        /// accepts a key and a where part that will go into the
         /// list for later construction into the query. The where part
-        /// can be a simple primitive or complex object that will be 
+        /// can be a simple primitive or complex object that will be
         /// evaluated.
         /// </summary>
         /// <param name="key">The Parameter Name</param>
@@ -129,6 +130,7 @@ namespace Carlabs.Getit
         /// </summary>
         /// <param name="query"></param>
         /// <returns>IQuery</returns>
+        // ReSharper disable once UnusedMethodReturnValue.Global
         IQuery Batch(IQuery query);
 
         /// <summary>
@@ -138,7 +140,7 @@ namespace Carlabs.Getit
         /// For Raw queries you must set the resultName param OR set the Name() in
         /// the query to match.
         /// </summary>
-        /// <typeparam name="T">Data Type, typically a list of the record but not always. 
+        /// <typeparam name="T">Data Type, typically a list of the record but not always.
         /// </typeparam>
         /// <param name="resultName">Overide of the Name/Alias of the query</param>
         /// <returns>The type of object stuffed with data from the query</returns>

@@ -5,6 +5,15 @@ namespace Carlabs.Getit
 {
     public class Config : IConfig
     {
+        public Config()
+        {
+        }
+
+        public Config(string url)
+        {
+            SetUrl(url);
+        }
+
         /// <summary>
         /// The URL of the GraphQL service.
         /// </summary>

@@ -286,8 +286,6 @@ namespace Carlabs.Getit
         /// <exception cref="ArgumentException">Dupe Key</exception>
         public async Task<T> Get<T>(string resultName = null)
         {
-            //return (T)((object)"This is a test of a string type");
-
             GqlErrors.Clear();
             GqlQuery.Query = "{" + ToString() + "}";
             GqlResp = null;

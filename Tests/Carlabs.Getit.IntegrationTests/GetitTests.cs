@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NSubstitute;
 
 namespace Carlabs.Getit.IntegrationTests
 {
     [TestClass]
+    [DeploymentItem("TestData/batch-query-response-data.json")]
+    [DeploymentItem("TestData/nearest-dealer-response-data.json")]
     public class GetitTests
     {
         private static string RemoveWhitespace(string input)
@@ -24,7 +29,7 @@ namespace Carlabs.Getit.IntegrationTests
 
             // Arrange
             Getit getit = new Getit();
-            Config config = new Config("http://192.168.1.75/clapper/web/graphql");
+            Config config = new Config("http://someurl.com/clapper/web/graphql");
             IQuery query = getit.Query(config).Select(select);
 
             // Assert
@@ -36,7 +41,7 @@ namespace Carlabs.Getit.IntegrationTests
         {
             // Arrange
             Getit getit = new Getit();
-            Config config = new Config("http://192.168.1.75/clapper/web/graphql");
+            Config config = new Config("http://someurl.com/clapper/web/graphql");
             IQuery query = getit.Query(config).Select("zip");
             IQuery query1 = getit.Query(config).Select("pitydodah");
 
@@ -51,7 +56,7 @@ namespace Carlabs.Getit.IntegrationTests
         {
             // Arrange
             Getit getit = new Getit();
-            Config config = new Config("http://192.168.1.75/clapper/web/graphql");
+            Config config = new Config("http://someurl.com/clapper/web/graphql");
             IQuery query = getit.Query(config).Name("test1").Select("id");
 
             // Assert
@@ -63,7 +68,7 @@ namespace Carlabs.Getit.IntegrationTests
         {
             // Arrange
             Getit getit = new Getit();
-            Config config = new Config("http://192.168.1.75/clapper/web/graphql");
+            Config config = new Config("http://someurl.com/clapper/web/graphql");
             IQuery query = getit.Query(config);
             IQuery subSelect = getit.Query(config);
 
@@ -168,9 +173,9 @@ namespace Carlabs.Getit.IntegrationTests
         [TestMethod]
         public async Task Query_Get_ReturnsCorrect()
         {
-            // Arrange (set for a honda endpoint or what ever vendor (makeId is used)
-            // NOTE : THIS TEST WILL FAIL WITHOUT A VALID WORKING GQL ENDPOINT TO HONDA DATA
-            Getit getit = new Getit();
+            // Arrange
+            string responseData = File.ReadAllText("TestData/batch-query-response-data.json");
+            IGetit getit = Substitute.For<IGetit>();
             Config config = new Config("https://clapper.honda-dev.car-labs.com/graphql");
 
             IQuery query = getit.Query(config);
@@ -187,7 +192,9 @@ namespace Carlabs.Getit.IntegrationTests
                 .Select("distance")
                 .Select(subSelect)
                 .Where("zip", "91302")
-                .Where("makeId", 16);   // honda
+                .Where("makeId", 16);
+
+            query.Get<string>().Returns(responseData);
 
             string results = await query.Get<string>();
 
@@ -197,11 +204,13 @@ namespace Carlabs.Getit.IntegrationTests
         }
 
         [TestMethod]
+        [DeploymentItem("TestData/batch-query-response-data.json")]
         public async Task Query_BatchGet_ReturnsCorrect()
         {
-            // Arrange (set for a honda endpoint or what ever vendor (makeId is used)
-            // NOTE : THIS TEST WILL FAIL WITHOUT A VALID WORKING GQL ENDPOINT TO HONDA DATA
-            Getit getit = new Getit();
+            // Arrange
+            string responseData = File.ReadAllText("TestData/batch-query-response-data.json");
+
+            IGetit getit = Substitute.For<IGetit>();
             Config config = new Config("https://clapper.honda-dev.car-labs.com/graphql");
 
             IQuery query = getit.Query(config);
@@ -238,6 +247,8 @@ namespace Carlabs.Getit.IntegrationTests
                 .Where("makeId", 16)
                 .Batch(query);
 
+            batchQuery.Get<string>().Returns(responseData);
+
             // get the json results as a strings
             string results = await batchQuery.Get<string>();
 
@@ -256,9 +267,10 @@ namespace Carlabs.Getit.IntegrationTests
         [TestMethod]
         public async Task Query_Get_ReturnsJObjectCorrect()
         {
-            // Arrange (set for a honda endpoint or what ever vendor (makeId is used)
-            // NOTE : THIS TEST WILL FAIL WITHOUT A VALID WORKING GQL ENDPOINT TO HONDA DATA
-            Getit getit = new Getit();
+            string responseData = File.ReadAllText("TestData/nearest-dealer-response-data.json");
+            JObject gqlResponse = JsonConvert.DeserializeObject<JObject>(responseData);
+
+            IGetit getit = Substitute.For<IGetit>();
             Config config = new Config("https://clapper.honda-dev.car-labs.com/graphql");
 
             IQuery query = getit.Query(config);
@@ -276,6 +288,8 @@ namespace Carlabs.Getit.IntegrationTests
                 .Select(subSelect)
                 .Where("zip", "91302")
                 .Where("makeId", 16);   // honda
+
+            query.Get<JObject>().Returns(gqlResponse);
 
             JObject results = await query.Get<JObject>();
 

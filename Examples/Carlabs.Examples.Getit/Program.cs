@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using GraphQL.Common.Response;
-
 using Newtonsoft.Json.Linq;
-
 using ConsoleDump;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable InconsistentNaming

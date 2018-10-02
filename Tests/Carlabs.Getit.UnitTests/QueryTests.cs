@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks.Dataflow;
 using GraphQL.Common.Response;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
@@ -12,15 +11,6 @@ namespace Carlabs.Getit.UnitTests
     [TestClass]
     public class QueryTests
     {
-        /// <summary>
-        /// Model used to test data deserialization
-        /// </summary>
-        //        [QueryName("model")]
-        //        class TestModel
-        //        {
-        //            public string Value;
-        //        }
-
         [TestMethod]
         public void Select_StringList_AddsToQuery()
         {
@@ -386,7 +376,7 @@ namespace Carlabs.Getit.UnitTests
                 .Where(expectedWhere)
                 .Comment(expectedComment)
                 .Batch(batchQuery);
-                
+
             // Assert to validate stuff has been set first!
             Assert.AreEqual(expectedFrom, query.QueryName);
             Assert.AreEqual(expectedAlias, query.AliasName);
@@ -404,7 +394,7 @@ namespace Carlabs.Getit.UnitTests
             Assert.AreEqual(emptyStr, query.QueryName);
             Assert.AreEqual(emptyStr, query.AliasName);
             CollectionAssert.AreEqual(expectedWhere, query.WhereMap);
-            Assert.AreEqual(0, query.SelectList.Count());
+            Assert.AreEqual(0, query.SelectList.Count);
             Assert.AreEqual(emptyStr, query.QueryComment);
             Assert.AreEqual(0, query.BatchQueryList.Count);
         }
@@ -444,7 +434,7 @@ namespace Carlabs.Getit.UnitTests
             query.GqlErrors.Add(new GraphQLError());
 
             // Query query = new Query(queryStringBuilder, config);
-            
+
             Assert.IsTrue(query.HasErrors());
         }
     }

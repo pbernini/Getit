@@ -1,0 +1,176 @@
+{
+  "BatchQuery": [
+    {
+      "distance": 7.5,
+      "Dealer": {
+        "id": 206550,
+        "subId": "206550",
+        "name": "Woodland Hills Honda"
+      }
+    },
+    {
+      "distance": 14.3,
+      "Dealer": {
+        "id": 208704,
+        "subId": "208704",
+        "name": "Hamer Honda"
+      }
+    },
+    {
+      "distance": 15.1,
+      "Dealer": {
+        "id": 207942,
+        "subId": "207942",
+        "name": "Honda of Thousand Oaks"
+      }
+    },
+    {
+      "distance": 19.1,
+      "Dealer": {
+        "id": 208136,
+        "subId": "208136",
+        "name": "First Honda"
+      }
+    },
+    {
+      "distance": 20.2,
+      "Dealer": {
+        "id": 208712,
+        "subId": "208712",
+        "name": "Keyes Honda"
+      }
+    },
+    {
+      "distance": 20.5,
+      "Dealer": {
+        "id": 206568,
+        "subId": "206568",
+        "name": "Honda of Santa Monica"
+      }
+    },
+    {
+      "distance": 25.3,
+      "Dealer": {
+        "id": 208424,
+        "subId": "208424",
+        "name": "Galpin Honda"
+      }
+    },
+    {
+      "distance": 26.4,
+      "Dealer": {
+        "id": 208764,
+        "subId": "208764",
+        "name": "Ocean Honda of North Hollywood"
+      }
+    },
+    {
+      "distance": 26.4,
+      "Dealer": {
+        "id": 206511,
+        "subId": "206511",
+        "name": "Robertson Honda"
+      }
+    },
+    {
+      "distance": 27.9,
+      "Dealer": {
+        "id": 208608,
+        "subId": "208608",
+        "name": "Culver City Honda"
+      }
+    }
+  ],
+  "SecondQuery": [
+    {
+      "distance": 7.5,
+      "Dealer": {
+        "id": 206550,
+        "subId": "206550",
+        "name": "Woodland Hills Honda",
+        "make": "Honda"
+      }
+    },
+    {
+      "distance": 14.3,
+      "Dealer": {
+        "id": 208704,
+        "subId": "208704",
+        "name": "Hamer Honda",
+        "make": "Honda"
+      }
+    },
+    {
+      "distance": 15.1,
+      "Dealer": {
+        "id": 207942,
+        "subId": "207942",
+        "name": "Honda of Thousand Oaks",
+        "make": "Honda"
+      }
+    },
+    {
+      "distance": 19.1,
+      "Dealer": {
+        "id": 208136,
+        "subId": "208136",
+        "name": "First Honda",
+        "make": "Honda"
+      }
+    },
+    {
+      "distance": 20.2,
+      "Dealer": {
+        "id": 208712,
+        "subId": "208712",
+        "name": "Keyes Honda",
+        "make": "Honda"
+      }
+    },
+    {
+      "distance": 20.5,
+      "Dealer": {
+        "id": 206568,
+        "subId": "206568",
+        "name": "Honda of Santa Monica",
+        "make": "Honda"
+      }
+    },
+    {
+      "distance": 25.3,
+      "Dealer": {
+        "id": 208424,
+        "subId": "208424",
+        "name": "Galpin Honda",
+        "make": "Honda"
+      }
+    },
+    {
+      "distance": 26.4,
+      "Dealer": {
+        "id": 208764,
+        "subId": "208764",
+        "name": "Ocean Honda of North Hollywood",
+        "make": "Honda"
+      }
+    },
+    {
+      "distance": 26.4,
+      "Dealer": {
+        "id": 206511,
+        "subId": "206511",
+        "name": "Robertson Honda",
+        "make": "Honda"
+      }
+    },
+    {
+      "distance": 27.9,
+      "Dealer": {
+        "id": 208608,
+        "subId": "208608",
+        "name": "Culver City Honda",
+        "make": "Honda"
+      }
+    }
+  ]
+}

@@ -11,9 +11,9 @@ namespace Carlabs.Getit
     /// Builds a GraphQL query from the Query Object. For parameters it
     /// support simple paramaters, ENUMs, Lists, and Objects.
     /// For selections fields it supports sub-selects with params as above.
-    /// 
+    ///
     /// Most all sturctures can be recursive, and are unwound as needed
-    /// 
+    ///
     /// </summary>
     public class QueryStringBuilder : IQueryStringBuilder
     {
@@ -37,7 +37,7 @@ namespace Carlabs.Getit
         /// Recurses an object which could be a primitive or more
         /// complex structure. This will return a string of the value
         /// at the current level. Recursion terminates when at a terminal
-        /// (primitive). 
+        /// (primitive).
         /// </summary>
         /// <param name="value"></param>
         /// <returns>string</returns>
@@ -177,26 +177,24 @@ namespace Carlabs.Getit
         {
             // Build the param list from the name value pairs. NOTE
             // This will build array or objects differently based on the
-            // type of the value object 
+            // type of the value object
 
             string strPad = new String(' ', indent);
 
             foreach (var field in query.SelectList)
             {
-                if (field is string)
+                switch (field)
                 {
-                    QueryString.Append(strPad + $"{field}\n");
-                }
-                else
-                    if (field  is Query)
-                    {
+                    case string _:
+                        QueryString.Append(strPad + $"{field}\n");
+                        break;
+                    case Query _:
                         QueryStringBuilder subQuery = new QueryStringBuilder();
                         QueryString.Append($"{subQuery.Build((Query)field, indent)}\n");
-                    }
-                    else
-                    {
+                        break;
+                    default:
                         throw new ArgumentException("Invalid Field Type Specified, must be `string` or `Query`");
-                    }
+                }
             }
         }
 

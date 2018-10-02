@@ -4,8 +4,8 @@
     <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="4.8.0" />
-    <PackageReference Include="Ensure.That" Version="7.2.1" />
-    <PackageReference Include="GraphQL.Client" Version="1.0.2" />
+    <PackageReference Include="Autofac" Version="4.8.1" />
+    <PackageReference Include="Ensure.That" Version="8.0.0" />
+    <PackageReference Include="GraphQL.Client" Version="1.0.3" />
   </ItemGroup>
 </Project>

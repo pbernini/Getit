@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using GraphQL.Common.Response;
-
 using Newtonsoft.Json.Linq;
-
 using ConsoleDump;
 
+// ReSharper disable UnusedMember.Global
+// ReSharper disable InconsistentNaming
+#pragma warning disable IDE1006
 namespace Carlabs.Getit.Examples
 {
-#pragma warning disable IDE1006 // Naming Styles off for GQL structs
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class Dealer
     {
         public int id { get; set; }
@@ -36,6 +36,7 @@ namespace Carlabs.Getit.Examples
         public string __debug { get; set; }
     }
 
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class NearestDealer
     {
         public Dealer Dealer;
@@ -47,17 +48,28 @@ namespace Carlabs.Getit.Examples
     {
         public IList<Dealer> Dealers { get; set; }
     }
-    
+
+    /// <summary>
+    ///  Sample program shows some use patterns. NOTE if the data doesn't
+    ///  exist for the queries you will get exceptions. This is set up
+    ///  for Honda Test data.
+    /// </summary>
+    // ReSharper disable once ArrangeTypeModifiers
+    // ReSharper disable once ClassNeverInstantiated.Global
     class Program
     {
-        // need language version 7.1+ to do async on main 
+        // need language version 7.1+ to do async on main
         // ReSharper disable once UnusedParameter.Local
         private static async Task Main(string[] args)
         {
             // Arrange (set for a honda endpoint or what ever vendor (makeId is used)
             // NOTE : THIS TEST WILL FAIL WITHOUT A VALID WORKING GQL ENDPOINT TO HONDA DATA
-            Getit.Config.SetUrl("http://hondadevclapperng.us-east-1.elasticbeanstalk.com/graphql");
-            IQuery subSelect = Getit.Query;
+
+            Getit getit = new Getit();
+            Config config = new Config();
+
+            config.SetUrl("https://clapper.honda-dev.car-labs.com/graphql");
+            IQuery subSelect = getit.Query(config);
 
             // set up a couple of enums for testing
 
@@ -129,8 +141,7 @@ namespace Carlabs.Getit.Examples
 
             // finally build some big query with all that stuff
 
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString, Getit.Config);
+            IQuery query = getit.Query(config);
 
             query
                 .Name("Dealers")
@@ -161,11 +172,8 @@ namespace Carlabs.Getit.Examples
                 .Select("city", "state", "zip", "county", "phone", "website", "latitude", "longitude")
                 .Select("internetManager", "contactEmail", "dteUpdated", "type", "status");
 
-            QueryStringBuilder nearestDealerQueryString = new QueryStringBuilder();
-            Query nearestDealerQuery = new Query(nearestDealerQueryString, Getit.Config);
-
-            QueryStringBuilder batchQueryString = new QueryStringBuilder();
-            Query batchQuery = new Query(batchQueryString, Getit.Config);
+            IQuery nearestDealerQuery = getit.Query(config);
+            IQuery batchQuery = getit.Query(config);
 
             nearestDealerQuery
                 .Name("NearestDealer")
@@ -202,7 +210,7 @@ namespace Carlabs.Getit.Examples
             nearestDealerQuery
                 .Name("NearestDealer")
                 .Alias("TheNearest")
-                .Select("XXXXdistance")
+                .Select("distance")
                 .Select(subSelect)
                 .Where("zip", "91302")
                 .Where("makeId", 16);
@@ -236,8 +244,11 @@ namespace Carlabs.Getit.Examples
             Console.WriteLine("Done with NearestDealer Query Get with Error Check");
 
             Console.WriteLine("Begin Testing with JObject");
-            QueryStringBuilder jsonQueryString = new QueryStringBuilder();
-            Query jsonQuery = new Query(jsonQueryString, Getit.Config);
+            //QueryStringBuilder jsonQueryString = new QueryStringBuilder();
+            //Query jsonQuery = new Query(jsonQueryString, config);
+
+            config.SetUrl("https://clapper.honda-dev.car-labs.com/graphql");
+            IQuery jsonQuery = getit.Query(config);
 
             jsonQuery.Raw(rawQuery);
             JObject jO = await jsonQuery.Get<JObject>();

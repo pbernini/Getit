@@ -16,9 +16,7 @@ namespace Carlabs.Getit
     /// The Query Class is a simple class to build out graphQL
     /// style queries. It will build the parameters and field lists
     /// similar in a way you would use a SQL query builder to assemble
-    /// a query. This is specific
-    /// 
-    /// 
+    /// a query.
     /// </summary>
     public class Query : IQuery
     {
@@ -28,28 +26,26 @@ namespace Carlabs.Getit
         public string AliasName { get; private set; }
         public string QueryComment { get; private set; }
         public string RawQuery { get; private set; }
-        public List<IQuery> BatchQueryList { get; private set; } = new List<IQuery>();
-        private readonly IConfig _config;
+        public List<IQuery> BatchQueryList { get; } = new List<IQuery>();
         private readonly IQueryStringBuilder _builder;
 
-        private GraphQLClient GqlClient { get; set; }
-        private GraphQLRequest GqlQuery { get; set; } = new GraphQLRequest();
+        private GraphQLClient GqlClient { get; }
+        private GraphQLRequest GqlQuery { get; } = new GraphQLRequest();
         private GraphQLResponse GqlResp { get; set; }
-        public List<GraphQLError> GqlErrors { get; private set; } = new List<GraphQLError>();
+        public List<GraphQLError> GqlErrors { get; } = new List<GraphQLError>();
 
         /// <summary>
         /// Constructor needing a QueryStringBuilder to
-        /// Hold the results. 
+        /// Hold the results.
         /// </summary>
         /// <param name="builder">The IQueryStringBuilder to use to build it</param>
         /// <param name="config">The ICongig to use to set it up</param>
         public Query(IQueryStringBuilder builder, IConfig config)
         {
             _builder = builder;
-            _config = config;
 
             // create the GraphQLClient with the configs URL to the endpoint
-            GqlClient = new GraphQLClient(_config.Url);
+            GqlClient = new GraphQLClient(config.Url);
         }
 
         /// <summary>
@@ -72,15 +68,15 @@ namespace Carlabs.Getit
 
         /// <summary>
         /// Accepts a string and will use this as the query. Setting
-        /// this will overide any other settings and ignore any 
+        /// this will overide any other settings and ignore any
         /// validation checks. If the string is empty it will be
-        /// ignored and the existing query builder actions will be 
+        /// ignored and the existing query builder actions will be
         /// at play.
         ///
         /// NOTE : This will strip out any leading or trailing braces if found
-        /// 
+        ///
         /// WARNING : Calling this will clear all other query elements.
-        /// 
+        ///
         /// </summary>
         /// <param name="rawQuery">The full valid query to be sent to the endpoint</param>
         public IQuery Raw(string rawQuery)
@@ -114,8 +110,8 @@ namespace Carlabs.Getit
 
             if (stripBraces)
             {
-                rawQuery = rawQuery.Remove(rawQuery.IndexOf("{"), 1);
-                rawQuery = rawQuery.Remove(rawQuery.LastIndexOf("}"), 1);
+                rawQuery = rawQuery.Remove(rawQuery.IndexOf("{", StringComparison.Ordinal), 1);
+                rawQuery = rawQuery.Remove(rawQuery.LastIndexOf("}", StringComparison.Ordinal), 1);
             }
 
             RawQuery = rawQuery;
@@ -135,7 +131,7 @@ namespace Carlabs.Getit
         }
 
         /// <summary>
-        /// Sets the Query Alias name. This is used in graphQL to allow 
+        /// Sets the Query Alias name. This is used in graphQL to allow
         /// multipe queries with the same endpoint (name) to be assembled
         /// into a batch like query. This will prefix the Name as specified.
         /// Note that this can be applied to any sub-select as well. GraphQL will
@@ -181,7 +177,7 @@ namespace Carlabs.Getit
         }
 
         /// <summary>
-        /// Add a list of simple strings to the selection part of the 
+        /// Add a list of simple strings to the selection part of the
         /// query.
         /// </summary>
         /// <param name="selects">List of strings</param>
@@ -213,9 +209,9 @@ namespace Carlabs.Getit
 
         /// <summary>
         /// Sets up the Parameters part of the GraphQL query. This
-        /// accepts a key and a where part that will go into the  
+        /// accepts a key and a where part that will go into the
         /// list for later construction into the query. The where part
-        /// can be a simple primitive or complex object that will be 
+        /// can be a simple primitive or complex object that will be
         /// evaluated.
         /// </summary>
         /// <param name="key">The Parameter Name</param>
@@ -283,15 +279,13 @@ namespace Carlabs.Getit
         /// For Raw queries you must set the resultName param OR set the Name() in
         /// the query to match.
         /// </summary>
-        /// <typeparam name="T">Data Type, typically a list of the record but not always. 
+        /// <typeparam name="T">Data Type, typically a list of the record but not always.
         /// </typeparam>
         /// <param name="resultName">Overide of the Name/Alias of the query</param>
         /// <returns>The type of object stuffed with data from the query</returns>
         /// <exception cref="ArgumentException">Dupe Key</exception>
         public async Task<T> Get<T>(string resultName = null)
         {
-            //return (T)((object)"This is a test of a string type");
-
             GqlErrors.Clear();
             GqlQuery.Query = "{" + ToString() + "}";
             GqlResp = null;
@@ -322,7 +316,7 @@ namespace Carlabs.Getit
 
                     GqlErrors.AddRange(GqlResp.Errors);
                 }
-            
+
             if (GqlResp.Data == null)
             {
                 return (T)(object)null;

@@ -52,7 +52,7 @@ namespace Carlabs.Getit.Examples
     /// <summary>
     ///  Sample program shows some use patterns. NOTE if the data doesn't
     ///  exist for the queries you will get exceptions. This is set up
-    ///  for Honda Test data.
+    ///  for Test data.
     /// </summary>
     // ReSharper disable once ArrangeTypeModifiers
     // ReSharper disable once ClassNeverInstantiated.Global
@@ -62,13 +62,13 @@ namespace Carlabs.Getit.Examples
         // ReSharper disable once UnusedParameter.Local
         private static async Task Main(string[] args)
         {
-            // Arrange (set for a honda endpoint or what ever vendor (makeId is used)
-            // NOTE : THIS TEST WILL FAIL WITHOUT A VALID WORKING GQL ENDPOINT TO HONDA DATA
-
+            // Arrange
+            // NOTE : THIS TEST WILL FAIL WITHOUT A VALID WORKING GQL ENDPOINT WITH UPDATE QUERY
             Getit getit = new Getit();
             Config config = new Config();
 
-            config.SetUrl("https://clapper.honda-dev.car-labs.com/graphql");
+            // Set a URL to your graphQL endpoint
+            config.SetUrl("https://randy.butternubs.com/graphql");
             IQuery subSelect = getit.Query(config);
 
             // set up a couple of enums for testing
@@ -85,7 +85,7 @@ namespace Carlabs.Getit.Examples
 
             Dictionary<string, object> mySubDict = new Dictionary<string, object>
             {
-                {"subMake", "honda"},
+                {"subMake", "aston martin"},
                 {"subState", "ca"},
                 {"subLimit", 1},
                 {"__debug", gqlEnumDisabled},
@@ -130,7 +130,7 @@ namespace Carlabs.Getit.Examples
 
             Dictionary<string, object> myDict = new Dictionary<string, object>
             {
-                {"make", "honda"},
+                {"make", "aston martin"},
                 {"state", "ca"},
                 {"limit", 2},
                 {"trims", trimList},
@@ -152,7 +152,7 @@ namespace Carlabs.Getit.Examples
                 .Where("id_int", 1)
                 .Where("id_double", 3.25)
                 .Where("id_string", "some_sting_id")
-                .Comment("My First F'n GQL Query with geTit\na second line of comments\nand yet another line of comments");
+                .Comment("My First GQL Query with getit\na second line of comments\nand yet another line of comments");
 
             Console.WriteLine($"{query}");
 
@@ -247,7 +247,8 @@ namespace Carlabs.Getit.Examples
             //QueryStringBuilder jsonQueryString = new QueryStringBuilder();
             //Query jsonQuery = new Query(jsonQueryString, config);
 
-            config.SetUrl("https://clapper.honda-dev.car-labs.com/graphql");
+            // NOTE : THIS TEST WILL FAIL WITHOUT A VALID WORKING GQL ENDPOINT WITH UPDATE QUERY
+            config.SetUrl("https://randy.butternubs.com/graphql");
             IQuery jsonQuery = getit.Query(config);
 
             jsonQuery.Raw(rawQuery);

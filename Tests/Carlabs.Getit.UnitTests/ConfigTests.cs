@@ -31,7 +31,7 @@ namespace Carlabs.Getit.UnitTests
         {
             // Arrange
             Config config = new Config();
-            const string url = "http://chopper-staging.example.com/graphql";
+            const string url = "https://randy.butternubs.com/graphql";
 
             // Act
             config.SetUrl(url);

@@ -179,7 +179,7 @@ namespace Carlabs.Getit.UnitTests
         public void Where_QueryString_ParseQueryString()
         {
             // Arrange
-            Config config = new Config("https://clapper.honda-dev.car-labs.com/graphql");
+            Config config = new Config("https://randy.butternubs.com/graphql");
             QueryStringBuilder queryString = new QueryStringBuilder();
             Query query = new Query(queryString, config);
 
@@ -218,7 +218,7 @@ namespace Carlabs.Getit.UnitTests
         public void Where_ClearQueryString_EmptyQueryString()
         {
             // Arrange
-            Config config = new Config("https://clapper.honda-dev.car-labs.com/graphql");
+            Config config = new Config("https://randy.butternubs.com/graphql");
             QueryStringBuilder queryString = new QueryStringBuilder();
             Query query = new Query(queryString, config);
 
@@ -258,7 +258,7 @@ namespace Carlabs.Getit.UnitTests
         public void Select_QueryString_ParseQueryString()
         {
             // Arrange
-            Config config = new Config("https://clapper.honda-dev.car-labs.com/graphql");
+            Config config = new Config("https://randy.butternubs.com/graphql");
             QueryStringBuilder queryString = new QueryStringBuilder();
             Query query = new Query(queryString, config);
             QueryStringBuilder subSelectString = new QueryStringBuilder();
@@ -271,7 +271,7 @@ namespace Carlabs.Getit.UnitTests
 
             Dictionary<string, object> mySubDict = new Dictionary<string, object>
             {
-                {"subMake", "honda"},
+                {"subMake", "aston martin"},
                 {"subState", "ca"},
                 {"subLimit", 1},
                 {"__debug", gqlEnumDisabled},
@@ -296,7 +296,7 @@ namespace Carlabs.Getit.UnitTests
             string addParamStr = RemoveWhitespace(queryString.QueryString.ToString());
 
             // Assert
-            Assert.AreEqual(RemoveWhitespace("morethingsin_a_selectidsubSelect(subMake:\"honda\",subState:\"ca\",subLimit:1,__debug:DISABLED,SuperQuerySpeed:ENABLED){subNamesubMakesubModel}namemakemodel"), addParamStr);
+            Assert.AreEqual(RemoveWhitespace("morethingsin_a_selectidsubSelect(subMake:\"aston martin\",subState:\"ca\",subLimit:1,__debug:DISABLED,SuperQuerySpeed:ENABLED){subNamesubMakesubModel}namemakemodel"), addParamStr);
         }
 
         [TestMethod]
@@ -317,7 +317,7 @@ namespace Carlabs.Getit.UnitTests
         public void Build_AllElements_StringMatch()
         {
             // Arrange
-            Config config = new Config("https://clapper.honda-dev.car-labs.com/graphql");
+            Config config = new Config("https://randy.butternubs.com/graphql");
             QueryStringBuilder queryString = new QueryStringBuilder();
             Query query = new Query(queryString, config);
             QueryStringBuilder subSelectString = new QueryStringBuilder();
@@ -330,7 +330,7 @@ namespace Carlabs.Getit.UnitTests
 
             Dictionary<string, object> mySubDict = new Dictionary<string, object>
             {
-                {"subMake", "honda"},
+                {"subMake", "aston martin"},
                 {"subState", "ca"},
                 {"subLimit", 1},
                 {"__debug", gqlEnumDisabled},
@@ -355,7 +355,7 @@ namespace Carlabs.Getit.UnitTests
             string buildStr = RemoveWhitespace(queryString.Build(query));
 
             // Assert
-            Assert.AreEqual(RemoveWhitespace("test1Alias:test1{#AsinglelineCommentmorethingsin_a_selectidsubSelect(subMake:\"honda\",subState:\"ca\",subLimit:1,__debug:DISABLED,SuperQuerySpeed:ENABLED){subNamesubMakesubModel}namemakemodel}"), buildStr);
+            Assert.AreEqual(RemoveWhitespace("test1Alias:test1{#AsinglelineCommentmorethingsin_a_selectidsubSelect(subMake:\"aston martin\",subState:\"ca\",subLimit:1,__debug:DISABLED,SuperQuerySpeed:ENABLED){subNamesubMakesubModel}namemakemodel}"), buildStr);
         }
     }
 }

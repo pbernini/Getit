@@ -12,12 +12,12 @@
     ///     EnumHelper GqlEnumEnabled = new EnumHelper().Enum("ENABLED");
     ///     EnumHelper GqlEnumDisabled = new EnumHelper("DISABLED");
     ///     GqlEnumDisabled.Enum("SOMETHNG_ENUM");
-    /// 
+    ///
     /// In use -
     ///     Creating a Dictionary for a Select (gQL Parameters)
     ///     Dictionary &lt;string, object&gt; mySubDict = new Dictionary&lt;string, object&gt;
     ///     {
-    ///         {"subMake", "honda"},
+    ///         {"subMake", "aston martin"},
     ///         {"subState", "ca"},
     ///         {"__debug", GqlEnumDisabled},
     ///         {"SuperQuerySpeed", GqlEnumEnabled }
@@ -28,7 +28,7 @@
         private string _str;
 
         /// <summary>
-        /// Create the Helper with a string, default empty. 
+        /// Create the Helper with a string, default empty.
         /// </summary>
         /// <param name="enumStr">String to represent as an ENUM to GraphQL, default is the empty string</param>
         public EnumHelper(string enumStr = "")

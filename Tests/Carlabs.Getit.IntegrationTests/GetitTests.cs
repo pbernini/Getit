@@ -29,7 +29,7 @@ namespace Carlabs.Getit.IntegrationTests
 
             // Arrange
             Getit getit = new Getit();
-            Config config = new Config("http://someurl.com/clapper/web/graphql");
+            Config config = new Config("https://randy.butternubs.com/graphql");
             IQuery query = getit.Query(config).Select(select);
 
             // Assert
@@ -41,7 +41,7 @@ namespace Carlabs.Getit.IntegrationTests
         {
             // Arrange
             Getit getit = new Getit();
-            Config config = new Config("http://someurl.com/clapper/web/graphql");
+            Config config = new Config("https://randy.butternubs.com/graphql");
             IQuery query = getit.Query(config).Select("zip");
             IQuery query1 = getit.Query(config).Select("pitydodah");
 
@@ -56,7 +56,7 @@ namespace Carlabs.Getit.IntegrationTests
         {
             // Arrange
             Getit getit = new Getit();
-            Config config = new Config("http://someurl.com/clapper/web/graphql");
+            Config config = new Config("https://randy.butternubs.com/graphql");
             IQuery query = getit.Query(config).Name("test1").Select("id");
 
             // Assert
@@ -68,7 +68,7 @@ namespace Carlabs.Getit.IntegrationTests
         {
             // Arrange
             Getit getit = new Getit();
-            Config config = new Config("http://someurl.com/clapper/web/graphql");
+            Config config = new Config("https://randy.butternubs.com/graphql");
             IQuery query = getit.Query(config);
             IQuery subSelect = getit.Query(config);
 
@@ -83,7 +83,7 @@ namespace Carlabs.Getit.IntegrationTests
             // has simple string, int, and a couple of ENUMs
             Dictionary<string, object> mySubDict = new Dictionary<string, object>
             {
-                {"subMake", "honda"},
+                {"subMake", "aston martin"},
                 {"subState", "ca"},
                 {"subLimit", 1},
                 {"__debug", gqlEnumDisabled},
@@ -101,7 +101,7 @@ namespace Carlabs.Getit.IntegrationTests
             List<object> selList = new List<object>(new object[] { "id", subSelect, "name", "make", "model" });
 
             // List of ints (IDs)
-            List<int> trimList = new List<int>(new[] { 43783, 43784, 43145 });
+            List<int> trimList = new List<int>(new[] { 143783, 243784, 343145 });
 
             // String List
             List<string> modelList = new List<string>(new[] { "DB7", "DB9", "Vantage" });
@@ -128,7 +128,7 @@ namespace Carlabs.Getit.IntegrationTests
             // Even more stuff nested in the params
             Dictionary<string, object> myDict = new Dictionary<string, object>
             {
-                {"make", "honda"},
+                {"make", "aston martin"},
                 {"state", "ca"},
                 {"limit", 2},
                 {"trims", trimList},
@@ -143,19 +143,19 @@ namespace Carlabs.Getit.IntegrationTests
                 .Name("Dealer")
                 .Alias("myDealerAlias")
                 .Where(myDict)
-                .Comment("My First F'n GQL Query with geTit\na second line of comments\nand yet another line of comments");
+                .Comment("My First GQL Query with getit\na second line of comments\nand yet another line of comments");
 
             // Get and pack results
             string packedResults = RemoveWhitespace(query.ToString());
             string packedCheck = RemoveWhitespace(@"
-                    myDealerAlias: Dealer(make: ""honda"", state: ""ca"", limit: 2, trims:[43783, 43784, 43145], models:[""DB7"", ""DB9"", ""Vantage""],
+                    myDealerAlias: Dealer(make: ""aston martin"", state: ""ca"", limit: 2, trims:[143783, 243784, 343145], models:[""DB7"", ""DB9"", ""Vantage""],
                     price:{ from: 123, to: 454, recurse:[""aa"", ""bb"", ""cc""], map: { from: 444.45, to: 555.45} },
                     __debug: ENABLED){
-                    # My First F'n GQL Query with geTit
+                    # My First GQL Query with getit
                     # a second line of comments
                     # and yet another line of comments
                     id
-                    subDealer(subMake: ""honda"", subState: ""ca"", subLimit: 1, __debug: DISABLED, SuperQuerySpeed: ENABLED){
+                    subDealer(subMake: ""aston martin"", subState: ""ca"", subLimit: 1, __debug: DISABLED, SuperQuerySpeed: ENABLED){
                         # SubSelect Below!
                         subName
                         subMake
@@ -176,7 +176,7 @@ namespace Carlabs.Getit.IntegrationTests
             // Arrange
             string responseData = File.ReadAllText("TestData/batch-query-response-data.json");
             IGetit getit = Substitute.For<IGetit>();
-            Config config = new Config("https://clapper.honda-dev.car-labs.com/graphql");
+            Config config = new Config("https://randy.butternubs.com/graphql");
 
             IQuery query = getit.Query(config);
             IQuery subSelect = getit.Query(config);
@@ -200,7 +200,7 @@ namespace Carlabs.Getit.IntegrationTests
 
             // Assert
             Assert.IsNotNull(results);
-            Assert.IsTrue(results.IndexOf("Galpin Honda", StringComparison.Ordinal) >= 0);
+            Assert.IsTrue(results.IndexOf("Randy Butternubs Aston Martin", StringComparison.Ordinal) >= 0);
         }
 
         [TestMethod]
@@ -211,7 +211,7 @@ namespace Carlabs.Getit.IntegrationTests
             string responseData = File.ReadAllText("TestData/batch-query-response-data.json");
 
             IGetit getit = Substitute.For<IGetit>();
-            Config config = new Config("https://clapper.honda-dev.car-labs.com/graphql");
+            Config config = new Config("https://randy.butternubs.com/graphql");
 
             IQuery query = getit.Query(config);
             IQuery subSelect = getit.Query(config);
@@ -230,7 +230,7 @@ namespace Carlabs.Getit.IntegrationTests
                 .Select("distance")
                 .Select(subSelect)
                 .Where("zip", "91302")
-                .Where("makeId", 16);   // honda makeid = 16
+                .Where("makeId", 2345);
 
             // Nearest Dealer has a sub-select of a dealer
             batchSubSelectQuery
@@ -257,8 +257,8 @@ namespace Carlabs.Getit.IntegrationTests
 
             // check for 2 as the query is the same, should be
             // further down the line...
-            int firstIndex = results.IndexOf("Galpin Honda", StringComparison.Ordinal);
-            int secondIndex = results.IndexOf("Galpin Honda", 11 + firstIndex, StringComparison.Ordinal);
+            int firstIndex = results.IndexOf("Randy Butternubs Aston Martin", StringComparison.Ordinal);
+            int secondIndex = results.IndexOf("Randy Butternubs Aston Martin", 11 + firstIndex, StringComparison.Ordinal);
 
             // will fail if both -1
             Assert.IsTrue(secondIndex > firstIndex);
@@ -271,7 +271,7 @@ namespace Carlabs.Getit.IntegrationTests
             JObject gqlResponse = JsonConvert.DeserializeObject<JObject>(responseData);
 
             IGetit getit = Substitute.For<IGetit>();
-            Config config = new Config("https://clapper.honda-dev.car-labs.com/graphql");
+            Config config = new Config("https://randy.butternubs.com/graphql");
 
             IQuery query = getit.Query(config);
             IQuery subSelect = getit.Query(config);
@@ -287,7 +287,7 @@ namespace Carlabs.Getit.IntegrationTests
                 .Select("distance")
                 .Select(subSelect)
                 .Where("zip", "91302")
-                .Where("makeId", 16);   // honda
+                .Where("makeId", 2345);
 
             query.Get<JObject>().Returns(gqlResponse);
 

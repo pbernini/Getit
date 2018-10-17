@@ -25,8 +25,11 @@ types for easy access. Don't like that, get it as a JObject, or plain old JSON.
 The main idea is to allow building queries programatically but simple. Common terms, similar
 to SQL are used to keep things familliar.
 
+Also LOOK AT THE SOURCE for additional parameter, features that
+may have not been covered here!
+
 Let's breakdown a simple GraphQL query and write it in Getit's querybuilder.
-```
+```C#
 {
     NearestDealer(zip: "91403", make: "aston martin") {
     distance
@@ -47,7 +50,7 @@ This query has a simple set of parameters, and a select field, along with what I
 Both are of string type, although they can be any GraphQL type including enums.
 
 Now lets write this with the Getit Querybuilder
-```
+```C#
 subSelectDealer
     .Name("Dealer")
     .Select("name", "address", "city", "state", "zip", "phone");
@@ -62,7 +65,7 @@ nearestDealerQuery
 ```
 It's pretty straight forward. You can also pass in dictionary type objects to both the `Select` and 
 the `Where` parts of the statement. Here is another way to write the same query -
-```
+```C#
 Dictionary<string, object> whereParams = new Dictionary<string, object>
 {
     {"make", "aston martin"},
@@ -91,7 +94,7 @@ These C# types are supported -
 * IDictionary < string, object >
 
 #### A more complex example with nested parameter data types
-```
+```C#
 // Create a List of Strings for passing as an ARRAY type parameter
 List<string> modelList = new List<string>(new[] {"DB7", "DB9", "Vantage"});
 List<object> recList = new List<object>(new object[] {"rec1", "rec2", "rec3"});
@@ -142,8 +145,45 @@ So as you can see you can express parameters as list or objects, and nested as w
 since this is a made up example your mileage may vary if you type in the code, but give
 it a try and see what the generated GraphQL query looks like, it likely won't be pretty.
 ## More Examples
+### Configuration, Creation, Use Options
+Their are a coupe of ways to set up Getit for use. Here are a few that are all 
+basically the same. Getit will allow a class config to be set, or you can set it 
+per-call to the Get().
 
+```#C#
+    // Create an instance of Getit, set it directly with the Config
+    Config config = new Config("http://haystack.calhoon.com");
+    IGetit getit = new Getit(config);
+...    
+    // Create without a config (must pass config to Get())
+    IGetit getit = new Getit();
+...
+    // Or if you want create Getit and set config
+    IGetit getit = new Getit();
+    ...
+    // Defer setting the configuration 
+    IConfig config = new Config("http://haystack.calhoon.com");
+    getit.Config = config;
+...    
+    // Getting a new query via the Dispenser (Factory)
+    IQuery aQuery = getit.Query();
+    
+    // You could also just have done this 
+    // IQuery aQuery = new Query()
+...
+    // You can use the Getit's instance's config if set
+    // to eliminate extra params when calling the Get().
+
+    // Exectue the query, notice that CONFIG is not required
+    JObject jOb = await getit.Get<JObject>(aQuery);
+...
+    // If you don't want to set or use Getit's instance config 
+    // just pass it with each Get() call
+    JObject jOb = await getit.Get<JObject>(aQuery, config);
 ```
+
+### Multiple `Query` Query
+```C#
 // Setup Getit and a couple of queries
 Getit getit = new Getit();
 
@@ -187,17 +227,19 @@ While the query builder is helpful, their are some cases where it's just simpler
 to pass a raw or prebuilt query to the GraphQL server. This is acomplished by using the *Raw()* query method.
 In this example we have on the server a query that responds to a `Version` number request.
 
-The GraphQL JSON response from the `Version` query would look like this -
-```
+The GraphQL JSON response from the `Make` query would look like this -
+```C#
 {
-  "data": {
-    "Version": "1.57.0"
-  }
-}
-```
+  "Make": [
+    {
+      "id": 121,
+      "name": "aston martin"
+    }
+  ]
+}```
 
 #### Example RAW query code
-```
+```C#
     // Create an instance of Getit and the Config
     Getit getit = new Getit();
     Config config = new Config();
@@ -209,23 +251,26 @@ The GraphQL JSON response from the `Version` query would look like this -
     IQuery aQuery = getit.Query();
 
     // Set the RAW GraphQL query
-    aQuery.Raw("{ Version }");
+    aQuery.Raw(@"{Make(name: "Kia") {id name }}");
 
     // Exectue the call
     JObject jOb = await getit.Get<JObject>(aQuery, config);
 
-    // Dump the JSON String
+    // Dump the JSON String (Via the JObject)
     Console.WriteLine(jOb);
-
-    // Dump just an element via the JObject
-    Console.WriteLine(jOb.Value<String>("Version"));
 ```
 #### RAW Example Console Output
-```
+```JSON
 {
-    "Version": "1.55.0"
+  "data": {
+    "Alias": [
+      {
+        "id": 121,
+        "name": "Aston Martin"
+      }
+    ]
+  }
 }
-1.55.0
 ```
 
 ### Batched Queries
@@ -234,7 +279,7 @@ Getit supports that functionality and it can save extra network requests. Essent
 you can pass any generated query to the `Batch()` method and it will be stuffed into
 the call. Using JObject's or JSON string returns from `Get()` is usually how you get the 
 blob of data back from batched queries.
-```
+```C#
 ...
 
 nearestDealerQuery
@@ -262,7 +307,7 @@ just be different. Getit allows the support for aliases. The proper name of the
 query should be set in the Name() method, but additionally you can add an `Alias()` call
 to set that. So back to a simple example query with an alias-
 
-```
+```C#
 {
     AstonNearestDealer:NearestDealer(zip: "91403", make: "aston martin") {
     distance
@@ -283,7 +328,7 @@ This query has a simple set of parameters, and a select field, along with what I
 Both are of string type, although they can be any GraphQL type including enums.
 
 Now lets write this with the Getit Querybuilder
-```
+```C#
 subSelectDealer
     .Name("Dealer")
     .Select("name", "address", "city", "state", "zip", "phone");
@@ -298,7 +343,7 @@ nearestDealerQuery
     .Where("make", "aston martin");
 ```
 The response (JObject) would be something like this -
-```
+```JSON
 {
   "AstonNearestDealer": [
     {
@@ -327,16 +372,15 @@ It uses the data type to determine how to build the query so in cases where you 
 GraphQL enumerations their is a simple helper class that can be used.
 
 Example how to generate an Enumeration
-```
+```C#
 EnumHelper GqlEnumEnabled = new EnumHelper().Enum("ENABLED");
 EnumHelper GqlEnumDisabled = new EnumHelper("DISABLED");
 EnumHelper GqlEnumConditionNew = new EnumHelper("NEW");
 EnumHelper GqlEnumConditionUsed = new EnumHelper("USED");
-
 ```
 
 Example creating a dictionary for a select (GraphQL Parameters)
-```
+```C#
 ...
 Dictionary <string, object> mySubDict = new Dictionary<string, object>;
 {
@@ -352,7 +396,7 @@ query.Name("CarStats")
     .Comment("Using Enums");
 ```
 This will generate a query that looks like this (well part of it anyway)
-```
+```C#
 {
     CarStats(Make:"aston martin", Model:"DB7GT", Condition:NEW, _debug:DISABLED)
     { 
@@ -375,7 +419,7 @@ returns `null`. This may change to allow the exception to bubble up. In your cod
 plan on catching any exceptions as well as checking for a `null` response.~**
 
 Here is an example how to check for GraphQL errors
-```
+```C#
 ...
 if (nearestDealerQuery.HasErrors())
 {
@@ -404,6 +448,5 @@ else
 * Stuff that is broken as it is discovered
 * Mutations if needed
 * Other missing GQL support
+* More Organized Docs
 * Publish on Nuget
-
-

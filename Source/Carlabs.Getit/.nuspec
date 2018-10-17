@@ -8,7 +8,7 @@
     <owners>CarLabs</owners>
     <licenseUrl>MIT</licenseUrl>
     <projectUrl>https://github.com/Revmaker/Getit</projectUrl>
-    <iconUrl>https://user-images.githubusercontent.com/5179047/42042618-6e7fc7e6-7aa9-11e8-92ae-35f7d0a3a2e1.png</iconUrl>
+    <iconUrl></iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Getit is a GraphQL Query builder. It helps build queries with a simple syntax and allows complex structures to be easily defined.</description>
     <releaseNotes>Initial Release</releaseNotes>

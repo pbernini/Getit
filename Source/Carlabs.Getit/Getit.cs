@@ -10,6 +10,34 @@ namespace Carlabs.Getit
 {
     public class Getit : IGetit
     {
+        private IConfig _config;
+
+        /// <summary>
+        /// Config storage for Getit, optionally can be used for
+        /// setting config on Get() calls.
+        /// </summary>
+        public IConfig Config
+        {
+            get => _config;
+            set => _config = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        public Getit()
+        {
+            _config = null;
+        }
+
+        /// <summary>
+        /// Set up anything needed, in this case we can
+        /// optionally passin the config that will be useful
+        /// for subsequent Get() calls if not supplied.
+        /// </summary>
+        /// <param name="config"></param>
+        public Getit(IConfig config)
+        {
+            Config = config;
+        }
+
         /// <inheritdoc />
         /// <summary>
         /// The Query Factory/Dispenser. These are independant
@@ -31,13 +59,36 @@ namespace Carlabs.Getit
         /// </summary>
         /// <typeparam name="T">Data Type, typically a list of the record but not always.
         /// </typeparam>
+        /// <param name="query"></param>
+        /// <param name="resultName">Overide of the Name/Alias of the query</param>
+        /// <returns>The type of object stuffed with data from the query</returns>
+        /// <exception cref="ArgumentException">Dupe Key, missing parts or empty parts of a query</exception>
+        public async Task<T> Get<T>(IQuery query, string resultName = null)
+        {
+            return await Get<T>(query, Config, resultName);
+        }
+
+        /// <summary>
+        /// Given a type return the results of a GraphQL query in it. If
+        /// the type is a string then will return the JSON string. The resultName
+        /// will be automatically set the Name or Alias name if not specified.
+        /// For Raw queries you must set the resultName param OR set the Name() in
+        /// the query to match. This handles server connection here!
+        /// </summary>
+        /// <typeparam name="T">Data Type, typically a list of the record but not always.
+        /// </typeparam>
+        /// <param name="query"></param>
         /// <param name="config"></param>
         /// <param name="resultName">Overide of the Name/Alias of the query</param>
-        /// <param name="query"></param>
         /// <returns>The type of object stuffed with data from the query</returns>
         /// <exception cref="ArgumentException">Dupe Key, missing parts or empty parts of a query</exception>
         public async Task<T> Get<T>(IQuery query, IConfig config, string resultName = null)
         {
+            if (config == null)
+            {
+                throw new ArgumentNullException("Invalid Config, it's null and should not be. Check Getit config or pass in a valid one");
+            }
+
             // Set up the needed client stuff
             GraphQLClient gqlClient = new GraphQLClient(config.Url);
 

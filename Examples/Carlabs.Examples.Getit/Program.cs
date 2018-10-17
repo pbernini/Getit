@@ -68,9 +68,9 @@ namespace Carlabs.Getit.Examples
             Config config = new Config();
 
             // Set a URL to your graphQL endpoint
-            config.SetUrl("https://clapper.honda-dev.car-labs.com/graphql");
+            config.SetUrl("https://clapper.kia-dev.car-labs.com/graphql");
 
-            string raw = "{ Version }";
+            string raw = @"{Make(name: ""Kia"") {id name }}";
             IQuery jQuery = getit.Query();
             jQuery.Raw(raw);
 
@@ -78,7 +78,8 @@ namespace Carlabs.Getit.Examples
 
             JObject jOb = await getit.Get<JObject>(jQuery, config);
             Console.WriteLine(jOb);
-            Console.WriteLine(jOb.Value<String>("Version"));
+//            Console.WriteLine(jOb.Value<String>("Version"));
+            return;
 
             IQuery subSelect = getit.Query();
 

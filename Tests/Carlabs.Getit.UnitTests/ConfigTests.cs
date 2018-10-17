@@ -13,7 +13,7 @@ namespace Carlabs.Getit.UnitTests
             Config config = new Config();
 
             // Assert
-            Assert.ThrowsException<ArgumentNullException>(() => config.SetUrl(null));
+            Assert.ThrowsException<ArgumentException>(() => config.SetUrl(null));
         }
 
         [TestMethod]

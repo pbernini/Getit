@@ -1,5 +1,4 @@
 ﻿using System;
-using EnsureThat;
 
 namespace Carlabs.Getit
 {
@@ -36,11 +35,11 @@ namespace Carlabs.Getit
         /// <exception cref="ArgumentException">Thrown when url is empty or null</exception>
         public void SetUrl(string url)
         {
-            Ensure.String.IsNotNullOrWhiteSpace(
-                url,
-                nameof(url),
-                opts => opts.WithMessage("GraphQL Url can't be blank or null.")
-            );
+            if (String.IsNullOrWhiteSpace(url))
+            {
+                throw new ArgumentException("GraphQL `Url` can't be blank or null.");
+            }
+
             Url = url;
         }
 

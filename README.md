@@ -14,7 +14,10 @@ Getit is a simple package that allows you go build GraphQL queries.
 It also allows RAW queries if you don't want to use the query builder.
 Currently Getit only builds queries and does not help with mutations. Getit
 does allow for passing a *Raw* query to your server so you can
-use it for passing anything you might create right on through.
+use it for passing anything you might create right on through. 
+
+The Getit query builder sits on top of the C# GraphQL client that can be found on Github
+[Github : graphql-client](https://github.com/graphql-dotnet/graphql-client)
 
 In addition  support mapping of the results back to concrete defined 
 types for easy access. Don't like that, get it as a JObject, or plain old JSON.
@@ -401,10 +404,6 @@ else
 * Stuff that is broken as it is discovered
 * Mutations if needed
 * Other missing GQL support
-* * Publish on Nuget
+* Publish on Nuget
 
-## Package Dependencies
-* EnsureThat
-* GQLClient
-* Other Stuff here
-* ConsoleDump (Usefull for dumping objects, not generally required)
+

@@ -41,7 +41,7 @@ namespace Carlabs.Getit
         /// </summary>
         /// <param name="value"></param>
         /// <returns>string</returns>
-        /// <exception cref="ArgumentException">Invalid Object Type in Param List</exception>
+        /// <exception cref="InvalidDataException">Invalid Object Type in Param List</exception>
         public string BuildQueryParam(object value)
         {
             // Nicely use the pattern match

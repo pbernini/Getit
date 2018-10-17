@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <PackageReference Include="ConsoleDump" Version="0.7.0" />
-    <PackageReference Include="Ensure.That" Version="7.2.1" />
     <PackageReference Include="GraphQL.Client" Version="1.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>

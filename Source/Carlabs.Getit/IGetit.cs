@@ -8,6 +8,7 @@ namespace Carlabs.Getit
         /// <summary>
         /// Holds getit config if used
         /// </summary>
+        // ReSharper disable once UnusedMemberInSuper.Global
         IConfig Config { set; get; }
 
         /// <summary>

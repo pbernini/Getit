@@ -78,8 +78,6 @@ namespace Carlabs.Getit.Examples
 
             JObject jOb = await getit.Get<JObject>(jQuery, config);
             Console.WriteLine(jOb);
-//            Console.WriteLine(jOb.Value<String>("Version"));
-            return;
 
             IQuery subSelect = getit.Query();
 

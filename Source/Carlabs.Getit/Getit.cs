@@ -86,7 +86,7 @@ namespace Carlabs.Getit
         {
             if (config == null)
             {
-                throw new ArgumentNullException("Invalid Config, it's null and should not be. Check Getit config or pass in a valid one");
+                throw new ArgumentNullException(nameof(config));
             }
 
             // Set up the needed client stuff

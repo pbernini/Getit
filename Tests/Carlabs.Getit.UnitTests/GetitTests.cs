@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using NSubstitute.Core.Arguments;
 
 namespace Carlabs.Getit.UnitTests
 {
@@ -54,7 +53,6 @@ namespace Carlabs.Getit.UnitTests
         public async Task Get_ValidConfig_ReturnsJson()
         {
             // Arrange
-            IConfig config = new Config("http://haystack.calhoon.com");
             IGetit getit = Substitute.For<IGetit>();
             IQuery query = new Query();
             query.Raw("{Version}");

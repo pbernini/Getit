@@ -1,14 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
-
-using GraphQL.Client;
-using GraphQL.Common.Request;
 using GraphQL.Common.Response;
-
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Carlabs.Getit
 {
@@ -16,7 +9,8 @@ namespace Carlabs.Getit
     /// The Query Class is a simple class to build out graphQL
     /// style queries. It will build the parameters and field lists
     /// similar in a way you would use a SQL query builder to assemble
-    /// a query.
+    /// a query. This will maintain the response and errors for the
+    /// query.
     /// </summary>
     public class Query : IQuery
     {
@@ -27,26 +21,8 @@ namespace Carlabs.Getit
         public string QueryComment { get; private set; }
         public string RawQuery { get; private set; }
         public List<IQuery> BatchQueryList { get; } = new List<IQuery>();
-        private readonly IQueryStringBuilder _builder;
-
-        private GraphQLClient GqlClient { get; }
-        private GraphQLRequest GqlQuery { get; } = new GraphQLRequest();
-        private GraphQLResponse GqlResp { get; set; }
+        public IQueryStringBuilder Builder { get; } = new QueryStringBuilder();
         public List<GraphQLError> GqlErrors { get; } = new List<GraphQLError>();
-
-        /// <summary>
-        /// Constructor needing a QueryStringBuilder to
-        /// Hold the results.
-        /// </summary>
-        /// <param name="builder">The IQueryStringBuilder to use to build it</param>
-        /// <param name="config">The ICongig to use to set it up</param>
-        public Query(IQueryStringBuilder builder, IConfig config)
-        {
-            _builder = builder;
-
-            // create the GraphQLClient with the configs URL to the endpoint
-            GqlClient = new GraphQLClient(config.Url);
-        }
 
         /// <summary>
         /// Clear the Query and anything related
@@ -55,7 +31,7 @@ namespace Carlabs.Getit
         {
             // reset all member vars to clean state
 
-            _builder.Clear();
+            Builder.Clear();
             SelectList.Clear();
             WhereMap.Clear();
             QueryName = string.Empty;
@@ -106,7 +82,7 @@ namespace Carlabs.Getit
                 break;
             }
 
-            // Got the word to remove surrounging braces
+            // Got the word to remove surrounding braces
 
             if (stripBraces)
             {
@@ -242,7 +218,9 @@ namespace Carlabs.Getit
         /// <summary>
         /// Helper to see if any errors were returned with the
         /// last query. No errors does not mean data, just means
-        /// no errors found in the GQL client results
+        /// no errors found in the GQL client results. Errors and the
+        /// thus this count will persis until cleared or the query
+        /// is executed.
         /// </summary>
         /// <returns>Bool true if errors exist, false if not</returns>
         public bool HasErrors()
@@ -258,7 +236,7 @@ namespace Carlabs.Getit
         /// change any items specific to this query. Each
         /// query will individually be calling it's ToString()
         /// to get the query to be batched. Use Alias names
-        /// where appropriate
+        /// where appropriate if calling the same Query multiple times.
         /// </summary>
         /// <param name="query"></param>
         /// <returns>IQuery</returns>
@@ -273,88 +251,11 @@ namespace Carlabs.Getit
         }
 
         /// <summary>
-        /// Given a type return the results of a GraphQL query in it. If
-        /// the type is a string then will return the JSON string. The resultName
-        /// will be automatically set the Name or Alias name if not specified.
-        /// For Raw queries you must set the resultName param OR set the Name() in
-        /// the query to match.
-        /// </summary>
-        /// <typeparam name="T">Data Type, typically a list of the record but not always.
-        /// </typeparam>
-        /// <param name="resultName">Overide of the Name/Alias of the query</param>
-        /// <returns>The type of object stuffed with data from the query</returns>
-        /// <exception cref="ArgumentException">Dupe Key</exception>
-        public async Task<T> Get<T>(string resultName = null)
-        {
-            GqlErrors.Clear();
-            GqlQuery.Query = "{" + ToString() + "}";
-            GqlResp = null;
-
-            try
-            {
-                GqlResp = await GqlClient.PostAsync(GqlQuery);
-            }
-            catch (Exception)
-            {
-                GqlResp = null;
-            }
-
-            // check for no results, errors
-            // Todo: may want create error here if null
-
-            if (GqlResp == null)
-            {
-                return (T) (object) null;
-            }
-
-            // see if any Gql errors
-
-            if (GqlResp.Errors != null)
-                if (GqlResp.Errors.Length > 0)
-                {
-                    // lets move these to our instance data
-
-                    GqlErrors.AddRange(GqlResp.Errors);
-                }
-
-            if (GqlResp.Data == null)
-            {
-                return (T)(object)null;
-            }
-
-            // if the given type was a string, ship them the JSON string
-
-            if (typeof(T) == typeof(string))
-            {
-                return GqlResp.Data.ToString();
-            }
-
-            // If the smart user passes in a JObject get it that way instead of fixed T type
-
-            if(typeof(T) == typeof(JObject))
-            {
-                return JsonConvert.DeserializeObject<JObject>(GqlResp.Data.ToString());
-            }
-
-            // Now we need to get the results name. This is EITHER the Name, or the Alias
-            // name. If Alias was set then use it. If the user does specify it in
-            // the Get call it's an overide. This might be needed with raw query
-
-            if (resultName == null)
-                resultName = string.IsNullOrWhiteSpace(AliasName) ? QueryName : AliasName;
-
-            // Let the client do the mapping , all sorts of things can thow at this point!
-            // caller should check for exceptions, Generally invalid mapping into the type
-
-            return GqlResp.GetDataFieldAs<T>(resultName);
-       }
-
-        /// <summary>
         /// Gets the string representation of the GraphQL query. This does some
         /// MINOR checking and will toss if not formatted correctly
         /// </summary>
-        /// <returns>The GrapQL Query String, without outer enclosing block</returns>
-        /// <exception cref="ArgumentException">Dupe Key</exception>
+        /// <returns>The GraphQL Query String, without outer enclosing block</returns>
+        /// <exception cref="ArgumentException">Dupe Key, empty or missing parts</exception>
         public override string ToString()
         {
 
@@ -385,8 +286,8 @@ namespace Carlabs.Getit
                     throw new ArgumentException("Must have a one or more `Select` fields in the Query");
                 }
 
-                _builder.Clear();
-                strQuery.Append(_builder.Build(this));
+                Builder.Clear();
+                strQuery.Append(Builder.Build(this));
             }
 
             // Now we have a query, check to see if we are batching

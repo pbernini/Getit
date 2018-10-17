@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using GraphQL.Common.Response;
 
 namespace Carlabs.Getit
@@ -10,10 +9,13 @@ namespace Carlabs.Getit
         List<object> SelectList { get; }
         Dictionary<string, object> WhereMap { get; }
         List<GraphQLError> GqlErrors { get; }
+        List<IQuery> BatchQueryList { get; }
 
         string QueryName { get; }
         string AliasName { get; }
         string QueryComment { get; }
+        string RawQuery { get; }
+        IQueryStringBuilder Builder { get; }
 
         /// <summary>
         /// Clear the Query and anything related
@@ -131,20 +133,6 @@ namespace Carlabs.Getit
         /// <returns>IQuery</returns>
         // ReSharper disable once UnusedMethodReturnValue.Global
         IQuery Batch(IQuery query);
-
-        /// <summary>
-        /// Given a type return the results of a GraphQL query in it. If
-        /// the type is a string then will return the JSON string. The resultName
-        /// will be automatically set the Name or Alias name if not specified.
-        /// For Raw queries you must set the resultName param OR set the Name() in
-        /// the query to match.
-        /// </summary>
-        /// <typeparam name="T">Data Type, typically a list of the record but not always.
-        /// </typeparam>
-        /// <param name="resultName">Overide of the Name/Alias of the query</param>
-        /// <returns>The type of object stuffed with data from the query</returns>
-        /// <exception cref="ArgumentException">Dupe Key</exception>
-        Task<T> Get<T>(string resultName = null);
 
         /// <summary>
         /// Gets the string representation of the GraphQL query. This does some

@@ -16,10 +16,7 @@ namespace Carlabs.Getit.UnitTests
         {
             // Arrange
 
-            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
-            IConfig config = Substitute.For<IConfig>();
-            config.Url.Returns("http://www.somesite.com");
-            Query query = new Query(queryStringBuilder, config);
+            Query query = new Query();
 
             List<string> selectList = new List<string>()
             {
@@ -38,10 +35,7 @@ namespace Carlabs.Getit.UnitTests
         public void From_String_AddsToQuery()
         {
             // Arrange
-            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
-            IConfig config = Substitute.For<IConfig>();
-            config.Url.Returns("http://www.somesite.com");
-            Query query = new Query(queryStringBuilder, config);
+            Query query = new Query();
 
             const string name = "user";
 
@@ -56,10 +50,7 @@ namespace Carlabs.Getit.UnitTests
         public void Select_String_AddsToQuery()
         {
             // Arrange
-            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
-            IConfig config = Substitute.For<IConfig>();
-            config.Url.Returns("http://www.somesite.com");
-            Query query = new Query(queryStringBuilder, config);
+            Query query = new Query();
 
             const string select = "id";
 
@@ -74,10 +65,7 @@ namespace Carlabs.Getit.UnitTests
         public void Select_DynamicArguments_AddsToQuery()
         {
             // Arrange
-            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
-            IConfig config = Substitute.For<IConfig>();
-            config.Url.Returns("http://www.somesite.com");
-            Query query = new Query(queryStringBuilder, config);
+            Query query = new Query();
 
             // Act
             query.Select("some", "thing", "else");
@@ -96,10 +84,7 @@ namespace Carlabs.Getit.UnitTests
         public void Select_ArrayOfString_AddsToQuery()
         {
             // Arrange
-            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
-            IConfig config = Substitute.For<IConfig>();
-            config.Url.Returns("http://www.somesite.com");
-            Query query = new Query(queryStringBuilder, config);
+            Query query = new Query();
 
             string[] selects =
             {
@@ -123,10 +108,7 @@ namespace Carlabs.Getit.UnitTests
         public void Select_ChainCombinationOfStringAndList_AddsToQuery()
         {
             // Arrange
-            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
-            IConfig config = Substitute.For<IConfig>();
-            config.Url.Returns("http://www.somesite.com");
-            Query query = new Query(queryStringBuilder, config);
+            Query query = new Query();
 
             const string select = "id";
             List<string> selectList = new List<string>()
@@ -166,10 +148,7 @@ namespace Carlabs.Getit.UnitTests
         public void Where_IntegerArgumentWhere_AddsToWhere()
         {
             // Arrange
-            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
-            IConfig config = Substitute.For<IConfig>();
-            config.Url.Returns("http://www.somesite.com");
-            Query query = new Query(queryStringBuilder, config);
+            Query query = new Query();
 
             // Act
             query.Where("id", 1);
@@ -182,10 +161,7 @@ namespace Carlabs.Getit.UnitTests
         public void Where_StringArgumentWhere_AddsToWhere()
         {
             // Arrange
-            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
-            IConfig config = Substitute.For<IConfig>();
-            config.Url.Returns("http://www.somesite.com");
-            Query query = new Query(queryStringBuilder, config);
+            Query query = new Query();
 
             // Act
             query.Where("name", "danny");
@@ -198,10 +174,7 @@ namespace Carlabs.Getit.UnitTests
         public void Where_DictionaryArgumentWhere_AddsToWhere()
         {
             // Arrange
-            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
-            IConfig config = Substitute.For<IConfig>();
-            config.Url.Returns("http://www.somesite.com");
-            Query query = new Query(queryStringBuilder, config);
+            Query query = new Query();
 
             Dictionary<string, int> dict = new Dictionary<string, int>()
             {
@@ -223,10 +196,7 @@ namespace Carlabs.Getit.UnitTests
         public void Where_ChainedWhere_AddsToWhere()
         {
             // Arrange
-            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
-            IConfig config = Substitute.For<IConfig>();
-            config.Url.Returns("http://www.somesite.com");
-            Query query = new Query(queryStringBuilder, config);
+            Query query = new Query();
 
             Dictionary<string, int> dict = new Dictionary<string, int>()
             {
@@ -254,10 +224,7 @@ namespace Carlabs.Getit.UnitTests
         public void Check_Required_Select()
         {
             // Arrange
-            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
-            IConfig config = Substitute.For<IConfig>();
-            config.Url.Returns("http://www.somesite.com");
-            Query query = new Query(queryStringBuilder, config);
+            Query query = new Query();
 
             // Act
             query
@@ -271,10 +238,7 @@ namespace Carlabs.Getit.UnitTests
         public void Check_Required_Name()
         {
             // Arrange
-            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
-            IConfig config = Substitute.For<IConfig>();
-            config.Url.Returns("http://www.somesite.com");
-            Query query = new Query(queryStringBuilder, config);
+            Query query = new Query();
 
             // Act
             query
@@ -288,10 +252,7 @@ namespace Carlabs.Getit.UnitTests
         public void Check_RawNotRequired_Match()
         {
             // Arrange
-            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
-            IConfig config = Substitute.For<IConfig>();
-            config.Url.Returns("http://www.somesite.com");
-            Query query = new Query(queryStringBuilder, config);
+            Query query = new Query();
 
             const string rawStr = "something(a:123){id}";
 
@@ -307,10 +268,7 @@ namespace Carlabs.Getit.UnitTests
         public void Check_RawBraces_Match()
         {
             // Arrange
-            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
-            IConfig config = Substitute.For<IConfig>();
-            config.Url.Returns("http://www.somesite.com");
-            Query query = new Query(queryStringBuilder, config);
+            Query query = new Query();
 
             const string rawStr = "{something(a:123){id}}";
             const string expectedRawStr = "something(a:123){id}";
@@ -327,10 +285,7 @@ namespace Carlabs.Getit.UnitTests
         public void Check_WhiteSpaceRawBraces_Match()
         {
             // Arrange
-            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
-            IConfig config = Substitute.For<IConfig>();
-            config.Url.Returns("http://www.somesite.com");
-            Query query = new Query(queryStringBuilder, config);
+            Query query = new Query();
 
             const string rawStr = "   {something(a:123){id}}   ";
             const string expectedRawStr = "   something(a:123){id}   ";
@@ -346,14 +301,8 @@ namespace Carlabs.Getit.UnitTests
         [TestMethod] public void Check_Clear()
         {
             // Arrange
-            IConfig config = Substitute.For<IConfig>();
-            config.Url.Returns("http://www.somesite.com");
-
-            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
-            Query query = new Query(queryStringBuilder, config);
-
-            IQueryStringBuilder batchQueryStringBuilder = Substitute.For<IQueryStringBuilder>();
-            Query batchQuery = new Query(batchQueryStringBuilder, config);
+            IQuery query = new Query();
+            IQuery batchQuery = new Query();
 
             const string expectedSelect = "field";
             const string expectedFrom = "haystack";
@@ -403,10 +352,9 @@ namespace Carlabs.Getit.UnitTests
         public void Check_Raw_Build()
         {
             // Arrange
-            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
             IConfig config = Substitute.For<IConfig>();
             config.Url.Returns("http://www.somesite.com");
-            Query query = new Query(queryStringBuilder, config);
+            IQuery query = new Query();
 
             const string expectedRawQuery = "query{Version}";
 
@@ -425,10 +373,7 @@ namespace Carlabs.Getit.UnitTests
         [TestMethod]
         public void Check_Error_Exists()
         {
-            IQueryStringBuilder queryStringBuilder = Substitute.For<IQueryStringBuilder>();
-            IConfig config = Substitute.For<IConfig>();
-            config.Url.Returns("http://www.somesite.com");
-            Query query = new Query(queryStringBuilder, config);
+            IQuery query = new Query();
 
             // add an empty error to mess with things
             query.GqlErrors.Add(new GraphQLError());

@@ -33,7 +33,7 @@ namespace Carlabs.Getit.Examples
         public string dteUpdated { get; set; }
         public string type { get; set; }
         public string status { get; set; }
-        public string __debug { get; set; }
+        public string _debug { get; set; }
     }
 
     // ReSharper disable once ClassNeverInstantiated.Global
@@ -68,8 +68,19 @@ namespace Carlabs.Getit.Examples
             Config config = new Config();
 
             // Set a URL to your graphQL endpoint
-            config.SetUrl("https://randy.butternubs.com/graphql");
-            IQuery subSelect = getit.Query(config);
+            config.SetUrl("https://clapper.honda-dev.car-labs.com/graphql");
+
+            string raw = "{ Version }";
+            IQuery jQuery = getit.Query();
+            jQuery.Raw(raw);
+
+            // now call the get with config, and the query. Query can be decouple from config!
+
+            JObject jOb = await getit.Get<JObject>(jQuery, config);
+            Console.WriteLine(jOb);
+            Console.WriteLine(jOb.Value<String>("Version"));
+
+            IQuery subSelect = getit.Query();
 
             // set up a couple of enums for testing
 
@@ -88,7 +99,7 @@ namespace Carlabs.Getit.Examples
                 {"subMake", "aston martin"},
                 {"subState", "ca"},
                 {"subLimit", 1},
-                {"__debug", gqlEnumDisabled},
+                {"_debug", gqlEnumDisabled},
                 {"SuperQuerySpeed", gqlEnumEnabled}
             };
 
@@ -136,12 +147,12 @@ namespace Carlabs.Getit.Examples
                 {"trims", trimList},
                 {"models", modelList},
                 {"price", fromToPrice},
-                {"__debug", gqlEnumEnabled},
+                {"_debug", gqlEnumEnabled},
             };
 
             // finally build some big query with all that stuff
 
-            IQuery query = getit.Query(config);
+            IQuery query = getit.Query();
 
             query
                 .Name("Dealers")
@@ -172,8 +183,8 @@ namespace Carlabs.Getit.Examples
                 .Select("city", "state", "zip", "county", "phone", "website", "latitude", "longitude")
                 .Select("internetManager", "contactEmail", "dteUpdated", "type", "status");
 
-            IQuery nearestDealerQuery = getit.Query(config);
-            IQuery batchQuery = getit.Query(config);
+            IQuery nearestDealerQuery = getit.Query();
+            IQuery batchQuery = getit.Query();
 
             nearestDealerQuery
                 .Name("NearestDealer")
@@ -186,11 +197,11 @@ namespace Carlabs.Getit.Examples
             Console.WriteLine("Nearest Dealer Query");
             Console.WriteLine(nearestDealerQuery);
             Console.WriteLine("Testing String Get");
-            Console.WriteLine(await nearestDealerQuery.Get<string>());
+            Console.WriteLine(await getit.Get<string>(nearestDealerQuery, config));
             Console.WriteLine("Done with String Get");
 
             Console.WriteLine("Testing NearestDealer Get");
-            List<NearestDealer> objResults = await nearestDealerQuery.Get<List<NearestDealer>>("TheNearest");
+            List<NearestDealer> objResults = await getit.Get<List<NearestDealer>>(nearestDealerQuery, config, "TheNearest");
             objResults.Dump();
             Console.WriteLine("Done with NearestDealer Get");
 
@@ -201,7 +212,7 @@ namespace Carlabs.Getit.Examples
             batchQuery.Batch(nearestDealerQuery);
 
             Console.WriteLine("Testing Batch Raw Query Get");
-            Console.WriteLine(await batchQuery.Get<string>());
+            Console.WriteLine(await getit.Get<string>(batchQuery, config));
             Console.WriteLine("Done with Batch Raw Query Get");
             Console.WriteLine("Batched Query String -");
             Console.WriteLine(batchQuery.ToString());
@@ -216,7 +227,7 @@ namespace Carlabs.Getit.Examples
                 .Where("makeId", 16);
 
             Console.WriteLine("Testing NearestDealer Query Get with Error Check");
-            objResults = await nearestDealerQuery.Get<List<NearestDealer>>("TheNearest");
+            objResults = await getit.Get<List<NearestDealer>>(nearestDealerQuery, config, "TheNearest");
 
             if(objResults == null)
                 Console.WriteLine("No Data in Results");
@@ -230,7 +241,7 @@ namespace Carlabs.Getit.Examples
                 foreach (GraphQLError gqlErr in nearestDealerQuery.GqlErrors)
                 {
                     Console.WriteLine("Error : " + gqlErr.Message);
-                    foreach (var loc in gqlErr.Locations)
+                    foreach (GraphQLLocation loc in gqlErr.Locations)
                     {
                         Console.WriteLine("  -->Location Line : " + loc.Line + ", Column : " + loc.Column);
                     }
@@ -248,11 +259,11 @@ namespace Carlabs.Getit.Examples
             //Query jsonQuery = new Query(jsonQueryString, config);
 
             // NOTE : THIS TEST WILL FAIL WITHOUT A VALID WORKING GQL ENDPOINT WITH UPDATE QUERY
-            config.SetUrl("https://randy.butternubs.com/graphql");
-            IQuery jsonQuery = getit.Query(config);
+            config.SetUrl("https://clapper.honda-dev.car-labs.com/graphql");
+            IQuery jsonQuery = getit.Query();
 
             jsonQuery.Raw(rawQuery);
-            JObject jO = await jsonQuery.Get<JObject>();
+            JObject jO = await getit.Get<JObject>(jsonQuery, config);
             Console.WriteLine(jO);
             Console.WriteLine(jO.Value<JArray>("TheNearest")[0].Value<double>("distance"));
 

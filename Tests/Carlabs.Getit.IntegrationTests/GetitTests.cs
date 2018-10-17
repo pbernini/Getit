@@ -29,8 +29,7 @@ namespace Carlabs.Getit.IntegrationTests
 
             // Arrange
             Getit getit = new Getit();
-            Config config = new Config("https://randy.butternubs.com/graphql");
-            IQuery query = getit.Query(config).Select(select);
+            IQuery query = getit.Query().Select(select);
 
             // Assert
             Assert.AreEqual(select, query.SelectList.First());
@@ -41,9 +40,8 @@ namespace Carlabs.Getit.IntegrationTests
         {
             // Arrange
             Getit getit = new Getit();
-            Config config = new Config("https://randy.butternubs.com/graphql");
-            IQuery query = getit.Query(config).Select("zip");
-            IQuery query1 = getit.Query(config).Select("pitydodah");
+            IQuery query = getit.Query().Select("zip");
+            IQuery query1 = getit.Query().Select("pitydodah");
 
             // Assert counts and not the same
             Assert.IsTrue(query.SelectList.Count == 1);
@@ -56,8 +54,7 @@ namespace Carlabs.Getit.IntegrationTests
         {
             // Arrange
             Getit getit = new Getit();
-            Config config = new Config("https://randy.butternubs.com/graphql");
-            IQuery query = getit.Query(config).Name("test1").Select("id");
+            IQuery query = getit.Query().Name("test1").Select("id");
 
             // Assert
             Assert.AreEqual("test1{id}", RemoveWhitespace(query.ToString()));
@@ -68,9 +65,8 @@ namespace Carlabs.Getit.IntegrationTests
         {
             // Arrange
             Getit getit = new Getit();
-            Config config = new Config("https://randy.butternubs.com/graphql");
-            IQuery query = getit.Query(config);
-            IQuery subSelect = getit.Query(config);
+            IQuery query = getit.Query();
+            IQuery subSelect = getit.Query();
 
             // set up a couple of ENUMS
             EnumHelper gqlEnumEnabled = new EnumHelper().Enum("ENABLED");
@@ -178,8 +174,8 @@ namespace Carlabs.Getit.IntegrationTests
             IGetit getit = Substitute.For<IGetit>();
             Config config = new Config("https://randy.butternubs.com/graphql");
 
-            IQuery query = getit.Query(config);
-            IQuery subSelect = getit.Query(config);
+            IQuery query = getit.Query();
+            IQuery subSelect = getit.Query();
 
             // Nearest Dealer has a sub-select of a dealer
             subSelect
@@ -194,9 +190,9 @@ namespace Carlabs.Getit.IntegrationTests
                 .Where("zip", "91302")
                 .Where("makeId", 16);
 
-            query.Get<string>().Returns(responseData);
+            getit.Get<string>(query, config).Returns(responseData);
 
-            string results = await query.Get<string>();
+            string results = await getit.Get<string>(query, config);
 
             // Assert
             Assert.IsNotNull(results);
@@ -213,10 +209,10 @@ namespace Carlabs.Getit.IntegrationTests
             IGetit getit = Substitute.For<IGetit>();
             Config config = new Config("https://randy.butternubs.com/graphql");
 
-            IQuery query = getit.Query(config);
-            IQuery subSelect = getit.Query(config);
-            IQuery batchQuery = getit.Query(config);
-            IQuery batchSubSelectQuery = getit.Query(config);
+            IQuery query = getit.Query();
+            IQuery subSelect = getit.Query();
+            IQuery batchQuery = getit.Query();
+            IQuery batchSubSelectQuery = getit.Query();
 
             // Nearest Dealer has a sub-select of a dealer
             subSelect
@@ -247,10 +243,10 @@ namespace Carlabs.Getit.IntegrationTests
                 .Where("makeId", 16)
                 .Batch(query);
 
-            batchQuery.Get<string>().Returns(responseData);
+            getit.Get<string>(batchQuery, config).Returns(responseData);
 
             // get the json results as a strings
-            string results = await batchQuery.Get<string>();
+            string results = await getit.Get<string>(batchQuery, config);
 
             // Assert
             Assert.IsNotNull(results);
@@ -273,8 +269,8 @@ namespace Carlabs.Getit.IntegrationTests
             IGetit getit = Substitute.For<IGetit>();
             Config config = new Config("https://randy.butternubs.com/graphql");
 
-            IQuery query = getit.Query(config);
-            IQuery subSelect = getit.Query(config);
+            IQuery query = getit.Query();
+            IQuery subSelect = getit.Query();
 
             // Nearest Dealer has a sub-select of a dealer
             subSelect
@@ -289,9 +285,9 @@ namespace Carlabs.Getit.IntegrationTests
                 .Where("zip", "91302")
                 .Where("makeId", 2345);
 
-            query.Get<JObject>().Returns(gqlResponse);
+            getit.Get<JObject>(query, config).Returns(gqlResponse);
 
-            JObject results = await query.Get<JObject>();
+            JObject results = await getit.Get<JObject>(query, config);
 
             // Assert
             Assert.IsNotNull(results);

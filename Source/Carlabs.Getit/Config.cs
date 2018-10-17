@@ -5,10 +5,19 @@ namespace Carlabs.Getit
 {
     public class Config : IConfig
     {
+        /// <summary>
+        /// Default constructor, don't forget to set up
+        /// any need options
+        /// </summary>
         public Config()
         {
         }
 
+        /// <summary>
+        /// Construct the config with the URL of the GraphQL
+        /// service.
+        /// </summary>
+        /// <param name="url"></param>
         public Config(string url)
         {
             SetUrl(url);

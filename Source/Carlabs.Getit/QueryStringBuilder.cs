@@ -219,7 +219,7 @@ namespace Carlabs.Getit
         /// <summary>
         /// Build the entire query into a string. This will take
         /// the query object and build a graphql query from it. This
-        /// returns the query, but not outer block. This is done so
+        /// returns the query, but not the outer block. This is done so
         /// you can use the output to batch the queries
         /// </summary>
         /// <param name="query">The Query</param>
@@ -244,6 +244,7 @@ namespace Carlabs.Getit
 
             // If we have params must add in parens, if
             // no params in the query then must skip the parens.
+
             if (query.WhereMap.Count > 0)
             {
                 QueryString.Append("(");

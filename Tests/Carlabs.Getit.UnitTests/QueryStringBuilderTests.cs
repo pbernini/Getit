@@ -179,9 +179,7 @@ namespace Carlabs.Getit.UnitTests
         public void Where_QueryString_ParseQueryString()
         {
             // Arrange
-            Config config = new Config("https://randy.butternubs.com/graphql");
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString, config);
+            Query query = new Query();
 
             List<object> objList = new List<object>(new object[] { "aa", "bb", "cc" });
             EnumHelper enumHaystack = new EnumHelper("HAYstack");
@@ -206,8 +204,11 @@ namespace Carlabs.Getit.UnitTests
                 .Select("name")
                 .Where(nestedListMap);
 
+            IQueryStringBuilder queryString = new QueryStringBuilder();
+
             // Act
             queryString.AddParams(query);
+
             string addParamStr = RemoveWhitespace(queryString.QueryString.ToString());
 
             // Assert
@@ -218,9 +219,7 @@ namespace Carlabs.Getit.UnitTests
         public void Where_ClearQueryString_EmptyQueryString()
         {
             // Arrange
-            Config config = new Config("https://randy.butternubs.com/graphql");
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString, config);
+            IQuery query = new Query();
 
             List<object> objList = new List<object>(new object[] { "aa", "bb", "cc" });
             EnumHelper enumHaystack = new EnumHelper("HAYstack");
@@ -245,10 +244,12 @@ namespace Carlabs.Getit.UnitTests
                 .Select("name")
                 .Where(nestedListMap);
 
+            IQueryStringBuilder queryString = query.Builder;
+
             queryString.AddParams(query);
 
             // Act
-            queryString.Clear();
+            queryString.QueryString.Clear();
 
             // Assert
             Assert.IsTrue(string.IsNullOrEmpty(queryString.QueryString.ToString()));
@@ -258,11 +259,8 @@ namespace Carlabs.Getit.UnitTests
         public void Select_QueryString_ParseQueryString()
         {
             // Arrange
-            Config config = new Config("https://randy.butternubs.com/graphql");
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString, config);
-            QueryStringBuilder subSelectString = new QueryStringBuilder();
-            Query subSelect = new Query(subSelectString, config);
+            IQuery query = new Query();
+            IQuery subSelect = new Query();
 
             EnumHelper gqlEnumEnabled = new EnumHelper().Enum("ENABLED");
             EnumHelper gqlEnumDisabled = new EnumHelper("DISABLED");
@@ -292,8 +290,8 @@ namespace Carlabs.Getit.UnitTests
                 .Select(selList);
 
             // Act
-            queryString.AddFields(query);
-            string addParamStr = RemoveWhitespace(queryString.QueryString.ToString());
+            query.Builder.AddFields(query);
+            string addParamStr = RemoveWhitespace(query.Builder.QueryString.ToString());
 
             // Assert
             Assert.AreEqual(RemoveWhitespace("morethingsin_a_selectidsubSelect(subMake:\"aston martin\",subState:\"ca\",subLimit:1,__debug:DISABLED,SuperQuerySpeed:ENABLED){subNamesubMakesubModel}namemakemodel"), addParamStr);
@@ -317,11 +315,8 @@ namespace Carlabs.Getit.UnitTests
         public void Build_AllElements_StringMatch()
         {
             // Arrange
-            Config config = new Config("https://randy.butternubs.com/graphql");
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            Query query = new Query(queryString, config);
-            QueryStringBuilder subSelectString = new QueryStringBuilder();
-            Query subSelect = new Query(subSelectString, config);
+            Query query = new Query();
+            Query subSelect = new Query();
 
             EnumHelper gqlEnumEnabled = new EnumHelper().Enum("ENABLED");
             EnumHelper gqlEnumDisabled = new EnumHelper("DISABLED");
@@ -350,6 +345,8 @@ namespace Carlabs.Getit.UnitTests
                 .Select("more", "things", "in_a_select")
                 .Select(selList)
                 .Comment("A single line Comment");
+
+            IQueryStringBuilder queryString = query.Builder;
 
             // Act
             string buildStr = RemoveWhitespace(queryString.Build(query));

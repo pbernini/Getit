@@ -4,17 +4,41 @@
 # Getit
 A GraphQL Query Builder For C#
 
-## Installation
-Install from Nuget, or your IDE's package manager
-> Install-Package Carlabs.Getit -Version X.Y.Z 
-
-
-## What is Getit?
 Getit is a simple package that allows you go build GraphQL queries. 
 It also allows RAW queries if you don't want to use the query builder.
 Currently Getit only builds queries and does not help with mutations. Getit
 does allow for passing a *Raw* query to your server so you can
 use it for passing anything you might create right on through. 
+
+
+## Installation
+Install from Nuget, or your IDE's package manager
+> Install-Package Carlabs.Getit
+
+Supports:
+* .NET Standard 1.3
+
+## Usage
+```C#
+// Setup Getit, config and a couple of queries
+
+Config config = new Config("https://randy.butternubs.com/graphql");
+Getit getit = new Getit(config);
+IQuery userQuery = getit.Query();
+
+userQuery
+    .Name("User")
+    .Select("userId", "firstName", "lastName", "phone")
+    .Where("userId", "331")
+    .Where("lastName", "Calhoon")
+    .Comment("My First Getit Query");
+
+// Fire the request to the sever as specified by the config
+
+Console.WriteLine(await getit.Get<string>(userQuery));
+```
+
+## What is Getit?
 
 The Getit query builder sits on top of the C# GraphQL client that can be found on Github
 [Github : graphql-client](https://github.com/graphql-dotnet/graphql-client)
@@ -95,6 +119,7 @@ These C# types are supported -
 
 #### A more complex example with nested parameter data types
 ```C#
+...
 // Create a List of Strings for passing as an ARRAY type parameter
 List<string> modelList = new List<string>(new[] {"DB7", "DB9", "Vantage"});
 List<object> recList = new List<object>(new object[] {"rec1", "rec2", "rec3"});
@@ -184,8 +209,10 @@ per-call to the Get().
 
 ### Multiple `Query` Query
 ```C#
-// Setup Getit and a couple of queries
+// Setup Getit, and a couple of queries
 Getit getit = new Getit();
+Config config = new Config();
+config.SetUrl("https://randy.butternubs.com/graphql");
 
 IQuery nearestDealerQuery = getit.Query();
 IQuery subSelectDealer = getit.Query();
@@ -209,6 +236,7 @@ Console.WriteLine(nearestDealerQuery);
 
 // This would get the string of JSON that was returned
 // **** getit.Get<T>() is the way to execute the query against the server ****
+// T can be a String, JObject, or your type. See Get() for more info
 Console.WriteLine(await getit.Get<string>(nearestDealerQuery, config));
 
 // If we had a matching C# NearestDealer Object that matched the GraphQL response (EXACTLY)

@@ -19,7 +19,7 @@
     ///     {
     ///         {"subMake", "aston martin"},
     ///         {"subState", "ca"},
-    ///         {"__debug", GqlEnumDisabled},
+    ///         {"_debug", GqlEnumDisabled},
     ///         {"SuperQuerySpeed", GqlEnumEnabled }
     ///     };
     /// </example>

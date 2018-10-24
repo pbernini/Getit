@@ -117,14 +117,14 @@ which can also contain nested data types, so you can have an list of strings
 and such nested structures.
 
 These C# types are supported:
-* string 
-* int
-* float
-* double
-* EnumHelper (For enumerated types)
-* KeyValuePair<string, object>
-* IList<object>
-* IDictionary<string, object>
+* `string`
+* `int`
+* `float`
+* `double`
+* `EnumHelper` (For enumerated types)
+* `KeyValuePair<string, object>`
+* `IList<object>`
+* `IDictionary<string, object>`
 
 #### A more complex example with nested parameter data types
 ```csharp

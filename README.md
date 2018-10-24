@@ -13,13 +13,15 @@ use it for passing anything you might create right on through.
 
 ## Installation
 Install from Nuget, or your IDE's package manager
-> Install-Package Carlabs.Getit
+```
+Install-Package Carlabs.Getit
+```
 
 Supports:
 * .NET Standard 1.3
 
 ## Usage
-```C#
+```csharp
 // Setup Getit, config and a couple of queries
 
 Config config = new Config("https://randy.butternubs.com/graphql");
@@ -53,7 +55,7 @@ Also LOOK AT THE SOURCE for additional parameter, features that
 may have not been covered here!
 
 Let's breakdown a simple GraphQL query and write it in Getit's querybuilder.
-```C#
+```csharp
 {
     NearestDealer(zip: "91403", make: "aston martin") {
     distance
@@ -74,7 +76,7 @@ This query has a simple set of parameters, and a select field, along with what I
 Both are of string type, although they can be any GraphQL type including enums.
 
 Now lets write this with the Getit Querybuilder
-```C#
+```csharp
 subSelectDealer
     .Name("Dealer")
     .Select("name", "address", "city", "state", "zip", "phone");
@@ -89,7 +91,7 @@ nearestDealerQuery
 ```
 It's pretty straight forward. You can also pass in dictionary type objects to both the `Select` and 
 the `Where` parts of the statement. Here is another way to write the same query -
-```C#
+```csharp
 Dictionary<string, object> whereParams = new Dictionary<string, object>
 {
     {"make", "aston martin"},
@@ -107,19 +109,18 @@ When appropriate (You figure it out) you can use the following data types,
 which can also contain nested data types, so you can have an list of strings 
 and such nested structures.
 
-These C# types are supported -
+These C# types are supported:
 * string 
 * int
 * float
 * double
 * EnumHelper (For enumerated types)
-* KeyValuePair < string, object >
-* IList < object >
-* IDictionary < string, object >
+* KeyValuePair<string, object>
+* IList<object>
+* IDictionary<string, object>
 
 #### A more complex example with nested parameter data types
-```C#
-...
+```csharp
 // Create a List of Strings for passing as an ARRAY type parameter
 List<string> modelList = new List<string>(new[] {"DB7", "DB9", "Vantage"});
 List<object> recList = new List<object>(new object[] {"rec1", "rec2", "rec3"});
@@ -164,7 +165,6 @@ query
     .Where("id_double", 3.25)
     .Where("id_string", "some_sting_id")
     .Comment("A complicated GQL Query with getit");
-...
 ```
 So as you can see you can express parameters as list or objects, and nested as well. 
 since this is a made up example your mileage may vary if you type in the code, but give
@@ -175,40 +175,40 @@ Their are a coupe of ways to set up Getit for use. Here are a few that are all
 basically the same. Getit will allow a class config to be set, or you can set it 
 per-call to the Get().
 
-```#C#
+```csharp
     // Create an instance of Getit, set it directly with the Config
     Config config = new Config("http://haystack.calhoon.com");
     IGetit getit = new Getit(config);
-...    
+
     // Create without a config (must pass config to Get())
     IGetit getit = new Getit();
-...
+
     // Or if you want create Getit and set config
     IGetit getit = new Getit();
-    ...
+
     // Defer setting the configuration 
     IConfig config = new Config("http://haystack.calhoon.com");
     getit.Config = config;
-...    
+
     // Getting a new query via the Dispenser (Factory)
     IQuery aQuery = getit.Query();
     
     // You could also just have done this 
     // IQuery aQuery = new Query()
-...
+
     // You can use the Getit's instance's config if set
     // to eliminate extra params when calling the Get().
 
     // Exectue the query, notice that CONFIG is not required
     JObject jOb = await getit.Get<JObject>(aQuery);
-...
+
     // If you don't want to set or use Getit's instance config 
     // just pass it with each Get() call
     JObject jOb = await getit.Get<JObject>(aQuery, config);
 ```
 
 ### Multiple `Query` Query
-```C#
+```csharp
 // Setup Getit, and a couple of queries
 Getit getit = new Getit();
 Config config = new Config();
@@ -288,7 +288,7 @@ The GraphQL JSON response from the `Make` query would look like this -
     Console.WriteLine(jOb);
 ```
 #### RAW Example Console Output
-```JSON
+```json
 {
   "data": {
     "Alias": [
@@ -307,17 +307,13 @@ Getit supports that functionality and it can save extra network requests. Essent
 you can pass any generated query to the `Batch()` method and it will be stuffed into
 the call. Using JObject's or JSON string returns from `Get()` is usually how you get the 
 blob of data back from batched queries.
-```C#
-...
-
+```csharp
 nearestDealerQuery
     .Name("NearestDealer")
     .Select("distance")
     .Select(subSelectDealer)
     .Where("zip", "91302")
     .Where("make", "aston martin");
-
-...
 
 batchQuery.Raw("{ Version }");          // Get the version
 batchQuery.Batch(nearestDealerQuery);   // Batch up the nearest dealer query
@@ -335,7 +331,7 @@ just be different. Getit allows the support for aliases. The proper name of the
 query should be set in the Name() method, but additionally you can add an `Alias()` call
 to set that. So back to a simple example query with an alias-
 
-```C#
+```csharp
 {
     AstonNearestDealer:NearestDealer(zip: "91403", make: "aston martin") {
     distance
@@ -356,7 +352,7 @@ This query has a simple set of parameters, and a select field, along with what I
 Both are of string type, although they can be any GraphQL type including enums.
 
 Now lets write this with the Getit Querybuilder
-```C#
+```csharp
 subSelectDealer
     .Name("Dealer")
     .Select("name", "address", "city", "state", "zip", "phone");
@@ -371,7 +367,7 @@ nearestDealerQuery
     .Where("make", "aston martin");
 ```
 The response (JObject) would be something like this -
-```JSON
+```json
 {
   "AstonNearestDealer": [
     {
@@ -384,9 +380,6 @@ The response (JObject) would be something like this -
         "zip": "91302",
         "phone": "(818) 887-7111",
       }
-    },
-    {
-        ...
     }
   ]
 }
@@ -408,8 +401,7 @@ EnumHelper GqlEnumConditionUsed = new EnumHelper("USED");
 ```
 
 Example creating a dictionary for a select (GraphQL Parameters)
-```C#
-...
+```csharp
 Dictionary <string, object> mySubDict = new Dictionary<string, object>;
 {
     {"Make", "aston martin"},
@@ -424,7 +416,7 @@ query.Name("CarStats")
     .Comment("Using Enums");
 ```
 This will generate a query that looks like this (well part of it anyway)
-```C#
+```csharp
 {
     CarStats(Make:"aston martin", Model:"DB7GT", Condition:NEW, _debug:DISABLED)
     { 
@@ -447,7 +439,7 @@ returns `null`. This may change to allow the exception to bubble up. In your cod
 plan on catching any exceptions as well as checking for a `null` response.~**
 
 Here is an example how to check for GraphQL errors
-```C#
+```csharp
 ...
 if (nearestDealerQuery.HasErrors())
 {

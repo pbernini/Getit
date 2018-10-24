@@ -256,7 +256,7 @@ to pass a raw or prebuilt query to the GraphQL server. This is acomplished by us
 In this example we have on the server a query that responds to a `Version` number request.
 
 The GraphQL JSON response from the `Make` query would look like this -
-```C#
+```json
 {
   "Make": [
     {
@@ -264,10 +264,11 @@ The GraphQL JSON response from the `Make` query would look like this -
       "name": "aston martin"
     }
   ]
-}```
+}
+```
 
 #### Example RAW query code
-```C#
+```csharp
     // Create an instance of Getit and the Config
     Getit getit = new Getit();
     Config config = new Config();

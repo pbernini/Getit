@@ -1,4 +1,6 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![VSTS Build Status](https://carlabs.visualstudio.com/Getit/_apis/build/status/Getit-PR)
+
+
 <p align="center"><img src= "getit-logo-640x.png"></img></p>
 
 # Getit

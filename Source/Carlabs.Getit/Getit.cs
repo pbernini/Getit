@@ -29,7 +29,7 @@ namespace Carlabs.Getit
 
         /// <summary>
         /// Set up anything needed, in this case we can
-        /// optionally passin the config that will be useful
+        /// optionally passing the config that will be useful
         /// for subsequent Get() calls if not supplied.
         /// </summary>
         /// <param name="config"></param>
@@ -40,7 +40,7 @@ namespace Carlabs.Getit
 
         /// <inheritdoc />
         /// <summary>
-        /// The Query Factory/Dispenser. These are independant
+        /// The Query Factory/Dispenser. These are independent
         /// of connection so you can create a bunch and use them
         /// for sub-queries, etc.
         /// </summary>
@@ -60,7 +60,7 @@ namespace Carlabs.Getit
         /// <typeparam name="T">Data Type, typically a list of the record but not always.
         /// </typeparam>
         /// <param name="query"></param>
-        /// <param name="resultName">Overide of the Name/Alias of the query</param>
+        /// <param name="resultName">Override of the Name/Alias of the query</param>
         /// <returns>The type of object stuffed with data from the query</returns>
         /// <exception cref="ArgumentException">Dupe Key, missing parts or empty parts of a query</exception>
         public async Task<T> Get<T>(IQuery query, string resultName = null)
@@ -79,7 +79,7 @@ namespace Carlabs.Getit
         /// </typeparam>
         /// <param name="query"></param>
         /// <param name="config"></param>
-        /// <param name="resultName">Overide of the Name/Alias of the query</param>
+        /// <param name="resultName">Override of the Name/Alias of the query</param>
         /// <returns>The type of object stuffed with data from the query</returns>
         /// <exception cref="ArgumentException">Dupe Key, missing parts or empty parts of a query</exception>
         /// <exception cref="ArgumentNullException">Invalid Configuration</exception>
@@ -144,14 +144,14 @@ namespace Carlabs.Getit
 
             // Now we need to get the results name. This is EITHER the Name, or the Alias
             // name. If Alias was set then use it. If the user does specify it in
-            // the Get call it's an overide. This might be needed with raw query
+            // the Get call it's an override. This might be needed with raw query
 
             if (resultName == null)
             {
                 resultName = string.IsNullOrWhiteSpace(query.AliasName) ? query.QueryName : query.AliasName;
             }
 
-            // Let the client do the mapping , all sorts of things can thow at this point!
+            // Let the client do the mapping , all sorts of things can throw at this point!
             // caller should check for exceptions, Generally invalid mapping into the type
 
             return gqlResp.GetDataFieldAs<T>(resultName);

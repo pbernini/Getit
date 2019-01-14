@@ -96,7 +96,7 @@ namespace Carlabs.Getit.IntegrationTests
             // Add that subselect to the main select
             List<object> selList = new List<object>(new object[] { "id", subSelect, "name", "make", "model" });
 
-            // List of ints (IDs)
+            // List of int's (IDs)
             List<int> trimList = new List<int>(new[] { 143783, 243784, 343145 });
 
             // String List

@@ -40,7 +40,7 @@ namespace Carlabs.Getit
 
         /// <summary>
         /// Accepts a string and will use this as the query. Setting
-        /// this will overide any other settings and ignore any
+        /// this will override any other settings and ignore any
         /// validation checks. If the string is empty it will be
         /// ignored and the existing query builder actions will be
         /// at play.
@@ -55,7 +55,7 @@ namespace Carlabs.Getit
         {
             Clear();
 
-            // scan string and find if the first nonwhitespace
+            // scan string and find if the first non-whitespace
             // is a brace, if so we need to strip beginning and
             // ending. Otherwise leave it be.
 
@@ -104,7 +104,7 @@ namespace Carlabs.Getit
 
         /// <summary>
         /// Sets the Query Alias name. This is used in graphQL to allow
-        /// multipe queries with the same endpoint (name) to be assembled
+        /// multiple queries with the same endpoint (name) to be assembled
         /// into a batch like query. This will prefix the Name as specified.
         /// Note that this can be applied to any sub-select as well. GraphQL will
         /// rename the query with the alias name in the response.
@@ -123,7 +123,7 @@ namespace Carlabs.Getit
         /// and add it to the Select block in the query. GraphQL formatting will
         /// be automatically added. Multi-line comments can be done with the
         /// '\n' character and it will be automatically converted into a GraphQL
-        /// multi-line coment
+        /// multi-line comment
         /// </summary>
         /// <param name="comment">The comment string</param>
         /// <returns>Query</returns>
@@ -199,7 +199,7 @@ namespace Carlabs.Getit
         /// <summary>
         /// Add a dict of key value pairs &lt;string, object&gt; to the existing where part
         /// </summary>
-        /// <param name="dict">An existing Dictionay that takes &lt;string, object&gt;</param>
+        /// <param name="dict">An existing Dictionary that takes &lt;string, object&gt;</param>
         /// <returns>Query</returns>
         /// <exception cref="ArgumentException">Dupe Key</exception>
         /// <exception cref="ArgumentNullException">Null Argument</exception>

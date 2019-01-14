@@ -27,7 +27,7 @@ namespace Carlabs.Getit
         /// <typeparam name="T">Data Type, typically a list of the record but not always.
         /// </typeparam>
         /// <param name="query">Created Query</param>
-        /// <param name="resultName">Overide of the Name/Alias of the query</param>
+        /// <param name="resultName">Override of the Name/Alias of the query</param>
         /// <returns>The type (T) of object stuffed with data from the query</returns>
         /// <exception cref="ArgumentException">Dupe Key</exception>
         Task<T> Get<T>(IQuery query, string resultName = null);
@@ -43,7 +43,7 @@ namespace Carlabs.Getit
         /// </typeparam>
         /// <param name="query">Created Query</param>
         /// <param name="config">Configuration</param>
-        /// <param name="resultName">Overide of the Name/Alias of the query</param>
+        /// <param name="resultName">Override of the Name/Alias of the query</param>
         /// <returns>The type (T) of object stuffed with data from the query</returns>
         /// <exception cref="ArgumentException">Dupe Key</exception>
         Task<T> Get<T>(IQuery query, IConfig config, string resultName = null);

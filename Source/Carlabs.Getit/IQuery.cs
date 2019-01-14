@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using GraphQL.Common.Response;
 
 namespace Carlabs.Getit
 {
@@ -8,7 +7,6 @@ namespace Carlabs.Getit
     {
         List<object> SelectList { get; }
         Dictionary<string, object> WhereMap { get; }
-        List<GraphQLError> GqlErrors { get; }
         List<IQuery> BatchQueryList { get; }
 
         string QueryName { get; }
@@ -110,14 +108,6 @@ namespace Carlabs.Getit
         /// <returns>Query</returns>
         /// <throws>Dupekey and others</throws>
         IQuery Where(Dictionary<string, object> dict);
-
-        /// <summary>
-        /// Helper to see if any errors were returned with the
-        /// last query. No errors does not mean data, just means
-        /// no errors found in the GQL client results
-        /// </summary>
-        /// <returns>Bool true if errors exist, false if not</returns>
-        bool HasErrors();
 
         /// <summary>
         /// Add additional queries to the request. These

@@ -82,58 +82,49 @@ namespace Carlabs.Getit
         /// <param name="resultName">Overide of the Name/Alias of the query</param>
         /// <returns>The type of object stuffed with data from the query</returns>
         /// <exception cref="ArgumentException">Dupe Key, missing parts or empty parts of a query</exception>
+        /// <exception cref="ArgumentNullException">Invalid Configuration</exception>
         public async Task<T> Get<T>(IQuery query, IConfig config, string resultName = null)
         {
+            // better have a solid config or expect something bad
+
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
 
             // Set up the needed client stuff
+
             GraphQLClient gqlClient = new GraphQLClient(config.Url);
 
             // Generate the query can throw here
+
             GraphQLRequest gqlQuery = new GraphQLRequest {Query = "{" + query.ToString() + "}"};
-            GraphQLResponse gqlResp;
 
-            try
+            // make the call to the server, this will toss on any non 200 response
+
+            GraphQLResponse gqlResp = await gqlClient.PostAsync(gqlQuery);
+
+            // check for no results, this is an odd case but should be caught
+
+            // Any mising/empty data or response errors (GQL) will cause an exception!
+            //
+            // NOTE: GQL can return VALID data for a partial set of queries and errors
+            // for others all in the same response set. Our case here is that ANY errors cause
+            // a report of failure.
+
+            if (gqlResp?.Data == null || gqlResp.Errors != null)
             {
-                // make the call to the server, bounce on bad errors
-                // could bubble up the exception if needed
+                ArgumentException ex = new ArgumentException("GQLResponse Data");
+                ex.Data.Add("request", gqlQuery.ToString());
 
-                gqlResp = await gqlClient.PostAsync(gqlQuery);
-            }
-            catch (Exception)
-            {
-                // TODO: This may get changed to a re-throw or not catch it
-                gqlResp = null;
-            }
+                // If we have any Errors reports, we are tossing so pass them back too
 
-            // check for no results, return null in object flavor
-
-            if (gqlResp == null)
-            {
-                return (T)(object)null;
-            }
-
-            // see if any Gql errors, can be 0 to many
-
-            if (gqlResp.Errors != null)
-            {
-                if (gqlResp.Errors.Length > 0)
+                if (gqlResp?.Errors != null && gqlResp.Errors.Length > 0)
                 {
-                    // lets move these to our instance data
-
-                    query.GqlErrors.AddRange(gqlResp.Errors);
+                    ex.Data.Add("gqlErrors", gqlResp.Errors);
                 }
-            }
 
-            // Must also check for null on the data portion, but
-            // only AFTER the error check so they can be processed
-
-            if (gqlResp.Data == null)
-            {
-                return (T)(object)null;
+                throw ex;
             }
 
             // If the given type was a string, ship the raw JSON string

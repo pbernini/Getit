@@ -82,7 +82,7 @@ namespace Carlabs.Getit.IntegrationTests
                 {"subMake", "aston martin"},
                 {"subState", "ca"},
                 {"subLimit", 1},
-                {"__debug", gqlEnumDisabled},
+                {"_debug", gqlEnumDisabled},
                 {"SuperQuerySpeed", gqlEnumEnabled}
             };
 
@@ -130,7 +130,7 @@ namespace Carlabs.Getit.IntegrationTests
                 {"trims", trimList},
                 {"models", modelList},
                 {"price", fromToPrice},
-                {"__debug", gqlEnumEnabled},
+                {"_debug", gqlEnumEnabled},
             };
 
             // Generate the query with an alias and multi-line comment
@@ -146,12 +146,12 @@ namespace Carlabs.Getit.IntegrationTests
             string packedCheck = RemoveWhitespace(@"
                     myDealerAlias: Dealer(make: ""aston martin"", state: ""ca"", limit: 2, trims:[143783, 243784, 343145], models:[""DB7"", ""DB9"", ""Vantage""],
                     price:{ from: 123, to: 454, recurse:[""aa"", ""bb"", ""cc""], map: { from: 444.45, to: 555.45} },
-                    __debug: ENABLED){
+                    _debug: ENABLED){
                     # My First GQL Query with getit
                     # a second line of comments
                     # and yet another line of comments
                     id
-                    subDealer(subMake: ""aston martin"", subState: ""ca"", subLimit: 1, __debug: DISABLED, SuperQuerySpeed: ENABLED){
+                    subDealer(subMake: ""aston martin"", subState: ""ca"", subLimit: 1, _debug: DISABLED, SuperQuerySpeed: ENABLED){
                         # SubSelect Below!
                         subName
                         subMake
@@ -292,6 +292,33 @@ namespace Carlabs.Getit.IntegrationTests
             // Assert
             Assert.IsNotNull(results);
             Assert.IsTrue(results.Value<JArray>("NearestDealer")[0].Value<double>("distance") >= 0.0);
+        }
+
+        [TestMethod]
+        public async Task Query_Get_InvalidConfigThrows()
+        {
+            // Arrange
+            IGetit getit = new Getit();
+            Config config = null;
+
+            IQuery query = getit.Query();
+            IQuery subSelect = getit.Query();
+
+            // Nearest Dealer has a sub-select of a dealer
+            subSelect
+                .Name("Dealer")
+                .Select("id", "subId", "name", "make");
+
+            // main query, with distance, and sub-select
+            query
+                .Name("NearestDealer")
+                .Select("distance")
+                .Select(subSelect)
+                .Where("zip", "91302")
+                .Where("makeId", 16);
+
+            // ReSharper disable once ExpressionIsAlwaysNull
+            await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await getit.Get<string>(query, config));
         }
     }
 }

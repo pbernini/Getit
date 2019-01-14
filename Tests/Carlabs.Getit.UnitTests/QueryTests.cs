@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using GraphQL.Common.Response;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 
@@ -368,19 +367,6 @@ namespace Carlabs.Getit.UnitTests
             Assert.AreEqual(expectedRawQuery, query.RawQuery);
             Assert.AreEqual(expectedRawQuery, query.ToString());
             Assert.AreEqual(string.Empty, query.QueryName);
-        }
-
-        [TestMethod]
-        public void Check_Error_Exists()
-        {
-            IQuery query = new Query();
-
-            // add an empty error to mess with things
-            query.GqlErrors.Add(new GraphQLError());
-
-            // Query query = new Query(queryStringBuilder, config);
-
-            Assert.IsTrue(query.HasErrors());
         }
     }
 }

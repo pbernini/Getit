@@ -16,7 +16,7 @@ use it for passing anything you might create right on through.
 * **V2.x.x** - Updated Get() method so it will now throw an exception 
 on any error. Previously would return `null`. This has some implications on 
 error handeling when sending multiple queries. If any fail,
-an exception is now raised. See error handeling above. This is a breaking change 
+an exception is now raised. See error handeling section. This is possibly a breaking change 
 from V1.
 * **v1.x.x** - Initial Release
 
@@ -403,7 +403,7 @@ It uses the data type to determine how to build the query so in cases where you 
 GraphQL enumerations their is a simple helper class that can be used.
 
 Example how to generate an Enumeration
-```C#
+```csharp
 EnumHelper GqlEnumEnabled = new EnumHelper().Enum("ENABLED");
 EnumHelper GqlEnumDisabled = new EnumHelper("DISABLED");
 EnumHelper GqlEnumConditionNew = new EnumHelper("NEW");
@@ -443,7 +443,7 @@ in response to error situations. For client errors, empty data or
 any graphQL related errors an exception will be throw. Additional data based on 
 the exception will be stored in the thrown exception.
 
-```C#
+```csharp
 using GraphQL.Common.Response;
 
 // Setup Getit, config and a couple of queries

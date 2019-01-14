@@ -498,7 +498,6 @@ catch(Exception ex)
 
 ```
 
-
 ## Todo's
 * Test on more then the single GraphQL server we use
 * Expose More GraphQLClient functionality

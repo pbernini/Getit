@@ -3,7 +3,7 @@
     /// <summary>
     /// Helper class that will allow us to pass a string but
     /// keep the idea that it's really a non-quoted ENUM in the
-    /// gQL relm. So the idea would be to pass this as a param
+    /// gQL realm. So the idea would be to pass this as a param
     /// value not a string and it will be rendered without being
     /// quoted
     /// </summary>
@@ -11,7 +11,7 @@
     /// Creating Instance -
     ///     EnumHelper GqlEnumEnabled = new EnumHelper().Enum("ENABLED");
     ///     EnumHelper GqlEnumDisabled = new EnumHelper("DISABLED");
-    ///     GqlEnumDisabled.Enum("SOMETHNG_ENUM");
+    ///     GqlEnumDisabled.Enum("SOMETHING_ENUM");
     ///
     /// In use -
     ///     Creating a Dictionary for a Select (gQL Parameters)

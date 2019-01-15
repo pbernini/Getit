@@ -15,7 +15,7 @@ namespace Carlabs.Getit
         void Clear();
 
         /// <summary>
-        /// Recurses an object which could be a primitive or more
+        /// Recurse an object which could be a primitive or more
         /// complex structure. This will return a string of the value
         /// at the current level. Recursion terminates when at a terminal
         /// (primitive).
@@ -26,7 +26,7 @@ namespace Carlabs.Getit
         string BuildQueryParam(object value);
 
         /// <summary>
-        /// This take all paramter data
+        /// This take all parameter data
         /// and builds the string. This will look in the query and
         /// use the WhereMap for the list of data. The data can be
         /// most any type as long as it's one that we support. Will
@@ -37,7 +37,7 @@ namespace Carlabs.Getit
 
         /// <summary>
         /// Adds fields to the query sting. This will use the SelectList
-        /// structure from the query to build the grapql select list. This
+        /// structure from the query to build the GraphQL select list. This
         /// will recurse as needed to pick up sub-selects that can contain
         /// parameter lists.
         /// </summary>
@@ -47,7 +47,7 @@ namespace Carlabs.Getit
 
         /// <summary>
         /// Adds a comment to the Select list part of the Query. Comments
-        /// may be seperated by a newline and those will expand to individual
+        /// may be separated by a newline and those will expand to individual
         /// comment line. Formatting for graphQL '#' comments will happen here
         /// </summary>
         /// <param name="comments">Simple Comment</param>
@@ -63,7 +63,7 @@ namespace Carlabs.Getit
         /// </summary>
         /// <param name="query">The Query</param>
         /// <param name="indent">Indent characters, default = 0</param>
-        /// <returns>GraphQL query string wihout outer block</returns>
+        /// <returns>GraphQL query string without outer block</returns>
         string Build(IQuery query, int indent = 0);
     }
 }

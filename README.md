@@ -12,6 +12,13 @@ Currently Getit only builds queries and does not help with mutations. Getit
 does allow for passing a *Raw* query to your server so you can
 use it for passing anything you might create right on through. 
 
+## Change Log
+* **V2.x.x** - Updated Get() method so it will now throw an exception 
+on any error. Previously would return `null`. This has some implications on 
+error handeling when sending multiple queries. If any fail,
+an exception is now raised. See error handeling section. This is possibly a breaking change 
+from V1.
+* **v1.x.x** - Initial Release
 
 ## Installation
 Install from Nuget, or your IDE's package manager
@@ -396,7 +403,7 @@ It uses the data type to determine how to build the query so in cases where you 
 GraphQL enumerations their is a simple helper class that can be used.
 
 Example how to generate an Enumeration
-```C#
+```csharp
 EnumHelper GqlEnumEnabled = new EnumHelper().Enum("ENABLED");
 EnumHelper GqlEnumDisabled = new EnumHelper("DISABLED");
 EnumHelper GqlEnumConditionNew = new EnumHelper("NEW");
@@ -430,46 +437,72 @@ This will generate a query that looks like this (well part of it anyway)
 }
 ```
 ### Handeling Errors
-Their are a few types of errors, generally no data, service issues, etc all will
-return a `null` from the Get() call. In addition to transport type of errors you may
-encounter GraphQL query syntax errors. These are generally shipped back as part of the JSON response.
-In some cases you may have some valid response data or a mixture of both response data and 
-GraphQL errors. Getit will try to pick off the Error's and stuff them into the Query's 
-`GqlErrors` structure. Also invalid JSON type conversions will generally cause an exception.
+**Getit version 2.X Error Handeling**
+Changed for version 2 onwards the Get() method will no longer return `null` 
+in response to error situations. For client errors, empty data or 
+any graphQL related errors an exception will be throw. Additional data based on 
+the exception will be stored in the thrown exception.
 
-**~NOTE: Currently a failed request to the server (or any exceptions from the GQLClient) 
-returns `null`. This may change to allow the exception to bubble up. In your code
-plan on catching any exceptions as well as checking for a `null` response.~**
-
-Here is an example how to check for GraphQL errors
 ```csharp
-...
-if (nearestDealerQuery.HasErrors())
+using GraphQL.Common.Response;
+
+// Setup Getit, config and a couple of queries
+
+Config config = new Config("https://randy.butternubs.com/graphql");
+Getit getit = new Getit(config);
+IQuery userQuery = getit.Query();
+
+userQuery
+    .Name("User")
+    .Select("userId", "firstName", "lastName", "phone")
+    .Where("userId", "331")
+    .Where("lastName", "Calhoon")
+    .Comment("My First Getit Query");
+
+// Fire the request to the sever catch any issues
+// Check the GraphQL client for list of it's possible exceptions.
+// Get it will also throw `ArgumentException` and `ArgumentNullException`
+
+try
 {
-    // scan all errors
-    foreach (GraphQLError gqlErr in nearestDealerQuery.GqlErrors)
+    string resp = await getit.Get<string>(userQuery);
+}
+catch(Exception ex)
+{
+    // Exceptions can OPTIONALLY have additional data depending on the cause
+
+    // "request"  - String of query set to server
+    if (e.Data.Contains("request"))
     {
-        Console.WriteLine("Error : " + gqlErr.Message);
-        
-        // For details scan the locations if desired
-        foreach (GraphQLLocation loc in gqlErr.Locations)
+
+        Console.WriteLine("Found Request Query");
+        Console.WriteLine(e.Data["request"]);
+    }
+
+    // "gqlErrors" - Array of GraphQLError's
+    if (e.Data.Contains("gqlErrors"))
+    {
+        Console.WriteLine("Found gqlErrors");
+
+        // Note data type returned is an Aarry of GraphQLError
+        GraphQLError [] errs = (GraphQLError []) e.Data["gqlErrors"];
+
+        foreach (GraphQLError err in errs)
         {
-            Console.WriteLine("  -->Location Line : " + loc.Line + ", Column : " + loc.Column);
+            // Look at any of the elements in the error, here just the message
+            Console.WriteLine(err.Message);
         }
     }
 }
-else
-{
-    Console.WriteLine("No Errors Found");
-}
 ...
+
 ```
+
 ## Todo's
 * Test on more then the single GraphQL server we use
-* GraphQLClient error handeling - to throw or now
 * Expose More GraphQLClient functionality
 * Stuff that is broken as it is discovered
 * Mutations if needed
 * Other missing GQL support
 * More Organized Docs
-* Publish on Nuget
+

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using GraphQL.Common.Response;
 
 namespace Carlabs.Getit
 {
@@ -8,7 +7,6 @@ namespace Carlabs.Getit
     {
         List<object> SelectList { get; }
         Dictionary<string, object> WhereMap { get; }
-        List<GraphQLError> GqlErrors { get; }
         List<IQuery> BatchQueryList { get; }
 
         string QueryName { get; }
@@ -24,7 +22,7 @@ namespace Carlabs.Getit
 
         /// <summary>
         /// Accepts a string and will use this as the query. Setting
-        /// this will overide any other settings and ignore any
+        /// this will override any other settings and ignore any
         /// validation checks. If the string is empty it will be
         /// ignored and the existing query builder actions will be
         /// at play.
@@ -45,7 +43,7 @@ namespace Carlabs.Getit
 
         /// <summary>
         /// Sets the Query Alias name. This is used in graphQL to allow
-        /// multipe queries with the same endpoint (name) to be assembled
+        /// multiple queries with the same endpoint (name) to be assembled
         /// into a batch like query. This will prefix the Name in the query.
         /// It will also be used for the Response name processing.
         /// Note that this can be applied to any sub-select as well. GraphQL will
@@ -60,7 +58,7 @@ namespace Carlabs.Getit
         /// and add it to the Select block in the query. GraphQL formatting will
         /// be automatically added. Multi-line comments can be done with the
         /// '\n' character and it will be automatically converted into a GraphQL
-        /// multi-line coment
+        /// multi-line comment
         /// </summary>
         /// <param name="comment">The comment string</param>
         /// <returns>Query</returns>
@@ -106,18 +104,10 @@ namespace Carlabs.Getit
         /// <summary>
         /// Add a dict of key value pairs &lt;string, object&gt; to the existing where part
         /// </summary>
-        /// <param name="dict">An existing Dictionay that takes &lt;string, object&gt;</param>
+        /// <param name="dict">An existing Dictionary that takes &lt;string, object&gt;</param>
         /// <returns>Query</returns>
-        /// <throws>Dupekey and others</throws>
+        /// <throws>DuplicateKeyException and others</throws>
         IQuery Where(Dictionary<string, object> dict);
-
-        /// <summary>
-        /// Helper to see if any errors were returned with the
-        /// last query. No errors does not mean data, just means
-        /// no errors found in the GQL client results
-        /// </summary>
-        /// <returns>Bool true if errors exist, false if not</returns>
-        bool HasErrors();
 
         /// <summary>
         /// Add additional queries to the request. These
@@ -138,7 +128,7 @@ namespace Carlabs.Getit
         /// Gets the string representation of the GraphQL query. This does some
         /// MINOR checking and will toss if not formatted correctly
         /// </summary>
-        /// <returns>The GrapQL Query String, without outer enclosing block</returns>
+        /// <returns>The GraphQL Query String, without outer enclosing block</returns>
         /// <throws>ArgumentException</throws>
         string ToString();
     }

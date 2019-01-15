@@ -9,10 +9,10 @@ namespace Carlabs.Getit
 {
     /// <summary>
     /// Builds a GraphQL query from the Query Object. For parameters it
-    /// support simple paramaters, ENUMs, Lists, and Objects.
+    /// support simple parameters, ENUMs, Lists, and Objects.
     /// For selections fields it supports sub-selects with params as above.
     ///
-    /// Most all sturctures can be recursive, and are unwound as needed
+    /// Most all structures can be recursive, and are unwound as needed
     ///
     /// </summary>
     public class QueryStringBuilder : IQueryStringBuilder
@@ -34,7 +34,7 @@ namespace Carlabs.Getit
         }
 
         /// <summary>
-        /// Recurses an object which could be a primitive or more
+        /// Recurse an object which could be a primitive or more
         /// complex structure. This will return a string of the value
         /// at the current level. Recursion terminates when at a terminal
         /// (primitive).
@@ -66,7 +66,7 @@ namespace Carlabs.Getit
                     return enumValue.ToString();
 
                 // All below are non-primitives that will recurse
-                // until the structure resloves into primitives
+                // until the structure resolves into primitives
 
                 case KeyValuePair<string, object> kvValue:
                     StringBuilder keyValueStr = new StringBuilder();
@@ -166,7 +166,7 @@ namespace Carlabs.Getit
 
         /// <summary>
         /// Adds fields to the query sting. This will use the SelectList
-        /// structure from the query to build the grapql select list. This
+        /// structure from the query to build the graphql select list. This
         /// will recurse as needed to pick up sub-selects that can contain
         /// parameter lists.
         /// </summary>
@@ -188,9 +188,9 @@ namespace Carlabs.Getit
                     case string _:
                         QueryString.Append(strPad + $"{field}\n");
                         break;
-                    case Query _:
+                    case Query query1:
                         QueryStringBuilder subQuery = new QueryStringBuilder();
-                        QueryString.Append($"{subQuery.Build((Query)field, indent)}\n");
+                        QueryString.Append($"{subQuery.Build(query1, indent)}\n");
                         break;
                     default:
                         throw new ArgumentException("Invalid Field Type Specified, must be `string` or `Query`");
@@ -200,7 +200,7 @@ namespace Carlabs.Getit
 
         /// <summary>
         /// Adds a comment to the Select list part of the Query. Comments
-        /// may be seperated by a newline and those will expand to individual
+        /// may be separated by a newline and those will expand to individual
         /// comment line. Formatting for graphQL '#' comments will happen here
         /// </summary>
         /// <param name="comments">Simple Comment</param>
@@ -224,7 +224,7 @@ namespace Carlabs.Getit
         /// </summary>
         /// <param name="query">The Query</param>
         /// <param name="indent">Indent characters, default = 0</param>
-        /// <returns>GraphQL query string wihout outer block</returns>
+        /// <returns>GraphQL query string without outer block</returns>
         public string Build(IQuery query, int indent = 0)
         {
             string pad = new String(' ', indent);

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using GraphQL.Common.Response;
 
 namespace Carlabs.Getit
 {
@@ -9,8 +8,7 @@ namespace Carlabs.Getit
     /// The Query Class is a simple class to build out graphQL
     /// style queries. It will build the parameters and field lists
     /// similar in a way you would use a SQL query builder to assemble
-    /// a query. This will maintain the response and errors for the
-    /// query.
+    /// a query. This will maintain the response for the query
     /// </summary>
     public class Query : IQuery
     {
@@ -22,7 +20,6 @@ namespace Carlabs.Getit
         public string RawQuery { get; private set; }
         public List<IQuery> BatchQueryList { get; } = new List<IQuery>();
         public IQueryStringBuilder Builder { get; } = new QueryStringBuilder();
-        public List<GraphQLError> GqlErrors { get; } = new List<GraphQLError>();
 
         /// <summary>
         /// Clear the Query and anything related
@@ -38,13 +35,12 @@ namespace Carlabs.Getit
             AliasName = string.Empty;
             QueryComment = string.Empty;
             RawQuery = string.Empty;
-            GqlErrors.Clear();
             BatchQueryList.Clear();
         }
 
         /// <summary>
         /// Accepts a string and will use this as the query. Setting
-        /// this will overide any other settings and ignore any
+        /// this will override any other settings and ignore any
         /// validation checks. If the string is empty it will be
         /// ignored and the existing query builder actions will be
         /// at play.
@@ -59,7 +55,7 @@ namespace Carlabs.Getit
         {
             Clear();
 
-            // scan string and find if the first nonwhitespace
+            // scan string and find if the first non-whitespace
             // is a brace, if so we need to strip beginning and
             // ending. Otherwise leave it be.
 
@@ -108,7 +104,7 @@ namespace Carlabs.Getit
 
         /// <summary>
         /// Sets the Query Alias name. This is used in graphQL to allow
-        /// multipe queries with the same endpoint (name) to be assembled
+        /// multiple queries with the same endpoint (name) to be assembled
         /// into a batch like query. This will prefix the Name as specified.
         /// Note that this can be applied to any sub-select as well. GraphQL will
         /// rename the query with the alias name in the response.
@@ -127,7 +123,7 @@ namespace Carlabs.Getit
         /// and add it to the Select block in the query. GraphQL formatting will
         /// be automatically added. Multi-line comments can be done with the
         /// '\n' character and it will be automatically converted into a GraphQL
-        /// multi-line coment
+        /// multi-line comment
         /// </summary>
         /// <param name="comment">The comment string</param>
         /// <returns>Query</returns>
@@ -203,7 +199,7 @@ namespace Carlabs.Getit
         /// <summary>
         /// Add a dict of key value pairs &lt;string, object&gt; to the existing where part
         /// </summary>
-        /// <param name="dict">An existing Dictionay that takes &lt;string, object&gt;</param>
+        /// <param name="dict">An existing Dictionary that takes &lt;string, object&gt;</param>
         /// <returns>Query</returns>
         /// <exception cref="ArgumentException">Dupe Key</exception>
         /// <exception cref="ArgumentNullException">Null Argument</exception>
@@ -213,19 +209,6 @@ namespace Carlabs.Getit
                 WhereMap.Add(field.Key, field.Value);
 
             return this;
-        }
-
-        /// <summary>
-        /// Helper to see if any errors were returned with the
-        /// last query. No errors does not mean data, just means
-        /// no errors found in the GQL client results. Errors and the
-        /// thus this count will persis until cleared or the query
-        /// is executed.
-        /// </summary>
-        /// <returns>Bool true if errors exist, false if not</returns>
-        public bool HasErrors()
-        {
-            return GqlErrors.Count > 0;
         }
 
         /// <summary>

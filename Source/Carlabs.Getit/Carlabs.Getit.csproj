@@ -6,5 +6,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GraphQL.Client" Version="1.0.3" />
+    <PackageReference Include="SecurityCodeScan.VS2017" Version="3.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>

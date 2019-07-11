@@ -5,6 +5,7 @@ namespace Carlabs.Getit
 {
     public interface IQuery
     {
+        QueryType Type { get; set; }
         List<object> SelectList { get; }
         Dictionary<string, object> WhereMap { get; }
         List<IQuery> BatchQueryList { get; }

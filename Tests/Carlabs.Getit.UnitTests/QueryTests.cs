@@ -348,7 +348,7 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
-        public void Check_Raw_Build()
+        public void Check_Raw_ReturnsQuery()
         {
             // Arrange
             IConfig config = Substitute.For<IConfig>();
@@ -367,6 +367,70 @@ namespace Carlabs.Getit.UnitTests
             Assert.AreEqual(expectedRawQuery, query.RawQuery);
             Assert.AreEqual(expectedRawQuery, query.ToString());
             Assert.AreEqual(string.Empty, query.QueryName);
+        }
+
+        [TestMethod]
+        public void Check_Raw_ReturnsMutation()
+        {
+            // Arrange
+            IConfig config = Substitute.For<IConfig>();
+            config.Url.Returns("http://www.somesite.com");
+            IQuery query = new Query();
+
+            const string expectedRawQuery = "mutation{Version}";
+
+            // Act
+            query
+                .Name("Should Not Exists")
+                .Raw(expectedRawQuery);
+
+            // Assert it's exists and returned on build
+
+            Assert.AreEqual(expectedRawQuery, query.RawQuery);
+            Assert.AreEqual(expectedRawQuery, query.ToString());
+            Assert.AreEqual(string.Empty, query.QueryName);
+        }
+
+        [TestMethod]
+        public void Raw_NoType_ReturnsQuery()
+        {
+            // Arrange
+            IQuery query = new Query();
+
+            // Act
+            query.Raw("{Version}");
+
+            // Assert it's exists and returned on build
+
+            Assert.AreEqual(QueryType.Query, query.Type);
+        }
+
+        [TestMethod]
+        public void Raw_Query_ReturnsQuery()
+        {
+            // Arrange
+            IQuery query = new Query();
+
+            // Act
+            query.Raw("query{Version}");
+
+            // Assert it's exists and returned on build
+
+            Assert.AreEqual(QueryType.Query, query.Type);
+        }
+
+        [TestMethod]
+        public void Raw_Mutation_ReturnsMutation()
+        {
+            // Arrange
+            IQuery query = new Query();
+
+            // Act
+            query.Raw("mutation{Version}");
+
+            // Assert it's exists and returned on build
+
+            Assert.AreEqual(QueryType.Mutation, query.Type);
         }
     }
 }

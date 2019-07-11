@@ -12,6 +12,7 @@ namespace Carlabs.Getit
     /// </summary>
     public class Query : IQuery
     {
+        public QueryType Type { get; set; } = QueryType.Query;
         public List<object> SelectList { get; } = new List<object>();
         public Dictionary<string, object> WhereMap { get; } = new Dictionary<string, object>();
         public string QueryName { get; private set; }
@@ -31,6 +32,7 @@ namespace Carlabs.Getit
             Builder.Clear();
             SelectList.Clear();
             WhereMap.Clear();
+            Type = QueryType.Query;
             QueryName = string.Empty;
             AliasName = string.Empty;
             QueryComment = string.Empty;
@@ -78,6 +80,13 @@ namespace Carlabs.Getit
                 break;
             }
 
+            // Check if mutation
+
+            if (rawQuery.ToLower().IndexOf("mutation", StringComparison.Ordinal) == 0)
+            {
+                Type = QueryType.Mutation;
+            }
+
             // Got the word to remove surrounding braces
 
             if (stripBraces)
@@ -85,6 +94,7 @@ namespace Carlabs.Getit
                 rawQuery = rawQuery.Remove(rawQuery.IndexOf("{", StringComparison.Ordinal), 1);
                 rawQuery = rawQuery.Remove(rawQuery.LastIndexOf("}", StringComparison.Ordinal), 1);
             }
+
 
             RawQuery = rawQuery;
             return this;

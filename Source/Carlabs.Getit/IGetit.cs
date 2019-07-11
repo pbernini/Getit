@@ -18,6 +18,12 @@ namespace Carlabs.Getit
         IQuery Query();
 
         /// <summary>
+        /// The Mutation Factory/Dispenser
+        /// </summary>
+        /// <returns></returns>
+        IQuery Mutation();
+
+        /// <summary>
         /// Given a type return the results of a GraphQL query in it. If
         /// the type is a string then will return the JSON string. The resultName
         /// will be automatically set the Name or Alias name if not specified.

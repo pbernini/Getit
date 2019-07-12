@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 
@@ -253,7 +254,7 @@ namespace Carlabs.Getit.UnitTests
             // Arrange
             Query query = new Query();
 
-            const string rawStr = "something(a:123){id}";
+            const string rawStr = "{something(a:123){id}}";
 
             // Act
             query
@@ -270,7 +271,7 @@ namespace Carlabs.Getit.UnitTests
             Query query = new Query();
 
             const string rawStr = "{something(a:123){id}}";
-            const string expectedRawStr = "something(a:123){id}";
+            const string expectedRawStr = "{something(a:123){id}}";
 
             // Act
             query
@@ -286,8 +287,8 @@ namespace Carlabs.Getit.UnitTests
             // Arrange
             Query query = new Query();
 
-            const string rawStr = "   {something(a:123){id}}   ";
-            const string expectedRawStr = "   something(a:123){id}   ";
+            const string rawStr = "   { something(a:123) {id}}   ";
+            const string expectedRawStr = "{something(a:123){id}}";
 
             // Act
             query
@@ -384,53 +385,60 @@ namespace Carlabs.Getit.UnitTests
                 .Name("Should Not Exists")
                 .Raw(expectedRawQuery);
 
-            // Assert it's exists and returned on build
-
-            Assert.AreEqual(expectedRawQuery, query.RawQuery);
+            // Assert
             Assert.AreEqual(expectedRawQuery, query.ToString());
-            Assert.AreEqual(string.Empty, query.QueryName);
         }
 
         [TestMethod]
-        public void Raw_NoType_ReturnsQuery()
+        public void ToString_Select_ReturnsInBrackets()
         {
             // Arrange
             IQuery query = new Query();
 
             // Act
-            query.Raw("{Version}");
+            query
+                .Name("Test")
+                .Select("version");
 
-            // Assert it's exists and returned on build
+            Regex ws = new Regex(@"\s+");
+            string queryStr = ws.Replace(query.ToString().Replace(Environment.NewLine, ""), "");
 
-            Assert.AreEqual(QueryType.Query, query.Type);
+            // Assert
+            Assert.AreEqual("{Test{version}}", queryStr);
         }
 
         [TestMethod]
-        public void Raw_Query_ReturnsQuery()
+        public void ToString_Raw_ReturnsInBrackets()
         {
             // Arrange
             IQuery query = new Query();
 
             // Act
-            query.Raw("query{Version}");
+            query
+                .Raw("{Test{version}}");
 
-            // Assert it's exists and returned on build
+            Regex ws = new Regex(@"\s+");
+            string queryStr = ws.Replace(query.ToString().Replace(Environment.NewLine, ""), "");
 
-            Assert.AreEqual(QueryType.Query, query.Type);
+            // Assert
+            Assert.AreEqual("{Test{version}}", queryStr);
         }
 
         [TestMethod]
-        public void Raw_Mutation_ReturnsMutation()
+        public void ToString_NoBracketsRaw_ReturnsInBrackets()
         {
             // Arrange
             IQuery query = new Query();
 
             // Act
-            query.Raw("mutation{Version}");
+            query
+                .Raw("Test{version}");
 
-            // Assert it's exists and returned on build
+            Regex ws = new Regex(@"\s+");
+            string queryStr = ws.Replace(query.ToString().Replace(Environment.NewLine, ""), "");
 
-            Assert.AreEqual(QueryType.Mutation, query.Type);
+            // Assert
+            Assert.AreEqual("{Test{version}}", queryStr);
         }
     }
 }

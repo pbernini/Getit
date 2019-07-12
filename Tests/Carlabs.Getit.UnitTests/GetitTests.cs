@@ -50,32 +50,6 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
-        public void Query_Called_ReturnsTypeQuery()
-        {
-            // Arrange
-            IGetit getit = new Getit();
-
-            // Act
-            IQuery query = getit.Query();
-
-            // Assert
-            Assert.AreEqual(QueryType.Query, query.Type);
-        }
-
-        [TestMethod]
-        public void Mutation_Called_ReturnsTypeMutation()
-        {
-            // Arrange
-            IGetit getit = new Getit();
-
-            // Act
-            IQuery query = getit.Mutation();
-
-            // Assert
-            Assert.AreEqual(QueryType.Mutation, query.Type);
-        }
-
-        [TestMethod]
         public async Task Get_ValidConfig_ReturnsJson()
         {
             // Arrange

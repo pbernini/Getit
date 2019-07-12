@@ -57,7 +57,7 @@ namespace Carlabs.Getit.IntegrationTests
             IQuery query = getit.Query().Name("test1").Select("id");
 
             // Assert
-            Assert.AreEqual("test1{id}", RemoveWhitespace(query.ToString()));
+            Assert.AreEqual("{test1{id}}", RemoveWhitespace(query.ToString()));
         }
 
         [TestMethod]
@@ -144,7 +144,7 @@ namespace Carlabs.Getit.IntegrationTests
             // Get and pack results
             string packedResults = RemoveWhitespace(query.ToString());
             string packedCheck = RemoveWhitespace(@"
-                    myDealerAlias: Dealer(make: ""aston martin"", state: ""ca"", limit: 2, trims:[143783, 243784, 343145], models:[""DB7"", ""DB9"", ""Vantage""],
+                    {myDealerAlias: Dealer(make: ""aston martin"", state: ""ca"", limit: 2, trims:[143783, 243784, 343145], models:[""DB7"", ""DB9"", ""Vantage""],
                     price:{ from: 123, to: 454, recurse:[""aa"", ""bb"", ""cc""], map: { from: 444.45, to: 555.45} },
                     _debug: ENABLED){
                     # My First GQL Query with getit
@@ -160,7 +160,7 @@ namespace Carlabs.Getit.IntegrationTests
                     name
                     make
                     model
-                }");
+                }}");
 
             // Best be the same!
             Assert.AreEqual(packedResults, packedCheck);

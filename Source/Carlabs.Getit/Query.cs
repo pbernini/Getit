@@ -283,6 +283,7 @@ namespace Carlabs.Getit
                 strQuery.Append(batchQuery.ToString());
             }
 
+            // ReSharper disable once SuggestVarOrType_BuiltInTypes
             string query = _ws.Replace(strQuery.ToString().Replace(System.Environment.NewLine, ""), "");
 
             if (query.IndexOf("{", StringComparison.Ordinal) != 0 &&

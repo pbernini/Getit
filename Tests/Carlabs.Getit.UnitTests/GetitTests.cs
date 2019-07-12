@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json.Linq;
 using NSubstitute;
 
 namespace Carlabs.Getit.UnitTests

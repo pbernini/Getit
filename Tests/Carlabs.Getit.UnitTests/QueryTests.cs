@@ -401,6 +401,7 @@ namespace Carlabs.Getit.UnitTests
                 .Select("version");
 
             Regex ws = new Regex(@"\s+");
+            // ReSharper disable once SuggestVarOrType_BuiltInTypes
             string queryStr = ws.Replace(query.ToString().Replace(System.Environment.NewLine, ""), "");
 
             // Assert
@@ -418,6 +419,7 @@ namespace Carlabs.Getit.UnitTests
                 .Raw("{Test{version}}");
 
             Regex ws = new Regex(@"\s+");
+            // ReSharper disable once SuggestVarOrType_BuiltInTypes
             string queryStr = ws.Replace(query.ToString().Replace(System.Environment.NewLine, ""), "");
 
             // Assert
@@ -435,6 +437,7 @@ namespace Carlabs.Getit.UnitTests
                 .Raw("Test{version}");
 
             Regex ws = new Regex(@"\s+");
+            // ReSharper disable once SuggestVarOrType_BuiltInTypes
             string queryStr = ws.Replace(query.ToString().Replace(System.Environment.NewLine, ""), "");
 
             // Assert

@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 
@@ -288,7 +287,7 @@ namespace Carlabs.Getit.UnitTests
             Query query = new Query();
 
             const string rawStr = "   { something(a:123) {id}}   ";
-            const string expectedRawStr = "{something(a:123){id}}";
+            const string expectedRawStr = "{    something(a:123) {id}   }";
 
             // Act
             query
@@ -390,24 +389,6 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
-        public void ToString_Select_ReturnsInBrackets()
-        {
-            // Arrange
-            IQuery query = new Query();
-
-            // Act
-            query
-                .Name("Test")
-                .Select("version");
-
-            Regex ws = new Regex(@"\s+");
-            string queryStr = ws.Replace(query.ToString().Replace(Environment.NewLine, ""), "");
-
-            // Assert
-            Assert.AreEqual("{Test{version}}", queryStr);
-        }
-
-        [TestMethod]
         public void ToString_Raw_ReturnsInBrackets()
         {
             // Arrange
@@ -417,8 +398,7 @@ namespace Carlabs.Getit.UnitTests
             query
                 .Raw("{Test{version}}");
 
-            Regex ws = new Regex(@"\s+");
-            string queryStr = ws.Replace(query.ToString().Replace(Environment.NewLine, ""), "");
+            string queryStr = query.ToString().Replace(Environment.NewLine, "");
 
             // Assert
             Assert.AreEqual("{Test{version}}", queryStr);
@@ -434,11 +414,26 @@ namespace Carlabs.Getit.UnitTests
             query
                 .Raw("Test{version}");
 
-            Regex ws = new Regex(@"\s+");
-            string queryStr = ws.Replace(query.ToString().Replace(Environment.NewLine, ""), "");
+            string queryStr = query.ToString().Replace(Environment.NewLine, "");
 
             // Assert
             Assert.AreEqual("{Test{version}}", queryStr);
+        }
+
+        [TestMethod]
+        public void ToString_NoBracketsRawSpaces_ReturnsInBrackets()
+        {
+            // Arrange
+            IQuery query = new Query();
+
+            // Act
+            query
+                .Raw("Test{version id name}");
+
+            string queryStr = query.ToString().Replace(Environment.NewLine, "");
+
+            // Assert
+            Assert.AreEqual("{Test{version id name}}", queryStr);
         }
     }
 }

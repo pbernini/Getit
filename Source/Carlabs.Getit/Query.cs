@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace Carlabs.Getit
 {
@@ -21,7 +20,6 @@ namespace Carlabs.Getit
         public string RawQuery { get; private set; }
         public List<IQuery> BatchQueryList { get; } = new List<IQuery>();
         public IQueryStringBuilder Builder { get; } = new QueryStringBuilder();
-        private readonly Regex _ws = new Regex(@"\s+");
 
         /// <summary>
         /// Clear the Query and anything related
@@ -283,7 +281,7 @@ namespace Carlabs.Getit
                 strQuery.Append(batchQuery.ToString());
             }
 
-            string query = _ws.Replace(strQuery.ToString().Replace(Environment.NewLine, ""), "");
+            string query = strQuery.ToString().Replace(Environment.NewLine, "");
 
             if (query.IndexOf("{", StringComparison.Ordinal) != 0 &&
                 query.IndexOf("query", StringComparison.Ordinal) != 0 &&

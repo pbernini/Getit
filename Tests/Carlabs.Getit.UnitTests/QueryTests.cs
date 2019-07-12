@@ -389,23 +389,6 @@ namespace Carlabs.Getit.UnitTests
         }
 
         [TestMethod]
-        public void ToString_Select_ReturnsInBrackets()
-        {
-            // Arrange
-            IQuery query = new Query();
-
-            // Act
-            query
-                .Name("Test")
-                .Select("version");
-
-            string queryStr = query.ToString().Replace(Environment.NewLine, "");
-
-            // Assert
-            Assert.AreEqual("{Test{    version}}", queryStr);
-        }
-
-        [TestMethod]
         public void ToString_Raw_ReturnsInBrackets()
         {
             // Arrange

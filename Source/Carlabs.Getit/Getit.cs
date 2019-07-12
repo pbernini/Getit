@@ -50,20 +50,6 @@ namespace Carlabs.Getit
             return new Query();
         }
 
-        /// <inheritdoc />
-        /// <summary>
-        /// The Query Factory/Dispenser. These are independent
-        /// of connection so you can create a bunch and use them
-        /// for sub-queries, etc.
-        /// </summary>
-        /// <returns></returns>
-        public IQuery Mutation()
-        {
-            IQuery query = new Query();
-            query.Type = QueryType.Mutation;
-            return query;
-        }
-
         /// <summary>
         /// Given a type return the results of a GraphQL query in it. If
         /// the type is a string then will return the JSON string. The resultName
@@ -112,18 +98,8 @@ namespace Carlabs.Getit
 
             // Generate the query can throw here
 
-            string type = "";
-            switch (query.Type)
-            {
-                case QueryType.Query:
-                    type = "query";
-                    break;
-                case QueryType.Mutation:
-                    type = "mutation";
-                    break;
-            }
+            GraphQLRequest gqlQuery = new GraphQLRequest {Query = query.ToString()};
 
-            GraphQLRequest gqlQuery = new GraphQLRequest {Query = type + "{" + query.ToString() + "}"};
 
             // make the call to the server, this will toss on any non 200 response
 

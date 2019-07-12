@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Carlabs.Getit
 {
@@ -12,7 +13,6 @@ namespace Carlabs.Getit
     /// </summary>
     public class Query : IQuery
     {
-        public QueryType Type { get; set; } = QueryType.Query;
         public List<object> SelectList { get; } = new List<object>();
         public Dictionary<string, object> WhereMap { get; } = new Dictionary<string, object>();
         public string QueryName { get; private set; }
@@ -21,6 +21,7 @@ namespace Carlabs.Getit
         public string RawQuery { get; private set; }
         public List<IQuery> BatchQueryList { get; } = new List<IQuery>();
         public IQueryStringBuilder Builder { get; } = new QueryStringBuilder();
+        private readonly Regex _ws = new Regex(@"\s+");
 
         /// <summary>
         /// Clear the Query and anything related
@@ -32,7 +33,6 @@ namespace Carlabs.Getit
             Builder.Clear();
             SelectList.Clear();
             WhereMap.Clear();
-            Type = QueryType.Query;
             QueryName = string.Empty;
             AliasName = string.Empty;
             QueryComment = string.Empty;
@@ -78,13 +78,6 @@ namespace Carlabs.Getit
                 }
 
                 break;
-            }
-
-            // Check if mutation
-
-            if (rawQuery.ToLower().IndexOf("mutation", StringComparison.Ordinal) == 0)
-            {
-                Type = QueryType.Mutation;
             }
 
             // Got the word to remove surrounding braces
@@ -290,7 +283,16 @@ namespace Carlabs.Getit
                 strQuery.Append(batchQuery.ToString());
             }
 
-            return strQuery.ToString();
+            string query = _ws.Replace(strQuery.ToString().Replace(System.Environment.NewLine, ""), "");
+
+            if (query.IndexOf("{", StringComparison.Ordinal) != 0 &&
+                query.IndexOf("query", StringComparison.Ordinal) != 0 &&
+                query.IndexOf("mutation", StringComparison.Ordinal) != 0)
+            {
+                query = "{" + query + "}";
+            }
+
+            return query;
         }
     }
 }

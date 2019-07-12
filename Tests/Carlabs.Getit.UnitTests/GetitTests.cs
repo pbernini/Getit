@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 using NSubstitute;
 
 namespace Carlabs.Getit.UnitTests
@@ -47,32 +48,6 @@ namespace Carlabs.Getit.UnitTests
 
             // Assert
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await getit.Get<String>(query));
-        }
-
-        [TestMethod]
-        public void Query_Called_ReturnsTypeQuery()
-        {
-            // Arrange
-            IGetit getit = new Getit();
-
-            // Act
-            IQuery query = getit.Query();
-
-            // Assert
-            Assert.AreEqual(QueryType.Query, query.Type);
-        }
-
-        [TestMethod]
-        public void Mutation_Called_ReturnsTypeMutation()
-        {
-            // Arrange
-            IGetit getit = new Getit();
-
-            // Act
-            IQuery query = getit.Mutation();
-
-            // Assert
-            Assert.AreEqual(QueryType.Mutation, query.Type);
         }
 
         [TestMethod]

@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Carlabs.Getit
 {
@@ -8,6 +10,7 @@ namespace Carlabs.Getit
         /// May need to look at the string as it's being built
         /// </summary>
         StringBuilder QueryString { get; }
+        Dictionary<string, Tuple<string, string>> ParmsMap { get; }
 
         /// <summary>
         /// Clear the QueryStringBuilder and all that entails
@@ -23,7 +26,7 @@ namespace Carlabs.Getit
         /// <param name="value"></param>
         /// <returns></returns>
         // ReSharper disable once UnusedMemberInSuper.Global
-        string BuildQueryParam(object value);
+        Tuple<string, string> BuildQueryParam(object value);
 
         /// <summary>
         /// This take all parameter data

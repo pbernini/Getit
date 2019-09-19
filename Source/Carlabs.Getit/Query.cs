@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Text;
 
 namespace Carlabs.Getit
@@ -19,7 +20,7 @@ namespace Carlabs.Getit
         public string QueryComment { get; private set; }
         public string RawQuery { get; private set; }
         public List<IQuery> BatchQueryList { get; } = new List<IQuery>();
-        public IQueryStringBuilder Builder { get; } = new QueryStringBuilder();
+        public object ActualParameters { get; private set; }
 
         /// <summary>
         /// Clear the Query and anything related
@@ -28,7 +29,6 @@ namespace Carlabs.Getit
         {
             // reset all member vars to clean state
 
-            Builder.Clear();
             SelectList.Clear();
             WhereMap.Clear();
             QueryName = string.Empty;
@@ -36,6 +36,7 @@ namespace Carlabs.Getit
             QueryComment = string.Empty;
             RawQuery = string.Empty;
             BatchQueryList.Clear();
+            ActualParameters = null;
         }
 
         /// <summary>
@@ -242,8 +243,8 @@ namespace Carlabs.Getit
         /// <exception cref="ArgumentException">Dupe Key, empty or missing parts</exception>
         public override string ToString()
         {
-
             StringBuilder strQuery = new StringBuilder();
+            QueryStringBuilder queryBuilder = new QueryStringBuilder();
 
             // If we have a RawQuery set, use that instead
             // of generating it since it can't mix with the
@@ -270,8 +271,8 @@ namespace Carlabs.Getit
                     throw new ArgumentException("Must have a one or more `Select` fields in the Query");
                 }
 
-                Builder.Clear();
-                strQuery.Append(Builder.Build(this));
+                ActualParameters = null;
+                strQuery.Append(queryBuilder.Build(this));
             }
 
             // Now we have a query, check to see if we are batching
@@ -290,7 +291,33 @@ namespace Carlabs.Getit
                 query = "{" + query + "}";
             }
 
+            if (queryBuilder.ParmsMap.Count != 0)
+            {
+                query = $"query({BuildParameters(queryBuilder.ParmsMap)}) {query}";
+            }
+
             return query;
+        }
+
+        private string BuildParameters(Dictionary<string, Tuple<string, string>> parmsMap)
+        {
+            IDictionary<string, object> values = new ExpandoObject();
+            StringBuilder strParms = new StringBuilder();
+
+            bool first = true;
+            foreach (var parm in parmsMap)
+            {
+                if (!first)
+                {
+                    strParms.Append(", ");
+                }
+                strParms.Append($"{parm.Key}: {parm.Value.Item1}");
+                values[parm.Key.Substring(1)] = parm.Value.Item2;
+                first = false;
+            }
+
+            ActualParameters = values;
+            return strParms.ToString();
         }
     }
 }

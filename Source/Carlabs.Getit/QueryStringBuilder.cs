@@ -18,6 +18,7 @@ namespace Carlabs.Getit
     public class QueryStringBuilder : IQueryStringBuilder
     {
         public StringBuilder QueryString { get; }
+        public Dictionary<string, Tuple<string, string>> ParmsMap { get; } = new Dictionary<string, Tuple<string, string>>();
         private const int IndentSize = 4;
 
         public QueryStringBuilder()
@@ -31,6 +32,7 @@ namespace Carlabs.Getit
         public void Clear()
         {
             QueryString.Clear();
+            ParmsMap.Clear();
         }
 
         /// <summary>
@@ -42,7 +44,7 @@ namespace Carlabs.Getit
         /// <param name="value"></param>
         /// <returns>string</returns>
         /// <exception cref="InvalidDataException">Invalid Object Type in Param List</exception>
-        public string BuildQueryParam(object value)
+        public Tuple<string, string> BuildQueryParam(object value)
         {
             // Nicely use the pattern match
 
@@ -51,37 +53,41 @@ namespace Carlabs.Getit
                 // String to EnumHelper are all treated as a
                 // primitive value
                 case string strValue:
-                    return "\"" + strValue + "\"";
+                    return new Tuple<string, string>("String!", "\"" + strValue + "\"");
 
                 case int intValue:
-                    return intValue.ToString();
+                    return new Tuple<string, string>("Int!", intValue.ToString());
 
                 case float floatValue:
-                    return floatValue.ToString(CultureInfo.CurrentCulture);
+                    return new Tuple<string, string>("Float!", floatValue.ToString(CultureInfo.CurrentCulture));
 
                 case double doubleValue:
-                    return doubleValue.ToString(CultureInfo.CurrentCulture);
+                    return new Tuple<string, string>("Float!", doubleValue.ToString(CultureInfo.CurrentCulture));
 
                 case EnumHelper enumValue:
-                    return enumValue.ToString();
+                    return new Tuple<string, string>("String!", enumValue.ToString());
 
                 // All below are non-primitives that will recurse
                 // until the structure resolves into primitives
-
-                case KeyValuePair<string, object> kvValue:
-                    StringBuilder keyValueStr = new StringBuilder();
-
-                    keyValueStr.Append($"{kvValue.Key}:{BuildQueryParam(kvValue.Value)}");
-                    return keyValueStr.ToString();
 
                 case IList listValue:
                     StringBuilder listStr = new StringBuilder();
 
                     listStr.Append("[");
+                    string listType = null;
                     bool hasList = false;
                     foreach (var obj in listValue)
                     {
-                        listStr.Append(BuildQueryParam(obj) + ", ");
+                        Tuple<string, string> listObj = BuildQueryParam(obj);
+                        if (listType == null)
+                        {
+                            listType = listObj.Item1;
+                        }
+                        else if (listType != listObj.Item1)
+                        {
+                            throw new InvalidDataException("Eterogeneous data lists not supported");
+                        }
+                        listStr.Append(listObj.Item2 + ", ");
                         hasList = true;
                     }
 
@@ -91,35 +97,14 @@ namespace Carlabs.Getit
                     {
                         listStr.Length -= 2;
                     }
+                    else
+                    {
+                        listType = "String!";
+                    }
 
                     listStr.Append("]");
 
-                    return listStr.ToString();
-
-                case IDictionary dictValue:
-                    StringBuilder dictStr = new StringBuilder();
-
-                    dictStr.Append("{");
-                    bool hasType = false;
-                    foreach (var dictObj in (Dictionary<string, object>) dictValue)
-                    {
-                        dictStr.Append(BuildQueryParam(dictObj) + ", ");
-                        hasType = true;
-                    }
-
-                    // strip comma-space from type if not empty.
-                    // Not sure if this should generate code
-                    // or Toss, depends on if in GQL `name:{}` is valid in
-                    // any circumstance
-
-                    if (hasType)
-                    {
-                        dictStr.Length -= 2;
-                    }
-
-                    dictStr.Append("}");
-
-                    return dictStr.ToString();
+                    return new Tuple<string, string>($"[{listType}]!", listStr.ToString());
 
                 default:
                     throw new InvalidDataException("Unsupported Query Parameter, Type Found : " + value.GetType());
@@ -147,20 +132,36 @@ namespace Carlabs.Getit
             // All entries have a `name`:`value` looking format. The
             // BuildQueryParam's will recurse any nested data elements
 
-            bool hasParams = false;
-            foreach (var param in query.WhereMap)
+            string parmsPrefix = (query.AliasName != null) ? query.AliasName : query.QueryName;
+            AddParams("$" + parmsPrefix, query.WhereMap);
+        }
+
+        private void AddParams(string parmNamePrefix, Dictionary<string, object> whereMap)
+        {
+            bool first = true;
+            foreach (var param in whereMap)
             {
+                if (!first)
+                {
+                    QueryString.Append(", ");
+                }
+
                 QueryString.Append($"{param.Key}:");
-                QueryString.Append(BuildQueryParam(param.Value) + ", ");
-                hasParams = true;
-            }
+                if (param.Value is Dictionary<string, object>)
+                {
+                    QueryString.Append("{");
+                    AddParams($"{parmNamePrefix}_{param.Key}", (Dictionary<string, object>)param.Value);
+                    QueryString.Append("}");
+                }
+                else
+                {
+                    string parmName = $"{parmNamePrefix}_{param.Key}";
+                    Tuple<string, string> parmValue = BuildQueryParam(param.Value);
+                    ParmsMap.Add(parmName, parmValue);
+                    QueryString.Append(parmName);
+                }
 
-            // Remove the last comma and space that always trails if we have params!
-
-            if (hasParams)
-            {
-                QueryString.Length--;
-                QueryString.Length--;
+                first = false;
             }
         }
 
@@ -191,6 +192,10 @@ namespace Carlabs.Getit
                     case Query query1:
                         QueryStringBuilder subQuery = new QueryStringBuilder();
                         QueryString.Append($"{subQuery.Build(query1, indent)}\n");
+                        foreach (var entry in subQuery.ParmsMap)
+                        {
+                            ParmsMap.Add(entry.Key, entry.Value);
+                        }
                         break;
                     default:
                         throw new ArgumentException("Invalid Field Type Specified, must be `string` or `Query`");
@@ -227,6 +232,8 @@ namespace Carlabs.Getit
         /// <returns>GraphQL query string without outer block</returns>
         public string Build(IQuery query, int indent = 0)
         {
+            Clear();
+
             string pad = new String(' ', indent);
             string prevPad = pad;
 

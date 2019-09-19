@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Carlabs.Getit.UnitTests
@@ -22,7 +23,7 @@ namespace Carlabs.Getit.UnitTests
             QueryStringBuilder queryString = new QueryStringBuilder();
 
             // Act
-            string intStr = queryString.BuildQueryParam(123);
+            string intStr = queryString.BuildQueryParam(123).Item2;
 
             // Assert
             Assert.AreEqual("123", intStr);
@@ -35,7 +36,7 @@ namespace Carlabs.Getit.UnitTests
             QueryStringBuilder queryString = new QueryStringBuilder();
 
             // Act
-            string strStr = queryString.BuildQueryParam("Haystack");
+            string strStr = queryString.BuildQueryParam("Haystack").Item2;
 
             // Assert
             Assert.AreEqual("\"Haystack\"", strStr);
@@ -49,7 +50,7 @@ namespace Carlabs.Getit.UnitTests
 
             // Act
             const double Value = 1234.5678;
-            string doubleStr = queryString.BuildQueryParam(Value);
+            string doubleStr = queryString.BuildQueryParam(Value).Item2;
 
             // Assert
             Assert.AreEqual(Value.ToString(), doubleStr);
@@ -63,30 +64,10 @@ namespace Carlabs.Getit.UnitTests
             EnumHelper enumDisabled = new EnumHelper("DISABLED");
 
             // Act
-            string enumStr = queryString.BuildQueryParam(enumDisabled);
+            string enumStr = queryString.BuildQueryParam(enumDisabled).Item2;
 
             // Assert
             Assert.AreEqual("DISABLED", enumStr);
-        }
-
-        [TestMethod]
-        public void BuildQueryParam_CustomType_ParseCustom()
-        {
-            // Arrange
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            const double from = 444.45;
-            const double to = 555.45;
-            Dictionary<string, object> fromToMap = new Dictionary<string, object>
-            {
-                {"from", from},
-                {"to", to}
-            };
-
-            // Act
-            string fromToMapStr = queryString.BuildQueryParam(fromToMap);
-
-            // Assert
-            Assert.AreEqual($"{{from:{from}, to:{to}}}", fromToMapStr);
         }
 
         [TestMethod]
@@ -97,7 +78,7 @@ namespace Carlabs.Getit.UnitTests
 
             // Act
             List<int> intList = new List<int>(new[] { 43783, 43784, 43145 });
-            string intListStr = queryString.BuildQueryParam(intList);
+            string intListStr = queryString.BuildQueryParam(intList).Item2;
 
             // Assert
             Assert.AreEqual("[43783, 43784, 43145]", intListStr);
@@ -111,7 +92,7 @@ namespace Carlabs.Getit.UnitTests
 
             // Act
             List<string> strList = new List<string>(new[] { "DB7", "DB9", "Vantage" });
-            string strListStr = queryString.BuildQueryParam(strList);
+            string strListStr = queryString.BuildQueryParam(strList).Item2;
 
             // Assert
             Assert.AreEqual("[\"DB7\", \"DB9\", \"Vantage\"]", strListStr);
@@ -127,7 +108,7 @@ namespace Carlabs.Getit.UnitTests
             const double float1 = 123.456;
             const double float2 = 78.901;
             List<double> doubleList = new List<double>(new[] { float1, 456, float2 });
-            string doubleListStr = queryString.BuildQueryParam(doubleList);
+            string doubleListStr = queryString.BuildQueryParam(doubleList).Item2;
 
             // Assert
             Assert.AreEqual($"[{float1}, 456, {float2}]", doubleListStr);
@@ -144,42 +125,10 @@ namespace Carlabs.Getit.UnitTests
 
             // Act
             List<EnumHelper> enumList = new List<EnumHelper>(new[] { enumEnabled, enumDisabled, enumHaystack });
-            string enumListStr = queryString.BuildQueryParam(enumList);
+            string enumListStr = queryString.BuildQueryParam(enumList).Item2;
 
             // Assert
             Assert.AreEqual("[ENABLED, DISABLED, HAYstack]", enumListStr);
-        }
-
-        [TestMethod]
-        public void BuildQueryParam_NestedListType_ParseNestedList()
-        {
-            // Arrange
-            QueryStringBuilder queryString = new QueryStringBuilder();
-            List<object> objList = new List<object>(new object[] { "aa", "bb", "cc" });
-            EnumHelper enumHaystack = new EnumHelper("HAYstack");
-
-            const double from = 444.45;
-            const double to = 555.45;
-            Dictionary<string, object> fromToMap = new Dictionary<string, object>
-            {
-                {"from", from},
-                {"to", to},
-            };
-
-            Dictionary<string, object> nestedListMap = new Dictionary<string, object>
-            {
-                {"from", 123},
-                {"to", 454},
-                {"recurse", objList},
-                {"map", fromToMap},
-                {"name",  enumHaystack}
-            };
-
-            // Act
-            string nestedListMapStr= queryString.BuildQueryParam(nestedListMap);
-
-            // Assert
-            Assert.AreEqual($"{{from:123, to:454, recurse:[\"aa\", \"bb\", \"cc\"], map:{{from:{from}, to:{to}}}, name:HAYstack}}", nestedListMapStr);
         }
 
         [TestMethod]
@@ -191,12 +140,10 @@ namespace Carlabs.Getit.UnitTests
             List<object> objList = new List<object>(new object[] { "aa", "bb", "cc" });
             EnumHelper enumHaystack = new EnumHelper("HAYstack");
 
-            const double from = 444.45;
-            const double to = 555.45;
             Dictionary<string, object> fromToMap = new Dictionary<string, object>
             {
-                {"from", from},
-                {"to", to},
+                {"from", 444.45},
+                {"to", 555.45},
             };
 
             Dictionary<string, object> nestedListMap = new Dictionary<string, object>
@@ -221,7 +168,12 @@ namespace Carlabs.Getit.UnitTests
             string addParamStr = RemoveWhitespace(queryString.QueryString.ToString());
 
             // Assert
-            Assert.AreEqual(RemoveWhitespace($"from:123,to:454,recurse:[\"aa\",\"bb\",\"cc\"],map:{{from:{from},to:{to}}},name:HAYstack"), addParamStr);
+            Assert.AreEqual(RemoveWhitespace("from:$test1_from,to:$test1_to,recurse:$test1_recurse,map:{from:$test1_map_from,to:$test1_map_to},name:$test1_name"), addParamStr);
+            MatchCollection matches = new Regex(@"(\$[A-Za-z0-9_]+)", RegexOptions.Compiled).Matches(addParamStr);
+            foreach (Match match in matches)
+            {
+                Assert.IsTrue(queryString.ParmsMap.ContainsKey(match.Groups[0].Value), $"parameter {match.Groups[0].Value} not found");
+            }
         }
 
         [TestMethod]
@@ -253,7 +205,7 @@ namespace Carlabs.Getit.UnitTests
                 .Select("name")
                 .Where(nestedListMap);
 
-            IQueryStringBuilder queryString = query.Builder;
+            IQueryStringBuilder queryString = new QueryStringBuilder();
 
             queryString.AddParams(query);
 
@@ -270,6 +222,7 @@ namespace Carlabs.Getit.UnitTests
             // Arrange
             IQuery query = new Query();
             IQuery subSelect = new Query();
+            QueryStringBuilder builder = new QueryStringBuilder();
 
             EnumHelper gqlEnumEnabled = new EnumHelper().Enum("ENABLED");
             EnumHelper gqlEnumDisabled = new EnumHelper("DISABLED");
@@ -299,11 +252,16 @@ namespace Carlabs.Getit.UnitTests
                 .Select(selList);
 
             // Act
-            query.Builder.AddFields(query);
-            string addParamStr = RemoveWhitespace(query.Builder.QueryString.ToString());
+            builder.AddFields(query);
+            string addParamStr = RemoveWhitespace(builder.QueryString.ToString());
 
             // Assert
-            Assert.AreEqual(RemoveWhitespace("morethingsin_a_selectidsubSelect(subMake:\"aston martin\",subState:\"ca\",subLimit:1,__debug:DISABLED,SuperQuerySpeed:ENABLED){subNamesubMakesubModel}namemakemodel"), addParamStr);
+            Assert.AreEqual(RemoveWhitespace("morethingsin_a_selectidsubSelect(subMake:$subSelect_subMake,subState:$subSelect_subState,subLimit:$subSelect_subLimit,__debug:$subSelect___debug,SuperQuerySpeed:$subSelect_SuperQuerySpeed){subNamesubMakesubModel}namemakemodel"), addParamStr);
+            MatchCollection matches = new Regex(@"(\$[A-Za-z0-9_]+)", RegexOptions.Compiled).Matches(addParamStr);
+            foreach (Match match in matches)
+            {
+                Assert.IsTrue(builder.ParmsMap.ContainsKey(match.Groups[0].Value), $"parameter {match.Groups[0].Value} not found");
+            }
         }
 
         [TestMethod]
@@ -355,13 +313,18 @@ namespace Carlabs.Getit.UnitTests
                 .Select(selList)
                 .Comment("A single line Comment");
 
-            IQueryStringBuilder queryString = query.Builder;
+            IQueryStringBuilder queryString = new QueryStringBuilder();
 
             // Act
             string buildStr = RemoveWhitespace(queryString.Build(query));
 
             // Assert
-            Assert.AreEqual(RemoveWhitespace("test1Alias:test1{#AsinglelineCommentmorethingsin_a_selectidsubSelect(subMake:\"aston martin\",subState:\"ca\",subLimit:1,__debug:DISABLED,SuperQuerySpeed:ENABLED){subNamesubMakesubModel}namemakemodel}"), buildStr);
+            Assert.AreEqual(RemoveWhitespace("test1Alias:test1{#AsinglelineCommentmorethingsin_a_selectidsubSelect(subMake:$subSelect_subMake,subState:$subSelect_subState,subLimit:$subSelect_subLimit,__debug:$subSelect___debug,SuperQuerySpeed:$subSelect_SuperQuerySpeed){subNamesubMakesubModel}namemakemodel}"), buildStr);
+            MatchCollection matches = new Regex(@"(\$[A-Za-z0-9_]+)", RegexOptions.Compiled).Matches(buildStr);
+            foreach (Match match in matches)
+            {
+                Assert.IsTrue(queryString.ParmsMap.ContainsKey(match.Groups[0].Value), $"parameter {match.Groups[0].Value} not found");
+            }
         }
     }
 }

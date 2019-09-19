@@ -13,7 +13,6 @@ namespace Carlabs.Getit
         string AliasName { get; }
         string QueryComment { get; }
         string RawQuery { get; }
-        IQueryStringBuilder Builder { get; }
 
         /// <summary>
         /// Clear the Query and anything related

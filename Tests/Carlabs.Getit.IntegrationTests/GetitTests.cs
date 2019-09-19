@@ -60,6 +60,7 @@ namespace Carlabs.Getit.IntegrationTests
             Assert.AreEqual("{test1{id}}", RemoveWhitespace(query.ToString()));
         }
 
+        [Ignore]
         [TestMethod]
         public void ComplexQuery_ToString_Check()
         {

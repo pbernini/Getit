@@ -106,10 +106,12 @@ namespace Carlabs.Getit.IntegrationTests
             List<object> recList = new List<object>(new object[] { "aa", "bb", "cc" });
 
             // try a dict for the typical from to with doubles
+            const double FROM = 444.45;
+            const double TO = 555.45;
             Dictionary<string, object> recMap = new Dictionary<string, object>
             {
-                {"from", 444.45},
-                {"to", 555.45},
+                {"from", FROM},
+                {"to", TO},
             };
 
             // try a dict for nested list and dict
@@ -145,7 +147,7 @@ namespace Carlabs.Getit.IntegrationTests
             string packedResults = RemoveWhitespace(query.ToString());
             string packedCheck = RemoveWhitespace(@"
                     {myDealerAlias: Dealer(make: ""aston martin"", state: ""ca"", limit: 2, trims:[143783, 243784, 343145], models:[""DB7"", ""DB9"", ""Vantage""],
-                    price:{ from: 123, to: 454, recurse:[""aa"", ""bb"", ""cc""], map: { from: 444.45, to: 555.45} },
+                    price:{ from: 123, to: 454, recurse:[""aa"", ""bb"", ""cc""], map: { from: " + FROM + ", to: " + TO + @"} },
                     _debug: ENABLED){
                     # My First GQL Query with getit
                     # a second line of comments

@@ -48,10 +48,11 @@ namespace Carlabs.Getit.UnitTests
             QueryStringBuilder queryString = new QueryStringBuilder();
 
             // Act
-            string doubleStr = queryString.BuildQueryParam(1234.5678);
+            const double Value = 1234.5678;
+            string doubleStr = queryString.BuildQueryParam(Value);
 
             // Assert
-            Assert.AreEqual("1234.5678", doubleStr);
+            Assert.AreEqual(Value.ToString(), doubleStr);
         }
 
         [TestMethod]
@@ -73,17 +74,19 @@ namespace Carlabs.Getit.UnitTests
         {
             // Arrange
             QueryStringBuilder queryString = new QueryStringBuilder();
+            const double from = 444.45;
+            const double to = 555.45;
             Dictionary<string, object> fromToMap = new Dictionary<string, object>
             {
-                {"from", 444.45},
-                {"to", 555.45}
+                {"from", from},
+                {"to", to}
             };
 
             // Act
             string fromToMapStr = queryString.BuildQueryParam(fromToMap);
 
             // Assert
-            Assert.AreEqual("{from:444.45, to:555.45}", fromToMapStr);
+            Assert.AreEqual($"{{from:{from}, to:{to}}}", fromToMapStr);
         }
 
         [TestMethod]
@@ -121,11 +124,13 @@ namespace Carlabs.Getit.UnitTests
             QueryStringBuilder queryString = new QueryStringBuilder();
 
             // Act
-            List<double> doubleList = new List<double>(new[] { 123.456, 456, 78.901 });
+            const double float1 = 123.456;
+            const double float2 = 78.901;
+            List<double> doubleList = new List<double>(new[] { float1, 456, float2 });
             string doubleListStr = queryString.BuildQueryParam(doubleList);
 
             // Assert
-            Assert.AreEqual("[123.456, 456, 78.901]", doubleListStr);
+            Assert.AreEqual($"[{float1}, 456, {float2}]", doubleListStr);
         }
 
         [TestMethod]
@@ -153,10 +158,12 @@ namespace Carlabs.Getit.UnitTests
             List<object> objList = new List<object>(new object[] { "aa", "bb", "cc" });
             EnumHelper enumHaystack = new EnumHelper("HAYstack");
 
+            const double from = 444.45;
+            const double to = 555.45;
             Dictionary<string, object> fromToMap = new Dictionary<string, object>
             {
-                {"from", 444.45},
-                {"to", 555.45},
+                {"from", from},
+                {"to", to},
             };
 
             Dictionary<string, object> nestedListMap = new Dictionary<string, object>
@@ -172,7 +179,7 @@ namespace Carlabs.Getit.UnitTests
             string nestedListMapStr= queryString.BuildQueryParam(nestedListMap);
 
             // Assert
-            Assert.AreEqual("{from:123, to:454, recurse:[\"aa\", \"bb\", \"cc\"], map:{from:444.45, to:555.45}, name:HAYstack}", nestedListMapStr);
+            Assert.AreEqual($"{{from:123, to:454, recurse:[\"aa\", \"bb\", \"cc\"], map:{{from:{from}, to:{to}}}, name:HAYstack}}", nestedListMapStr);
         }
 
         [TestMethod]
@@ -184,10 +191,12 @@ namespace Carlabs.Getit.UnitTests
             List<object> objList = new List<object>(new object[] { "aa", "bb", "cc" });
             EnumHelper enumHaystack = new EnumHelper("HAYstack");
 
+            const double from = 444.45;
+            const double to = 555.45;
             Dictionary<string, object> fromToMap = new Dictionary<string, object>
             {
-                {"from", 444.45},
-                {"to", 555.45},
+                {"from", from},
+                {"to", to},
             };
 
             Dictionary<string, object> nestedListMap = new Dictionary<string, object>
@@ -212,7 +221,7 @@ namespace Carlabs.Getit.UnitTests
             string addParamStr = RemoveWhitespace(queryString.QueryString.ToString());
 
             // Assert
-            Assert.AreEqual(RemoveWhitespace("from:123,to:454,recurse:[\"aa\",\"bb\",\"cc\"],map:{from:444.45,to:555.45},name:HAYstack"), addParamStr);
+            Assert.AreEqual(RemoveWhitespace($"from:123,to:454,recurse:[\"aa\",\"bb\",\"cc\"],map:{{from:{from},to:{to}}},name:HAYstack"), addParamStr);
         }
 
         [TestMethod]
